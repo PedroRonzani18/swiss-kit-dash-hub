@@ -78,6 +78,36 @@ export const initialCategories: Category[] = [
 ];
 
 export const initialTransactions: Transaction[] = [
+  // --- Janeiro 2026 ---
+  { id: "t-j1", account: "Nubank", date: "2026-01-05", description: "Salário mensal", amount: 4500, type: "income", categoryId: "cat-1", subcategoryId: "sub-1" },
+  { id: "t-j2", account: "Mercado Pago", date: "2026-01-06", description: "Mesada avó", amount: 200, type: "income", categoryId: "cat-1", subcategoryId: "sub-2" },
+  { id: "t-j3", account: "Nubank", date: "2026-01-07", description: "Tic Tac menta", amount: 3, type: "expense", categoryId: "cat-2", subcategoryId: "sub-3" },
+  { id: "t-j4", account: "Nubank", date: "2026-01-10", description: "Pastel de frango", amount: 7.5, type: "expense", categoryId: "cat-2", subcategoryId: "sub-4" },
+  { id: "t-j5", account: "Mercado Pago", date: "2026-01-12", description: "Supercoffee vanilla", amount: 34, type: "expense", categoryId: "cat-2", subcategoryId: "sub-5" },
+  { id: "t-j6", account: "Nubank", date: "2026-01-14", description: "2kg Peito de frango", amount: 48, type: "expense", categoryId: "cat-3", subcategoryId: "sub-6" },
+  { id: "t-j7", account: "Nubank", date: "2026-01-16", description: "Cartela de ovo 30un", amount: 20, type: "expense", categoryId: "cat-3", subcategoryId: "sub-7" },
+  { id: "t-j8", account: "Mercado Pago", date: "2026-01-18", description: "Banana prata 2kg", amount: 11, type: "expense", categoryId: "cat-3", subcategoryId: "sub-8" },
+  { id: "t-j9", account: "Nubank", date: "2026-01-20", description: "Aveia flocos 1kg", amount: 15, type: "expense", categoryId: "cat-3", subcategoryId: "sub-9" },
+  { id: "t-j10", account: "Nubank", date: "2026-01-22", description: "Esponja 6un", amount: 9, type: "expense", categoryId: "cat-4", subcategoryId: "sub-10" },
+  { id: "t-j11", account: "Mercado Pago", date: "2026-01-24", description: "Diarista faxina", amount: 180, type: "expense", categoryId: "cat-4", subcategoryId: "sub-12" },
+  { id: "t-j12", account: "Nubank", date: "2026-01-26", description: "Gasolina tanque cheio", amount: 290, type: "expense", categoryId: "cat-5", subcategoryId: "sub-13" },
+  { id: "t-j13", account: "Nubank", date: "2026-01-28", description: "Gasolina complemento", amount: 130, type: "expense", categoryId: "cat-5", subcategoryId: "sub-13" },
+
+  // --- Fevereiro 2026 ---
+  { id: "t-f1", account: "Nubank", date: "2026-02-03", description: "Salário mensal", amount: 4500, type: "income", categoryId: "cat-1", subcategoryId: "sub-1" },
+  { id: "t-f2", account: "Mercado Pago", date: "2026-02-04", description: "Mesada avó", amount: 200, type: "income", categoryId: "cat-1", subcategoryId: "sub-2" },
+  { id: "t-f3", account: "Nubank", date: "2026-02-05", description: "Tic Tac morango", amount: 3.5, type: "expense", categoryId: "cat-2", subcategoryId: "sub-3" },
+  { id: "t-f4", account: "Nubank", date: "2026-02-08", description: "Pastel de carne", amount: 8, type: "expense", categoryId: "cat-2", subcategoryId: "sub-4" },
+  { id: "t-f5", account: "Nubank", date: "2026-02-10", description: "1kg Peito de frango", amount: 26, type: "expense", categoryId: "cat-3", subcategoryId: "sub-6" },
+  { id: "t-f6", account: "Nubank", date: "2026-02-12", description: "Cartela de ovo 30un", amount: 21, type: "expense", categoryId: "cat-3", subcategoryId: "sub-7" },
+  { id: "t-f7", account: "Mercado Pago", date: "2026-02-14", description: "Banana prata 1.5kg", amount: 8, type: "expense", categoryId: "cat-3", subcategoryId: "sub-8" },
+  { id: "t-f8", account: "Nubank", date: "2026-02-16", description: "Aveia flocos 500g", amount: 8.5, type: "expense", categoryId: "cat-3", subcategoryId: "sub-9" },
+  { id: "t-f9", account: "Nubank", date: "2026-02-18", description: "Bombril 8un", amount: 4, type: "expense", categoryId: "cat-4", subcategoryId: "sub-11" },
+  { id: "t-f10", account: "Mercado Pago", date: "2026-02-20", description: "Diarista faxina", amount: 180, type: "expense", categoryId: "cat-4", subcategoryId: "sub-12" },
+  { id: "t-f11", account: "Nubank", date: "2026-02-22", description: "Gasolina tanque cheio", amount: 270, type: "expense", categoryId: "cat-5", subcategoryId: "sub-13" },
+  { id: "t-f12", account: "Nubank", date: "2026-02-25", description: "Supercoffee chocolate", amount: 32, type: "expense", categoryId: "cat-2", subcategoryId: "sub-5" },
+
+  // --- Março 2026 ---
   { id: "t-1", account: "Nubank", date: "2026-03-01", description: "Salário mensal", amount: 4500, type: "income", categoryId: "cat-1", subcategoryId: "sub-1" },
   { id: "t-2", account: "Mercado Pago", date: "2026-03-02", description: "Mesada avó", amount: 200, type: "income", categoryId: "cat-1", subcategoryId: "sub-2" },
   { id: "t-3", account: "Nubank", date: "2026-03-03", description: "Tic Tac morango", amount: 3.5, type: "expense", categoryId: "cat-2", subcategoryId: "sub-3" },
