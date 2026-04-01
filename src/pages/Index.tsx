@@ -91,12 +91,28 @@ const Index = () => {
           </TabsList>
 
           <TabsContent value="analytics">
-            <AnalyticsPanel
-              transactions={filteredTx}
-              categories={categories}
-              getCategoryName={getCategoryName}
-              getSubcategoryName={getSubcategoryName}
-            />
+            <Tabs defaultValue="overview" className="space-y-4">
+              <TabsList className="bg-secondary">
+                <TabsTrigger value="overview">Visão Geral</TabsTrigger>
+                <TabsTrigger value="advanced">Análise Avançada</TabsTrigger>
+              </TabsList>
+              <TabsContent value="overview">
+                <AnalyticsPanel
+                  transactions={filteredTx}
+                  categories={categories}
+                  getCategoryName={getCategoryName}
+                  getSubcategoryName={getSubcategoryName}
+                />
+              </TabsContent>
+              <TabsContent value="advanced">
+                <AdvancedAnalyticsPanel
+                  transactions={transactions}
+                  categories={categories}
+                  getCategoryName={getCategoryName}
+                  getSubcategoryName={getSubcategoryName}
+                />
+              </TabsContent>
+            </Tabs>
           </TabsContent>
 
           <TabsContent value="transactions">
