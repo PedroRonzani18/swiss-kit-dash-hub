@@ -4,6 +4,7 @@ import { TransactionForm } from "@/components/finance/TransactionForm";
 import { TransactionTable } from "@/components/finance/TransactionTable";
 import { CategoryManager } from "@/components/finance/CategoryManager";
 import { AnalyticsPanel } from "@/components/finance/AnalyticsPanel";
+import { AdvancedAnalyticsPanel } from "@/components/finance/AdvancedAnalyticsPanel";
 import { useFinanceStore } from "@/hooks/useFinanceStore";
 import {
   Select,
