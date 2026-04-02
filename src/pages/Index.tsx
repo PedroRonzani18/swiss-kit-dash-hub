@@ -9,24 +9,59 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Transaction } from "@/data/mockData";
+import { toast } from "sonner";
 
 const Index = () => {
   const {
     categories,
     transactions,
     addCategory,
+    updateCategory,
+    deleteCategory,
+    updateSubcategory,
+    deleteSubcategory,
     addTransaction,
+    updateTransaction,
+    deleteTransaction,
     getCategoryName,
     getSubcategoryName,
   } = useFinanceStore();
 
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+
+  const handleOpenNew = () => {
+    setEditingTransaction(null);
+    setDialogOpen(true);
+  };
+
+  const handleEdit = (t: Transaction) => {
+    setEditingTransaction(t);
+    setDialogOpen(true);
+  };
+
+  const handleSave = (data: Omit<Transaction, "id">) => {
+    if (editingTransaction) {
+      updateTransaction(editingTransaction.id, data);
+      toast.success("Transação atualizada");
+    } else {
+      addTransaction(data);
+      toast.success("Transação adicionada");
+    }
+    setDialogOpen(false);
+    setEditingTransaction(null);
+  };
+
+  const handleDelete = (id: string) => {
+    deleteTransaction(id);
+  };
 
   return (
     <AppLayout breadcrumbs={["SwissKit", "Financeiro"]}>
@@ -39,7 +74,7 @@ const Index = () => {
               Gerencie suas finanças pessoais com controle total.
             </p>
           </div>
-          <Button onClick={() => setSheetOpen(true)} className="gap-1">
+          <Button onClick={handleOpenNew} className="gap-1">
             <Plus className="h-4 w-4" />
             Nova Transação
           </Button>
@@ -65,8 +100,11 @@ const Index = () => {
           <TabsContent value="transactions">
             <TransactionTable
               transactions={transactions}
+              categories={categories}
               getCategoryName={getCategoryName}
               getSubcategoryName={getSubcategoryName}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
             />
           </TabsContent>
 
@@ -74,28 +112,28 @@ const Index = () => {
             <CategoryManager
               categories={categories}
               onAddCategory={addCategory}
+              onUpdateCategory={updateCategory}
+              onDeleteCategory={deleteCategory}
+              onUpdateSubcategory={updateSubcategory}
+              onDeleteSubcategory={deleteSubcategory}
             />
           </TabsContent>
         </Tabs>
 
-        {/* Transaction Sheet */}
-        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-          <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
-            <SheetHeader>
-              <SheetTitle>Nova Transação</SheetTitle>
-              <SheetDescription>Preencha os dados da transação.</SheetDescription>
-            </SheetHeader>
-            <div className="mt-6">
-              <TransactionForm
-                categories={categories}
-                onAdd={(t) => {
-                  addTransaction(t);
-                  setSheetOpen(false);
-                }}
-              />
-            </div>
-          </SheetContent>
-        </Sheet>
+        {/* Transaction Dialog */}
+        <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) setEditingTransaction(null); }}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>{editingTransaction ? "Editar Transação" : "Nova Transação"}</DialogTitle>
+              <DialogDescription>Preencha os dados da transação.</DialogDescription>
+            </DialogHeader>
+            <TransactionForm
+              categories={categories}
+              onSave={handleSave}
+              initialData={editingTransaction ?? undefined}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
     </AppLayout>
   );
