@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Category, Transaction, accounts } from "@/data/mockData";
-import { Plus } from "lucide-react";
+import { Plus, Save } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -19,10 +19,11 @@ import { cn } from "@/lib/utils";
 
 interface TransactionFormProps {
   categories: Category[];
-  onAdd: (t: Omit<Transaction, "id">) => void;
+  onSave: (t: Omit<Transaction, "id">) => void;
+  initialData?: Transaction;
 }
 
-export function TransactionForm({ categories, onAdd }: TransactionFormProps) {
+export function TransactionForm({ categories, onSave, initialData }: TransactionFormProps) {
   const [account, setAccount] = useState("");
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [description, setDescription] = useState("");
@@ -31,12 +32,25 @@ export function TransactionForm({ categories, onAdd }: TransactionFormProps) {
   const [categoryId, setCategoryId] = useState("");
   const [subcategoryId, setSubcategoryId] = useState("");
 
+  useEffect(() => {
+    if (initialData) {
+      setAccount(initialData.account);
+      setDate(new Date(initialData.date + "T12:00:00"));
+      setDescription(initialData.description);
+      setAmount(String(initialData.amount));
+      setType(initialData.type);
+      setCategoryId(initialData.categoryId);
+      setSubcategoryId(initialData.subcategoryId);
+    }
+  }, [initialData]);
+
   const selectedCategory = categories.find((c) => c.id === categoryId);
   const filteredCategories = categories.filter((c) => c.type === type);
+  const isEditing = !!initialData;
 
   const handleSubmit = () => {
     if (!account || !description || !amount || !categoryId || !subcategoryId) return;
-    onAdd({
+    onSave({
       account,
       date: date ? format(date, "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd"),
       description,
@@ -45,14 +59,10 @@ export function TransactionForm({ categories, onAdd }: TransactionFormProps) {
       categoryId,
       subcategoryId,
     });
-    setDescription("");
-    setAmount("");
   };
 
   return (
-    <div className="bg-card border border-border rounded-lg p-5 space-y-4">
-      <h3 className="text-sm font-medium text-muted-foreground">Nova Transação</h3>
-
+    <div className="space-y-4">
       {/* Type toggle */}
       <div className="flex gap-1 bg-secondary rounded-md p-1 w-fit">
         <button
@@ -75,7 +85,7 @@ export function TransactionForm({ categories, onAdd }: TransactionFormProps) {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 gap-3">
         {/* Account */}
         <Select value={account} onValueChange={setAccount}>
           <SelectTrigger>
@@ -127,10 +137,10 @@ export function TransactionForm({ categories, onAdd }: TransactionFormProps) {
         />
       </div>
 
-      <div className="flex flex-wrap gap-3 items-end">
+      <div className="grid grid-cols-2 gap-3">
         {/* Category */}
         <Select value={categoryId} onValueChange={(v) => { setCategoryId(v); setSubcategoryId(""); }}>
-          <SelectTrigger className="w-44">
+          <SelectTrigger>
             <SelectValue placeholder="Categoria" />
           </SelectTrigger>
           <SelectContent>
@@ -142,7 +152,7 @@ export function TransactionForm({ categories, onAdd }: TransactionFormProps) {
 
         {/* Subcategory */}
         <Select value={subcategoryId} onValueChange={setSubcategoryId} disabled={!selectedCategory}>
-          <SelectTrigger className="w-44">
+          <SelectTrigger>
             <SelectValue placeholder="Subcategoria" />
           </SelectTrigger>
           <SelectContent>
@@ -151,12 +161,12 @@ export function TransactionForm({ categories, onAdd }: TransactionFormProps) {
             ))}
           </SelectContent>
         </Select>
-
-        <Button onClick={handleSubmit} className="gap-1">
-          <Plus className="h-4 w-4" />
-          Adicionar Transação
-        </Button>
       </div>
+
+      <Button onClick={handleSubmit} className="w-full gap-1">
+        {isEditing ? <Save className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+        {isEditing ? "Salvar Alterações" : "Adicionar Transação"}
+      </Button>
     </div>
   );
 }
