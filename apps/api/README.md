@@ -1,51 +1,39 @@
-# SwissKit API (Backend Foundation)
+# SwissKit API
 
-Backend NestJS simplificado para o app de finanças pessoais.
+Backend NestJS para finanças pessoais no monorepo (`apps/api`).
 
-## Princípios desta base
+## Arquitetura
 
-- Monorepo: backend em `apps/api`
-- Arquitetura **single-tenant**
-- Sem lógica legada de domínio
-- Estrutura modular pronta para evolução
+- Camadas por módulo: `controller -> service -> repositories -> PrismaService`
+- Tipagem de domínio em `src/common/contracts`
+- Swagger habilitado em `/api/docs`
+- Prisma 7 com `@prisma/adapter-pg`
 
-## Estrutura principal
+## Módulos
+
+- `health`
+- `accounts`
+- `categories`
+- `subcategories`
+- `transactions`
+
+## Prisma (multi-file schema)
 
 ```txt
-src/
-  main.ts
-  app.module.ts
-  config/
-  common/
-  modules/
-    health/
-    accounts/
-    categories/
-    subcategories/
-    transactions/
-    dashboard/
-  prisma/
 prisma/
-  schema.prisma
+  schema/
+    schema.prisma
+    enums.prisma
+    user.prisma
+    account.prisma
+    category.prisma
+    subcategory.prisma
+    transaction.prisma
+  migrations/
   seed.ts
 ```
 
-## Requisitos
-
-- Node.js 20+
-- PostgreSQL (opcional para subir API; necessário para persistência)
-
-## Variáveis de ambiente
-
-Exemplo mínimo (`.env`):
-
-```env
-PORT=3001
-NODE_ENV=development
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/swisskit
-```
-
-## Rodando localmente
+## Rodar localmente
 
 ```bash
 npm install
@@ -57,16 +45,8 @@ Swagger:
 
 - `http://localhost:3001/api/docs`
 
-## Prisma
+## Banco local com Docker
 
 ```bash
-npm run prisma:generate
-npm run prisma:migrate:dev
-npm run prisma:seed
-npm run prisma:studio
+docker compose up -d
 ```
-
-## Observações
-
-- Esta fase é uma fundação estrutural.
-- Módulos de finanças estão com implementação inicial simples para manter o backend compilável e organizado.

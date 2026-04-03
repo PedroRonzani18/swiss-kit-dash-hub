@@ -1,7 +1,7 @@
 services:
-  postgres:
+  swisskit-postgres:
     image: postgres:16
-    container_name: swisskit-postgres
+    container_name: swisskit-api-postgres
     environment:
       POSTGRES_DB: swisskit
       POSTGRES_USER: postgres
@@ -9,8 +9,8 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - swisskit-postgres-data:/var/lib/postgresql/data
     restart: unless-stopped
 
 volumes:
-  postgres-data:
+  swisskit-postgres-data:

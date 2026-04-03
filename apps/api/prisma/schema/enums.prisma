@@ -1,0 +1,11 @@
+enum AccountType {
+  checking
+  savings
+  credit_card
+  cash
+}
+
+enum TransactionType {
+  income
+  expense
+}

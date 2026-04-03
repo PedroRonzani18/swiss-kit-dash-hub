@@ -1,18 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsString, MaxLength } from 'class-validator';
+import { IsEnum, IsString, IsUUID, MaxLength } from 'class-validator';
 
-export enum CategoryType {
+export enum CategoryTypeDto {
   INCOME = 'income',
   EXPENSE = 'expense',
 }
 
 export class CreateCategoryDto {
+  @ApiProperty({ format: 'uuid' })
+  @IsUUID()
+  userId: string;
+
   @ApiProperty({ example: 'Alimentação' })
   @IsString()
   @MaxLength(80)
   name: string;
 
-  @ApiProperty({ enum: CategoryType, example: CategoryType.EXPENSE })
-  @IsEnum(CategoryType)
-  type: CategoryType;
+  @ApiProperty({ enum: CategoryTypeDto, example: CategoryTypeDto.EXPENSE })
+  @IsEnum(CategoryTypeDto)
+  type: CategoryTypeDto;
 }

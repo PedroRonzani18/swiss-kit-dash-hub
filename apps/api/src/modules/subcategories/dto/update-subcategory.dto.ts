@@ -1,4 +1,15 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateSubcategoryDto } from './create-subcategory.dto';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
 
-export class UpdateSubcategoryDto extends PartialType(CreateSubcategoryDto) {}
+export class UpdateSubcategoryDto {
+  @ApiPropertyOptional({ format: 'uuid' })
+  @IsOptional()
+  @IsUUID()
+  categoryId?: string;
+
+  @ApiPropertyOptional({ example: 'Padaria' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(80)
+  name?: string;
+}

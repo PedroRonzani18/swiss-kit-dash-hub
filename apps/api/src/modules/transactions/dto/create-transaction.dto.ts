@@ -1,32 +1,36 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDateString, IsEnum, IsInt, IsOptional, IsString, Min } from 'class-validator';
+import { IsDateString, IsEnum, IsInt, IsOptional, IsString, IsUUID, MaxLength, Min } from 'class-validator';
 
-export enum TransactionType {
+export enum TransactionTypeDto {
   INCOME = 'income',
   EXPENSE = 'expense',
 }
 
 export class CreateTransactionDto {
-  @ApiProperty({ enum: TransactionType, example: TransactionType.EXPENSE })
-  @IsEnum(TransactionType)
-  type: TransactionType;
+  @ApiProperty({ format: 'uuid' })
+  @IsUUID()
+  userId: string;
+
+  @ApiProperty({ enum: TransactionTypeDto, example: TransactionTypeDto.EXPENSE })
+  @IsEnum(TransactionTypeDto)
+  type: TransactionTypeDto;
 
   @ApiProperty({ example: 1500 })
   @IsInt()
   @Min(1)
   amountCents: number;
 
-  @ApiProperty({ example: 'account-id' })
-  @IsString()
+  @ApiProperty({ format: 'uuid' })
+  @IsUUID()
   accountId: string;
 
-  @ApiProperty({ example: 'category-id' })
-  @IsString()
+  @ApiProperty({ format: 'uuid' })
+  @IsUUID()
   categoryId: string;
 
-  @ApiPropertyOptional({ example: 'subcategory-id' })
+  @ApiPropertyOptional({ format: 'uuid', nullable: true })
   @IsOptional()
-  @IsString()
+  @IsUUID()
   subcategoryId?: string;
 
   @ApiProperty({ example: '2026-04-02T12:00:00.000Z' })
@@ -36,5 +40,6 @@ export class CreateTransactionDto {
   @ApiPropertyOptional({ example: 'Gasolina complemento' })
   @IsOptional()
   @IsString()
+  @MaxLength(300)
   note?: string;
 }

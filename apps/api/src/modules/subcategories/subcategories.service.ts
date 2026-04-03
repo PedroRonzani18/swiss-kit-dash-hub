@@ -1,7 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  CreateSubcategoryContract,
+  SubcategoryContract,
+  UpdateSubcategoryContract,
+} from '@/common/contracts';
 import { CreateSubcategoryDto } from './dto/create-subcategory.dto';
 import { UpdateSubcategoryDto } from './dto/update-subcategory.dto';
-import { SubcategoriesRepository } from './repository/subcategories.repository';
+import { SubcategoriesRepository } from './repositories/subcategories.repository';
 
 @Injectable()
 export class SubcategoriesService {
@@ -9,12 +14,12 @@ export class SubcategoriesService {
     private readonly subcategoriesRepository: SubcategoriesRepository,
   ) {}
 
-  findAll() {
-    return this.subcategoriesRepository.findAll();
+  findAll(userId?: string): Promise<SubcategoryContract[]> {
+    return this.subcategoriesRepository.findAll(userId);
   }
 
-  async findOne(id: string) {
-    const subcategory = await this.subcategoriesRepository.findById(id);
+  async findOne(id: string, userId?: string): Promise<SubcategoryContract> {
+    const subcategory = await this.subcategoriesRepository.findById(id, userId);
     if (!subcategory) {
       throw new NotFoundException('Subcategory not found');
     }
@@ -22,34 +27,33 @@ export class SubcategoriesService {
     return subcategory;
   }
 
-  create(input: CreateSubcategoryDto) {
-    return this.subcategoriesRepository.create({
+  create(input: CreateSubcategoryDto): Promise<SubcategoryContract> {
+    const payload: CreateSubcategoryContract = {
+      userId: input.userId,
+      categoryId: input.categoryId,
       name: input.name,
-      category: {
-        connect: {
-          id: input.categoryId,
-        },
-      },
-    });
+    };
+
+    return this.subcategoriesRepository.create(payload);
   }
 
-  async update(id: string, input: UpdateSubcategoryDto) {
-    await this.findOne(id);
+  async update(
+    id: string,
+    input: UpdateSubcategoryDto,
+    userId?: string,
+  ): Promise<SubcategoryContract> {
+    await this.findOne(id, userId);
 
-    return this.subcategoriesRepository.update(id, {
+    const payload: UpdateSubcategoryContract = {
       name: input.name,
-      category: input.categoryId
-        ? {
-            connect: {
-              id: input.categoryId,
-            },
-          }
-        : undefined,
-    });
+      categoryId: input.categoryId,
+    };
+
+    return this.subcategoriesRepository.update(id, payload);
   }
 
-  async remove(id: string) {
-    await this.findOne(id);
+  async remove(id: string, userId?: string): Promise<{ deleted: true }> {
+    await this.findOne(id, userId);
     await this.subcategoriesRepository.delete(id);
 
     return { deleted: true };

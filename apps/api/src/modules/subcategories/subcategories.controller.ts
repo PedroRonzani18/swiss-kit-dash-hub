@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { SubcategoriesService } from './subcategories.service';
 import { CreateSubcategoryDto } from './dto/create-subcategory.dto';
 import { UpdateSubcategoryDto } from './dto/update-subcategory.dto';
@@ -10,13 +10,15 @@ export class SubcategoriesController {
   constructor(private readonly subcategoriesService: SubcategoriesService) {}
 
   @Get()
-  findAll() {
-    return this.subcategoriesService.findAll();
+  @ApiQuery({ name: 'userId', required: false })
+  findAll(@Query('userId') userId?: string) {
+    return this.subcategoriesService.findAll(userId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.subcategoriesService.findOne(id);
+  @ApiQuery({ name: 'userId', required: false })
+  findOne(@Param('id') id: string, @Query('userId') userId?: string) {
+    return this.subcategoriesService.findOne(id, userId);
   }
 
   @Post()
@@ -25,12 +27,18 @@ export class SubcategoriesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() input: UpdateSubcategoryDto) {
-    return this.subcategoriesService.update(id, input);
+  @ApiQuery({ name: 'userId', required: false })
+  update(
+    @Param('id') id: string,
+    @Body() input: UpdateSubcategoryDto,
+    @Query('userId') userId?: string,
+  ) {
+    return this.subcategoriesService.update(id, input, userId);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.subcategoriesService.remove(id);
+  @ApiQuery({ name: 'userId', required: false })
+  remove(@Param('id') id: string, @Query('userId') userId?: string) {
+    return this.subcategoriesService.remove(id, userId);
   }
 }

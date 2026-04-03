@@ -1,7 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  CreateTransactionContract,
+  TransactionContract,
+  UpdateTransactionContract,
+} from '@/common/contracts';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
-import { TransactionsRepository } from './repository/transactions.repository';
+import { TransactionsRepository } from './repositories/transactions.repository';
 
 @Injectable()
 export class TransactionsService {
@@ -9,12 +14,12 @@ export class TransactionsService {
     private readonly transactionsRepository: TransactionsRepository,
   ) {}
 
-  findAll() {
-    return this.transactionsRepository.findAll();
+  findAll(userId?: string): Promise<TransactionContract[]> {
+    return this.transactionsRepository.findAll(userId);
   }
 
-  async findOne(id: string) {
-    const transaction = await this.transactionsRepository.findById(id);
+  async findOne(id: string, userId?: string): Promise<TransactionContract> {
+    const transaction = await this.transactionsRepository.findById(id, userId);
     if (!transaction) {
       throw new NotFoundException('Transaction not found');
     }
@@ -22,66 +27,46 @@ export class TransactionsService {
     return transaction;
   }
 
-  create(input: CreateTransactionDto) {
-    return this.transactionsRepository.create({
+  create(input: CreateTransactionDto): Promise<TransactionContract> {
+    const payload: CreateTransactionContract = {
+      userId: input.userId,
       type: input.type,
       amountCents: input.amountCents,
+      accountId: input.accountId,
+      categoryId: input.categoryId,
+      subcategoryId: input.subcategoryId,
+      occurredAt: input.occurredAt,
       note: input.note,
-      occurredAt: new Date(input.occurredAt),
-      account: {
-        connect: {
-          id: input.accountId,
-        },
-      },
-      category: {
-        connect: {
-          id: input.categoryId,
-        },
-      },
-      subcategory: input.subcategoryId
-        ? {
-            connect: {
-              id: input.subcategoryId,
-            },
-          }
-        : undefined,
-    });
+    };
+
+    return this.transactionsRepository.create(payload);
   }
 
-  async update(id: string, input: UpdateTransactionDto) {
-    await this.findOne(id);
+  async update(
+    id: string,
+    input: UpdateTransactionDto,
+    userId?: string,
+  ): Promise<TransactionContract> {
+    await this.findOne(id, userId);
 
-    return this.transactionsRepository.update(id, {
+    const payload: UpdateTransactionContract = {
       type: input.type,
       amountCents: input.amountCents,
+      accountId: input.accountId,
+      categoryId: input.categoryId,
+      occurredAt: input.occurredAt,
       note: input.note,
-      occurredAt: input.occurredAt ? new Date(input.occurredAt) : undefined,
-      account: input.accountId
-        ? {
-            connect: {
-              id: input.accountId,
-            },
-          }
-        : undefined,
-      category: input.categoryId
-        ? {
-            connect: {
-              id: input.categoryId,
-            },
-          }
-        : undefined,
-      subcategory: input.subcategoryId
-        ? {
-            connect: {
-              id: input.subcategoryId,
-            },
-          }
-        : undefined,
-    });
+    };
+
+    if (Object.prototype.hasOwnProperty.call(input, 'subcategoryId')) {
+      payload.subcategoryId = input.subcategoryId ?? null;
+    }
+
+    return this.transactionsRepository.update(id, payload);
   }
 
-  async remove(id: string) {
-    await this.findOne(id);
+  async remove(id: string, userId?: string): Promise<{ deleted: true }> {
+    await this.findOne(id, userId);
     await this.transactionsRepository.delete(id);
 
     return { deleted: true };

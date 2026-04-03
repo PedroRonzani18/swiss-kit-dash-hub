@@ -14,24 +14,45 @@ const prisma = new PrismaClient({
 });
 
 async function main() {
-  await prisma.category.upsert({
-    where: { id: 'seed-category-expense' },
+  const user = await prisma.user.upsert({
+    where: { email: 'demo@swisskit.app' },
     update: {},
     create: {
-      id: 'seed-category-expense',
-      name: 'General',
-      type: 'expense',
+      email: 'demo@swisskit.app',
+      name: 'Demo User',
     },
   });
 
   await prisma.account.upsert({
-    where: { id: 'seed-account-main' },
+    where: {
+      userId_name: {
+        userId: user.id,
+        name: 'Main account',
+      },
+    },
     update: {},
     create: {
-      id: 'seed-account-main',
+      userId: user.id,
       name: 'Main account',
       type: 'checking',
       currency: 'BRL',
+      openingBalanceCents: 0,
+    },
+  });
+
+  await prisma.category.upsert({
+    where: {
+      userId_name_type: {
+        userId: user.id,
+        name: 'General',
+        type: 'expense',
+      },
+    },
+    update: {},
+    create: {
+      userId: user.id,
+      name: 'General',
+      type: 'expense',
     },
   });
 }

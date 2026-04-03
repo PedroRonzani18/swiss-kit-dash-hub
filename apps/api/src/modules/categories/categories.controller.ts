@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -10,13 +10,15 @@ export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Get()
-  findAll() {
-    return this.categoriesService.findAll();
+  @ApiQuery({ name: 'userId', required: false })
+  findAll(@Query('userId') userId?: string) {
+    return this.categoriesService.findAll(userId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.categoriesService.findOne(id);
+  @ApiQuery({ name: 'userId', required: false })
+  findOne(@Param('id') id: string, @Query('userId') userId?: string) {
+    return this.categoriesService.findOne(id, userId);
   }
 
   @Post()
@@ -25,12 +27,18 @@ export class CategoriesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() input: UpdateCategoryDto) {
-    return this.categoriesService.update(id, input);
+  @ApiQuery({ name: 'userId', required: false })
+  update(
+    @Param('id') id: string,
+    @Body() input: UpdateCategoryDto,
+    @Query('userId') userId?: string,
+  ) {
+    return this.categoriesService.update(id, input, userId);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.categoriesService.remove(id);
+  @ApiQuery({ name: 'userId', required: false })
+  remove(@Param('id') id: string, @Query('userId') userId?: string) {
+    return this.categoriesService.remove(id, userId);
   }
 }

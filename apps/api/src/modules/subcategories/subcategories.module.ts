@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { SubcategoriesController } from './subcategories.controller';
 import { SubcategoriesService } from './subcategories.service';
-import { SubcategoriesRepository } from './repository/subcategories.repository';
+import { SubcategoriesRepository } from './repositories/subcategories.repository';
 
 @Module({
   controllers: [SubcategoriesController],
