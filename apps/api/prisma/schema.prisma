@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum AccountType {
+  checking
+  savings
+  credit_card
+  cash
+}
+
+enum TransactionType {
+  income
+  expense
+}
+
+model Account {
+  id           String        @id @default(uuid())
+  name         String
+  type         AccountType
+  currency     String        @default("BRL")
+  balanceCents Int           @default(0)
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  transactions Transaction[]
+}
+
+model Category {
+  id            String        @id @default(uuid())
+  name          String
+  type          TransactionType
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  subcategories Subcategory[]
+  transactions  Transaction[]
+}
+
+model Subcategory {
+  id           String        @id @default(uuid())
+  name         String
+  categoryId   String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  category     Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  @@index([categoryId])
+}
+
+model Transaction {
+  id            String          @id @default(uuid())
+  type          TransactionType
+  amountCents   Int
+  accountId     String
+  categoryId    String
+  subcategoryId String?
+  note          String?
+  occurredAt    DateTime
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  account       Account         @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  category      Category        @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  subcategory   Subcategory?    @relation(fields: [subcategoryId], references: [id], onDelete: SetNull)
+
+  @@index([accountId])
+  @@index([categoryId])
+  @@index([subcategoryId])
+  @@index([occurredAt])
+}
