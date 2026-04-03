@@ -1,17 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
+import { PrismaService } from '@/prisma/prisma.service';
 import {
   CreateSubcategoryContract,
   SubcategoryContract,
   UpdateSubcategoryContract,
 } from '@/common/contracts';
+import { mapSubcategoryFromPersistence } from '@/common/mappers';
 
 const subcategorySelect = {
   id: true,
   userId: true,
   categoryId: true,
   name: true,
+  isArchived: true,
   createdAt: true,
   updatedAt: true,
 } satisfies Prisma.SubcategorySelect;
@@ -20,41 +22,32 @@ type SubcategoryRow = Prisma.SubcategoryGetPayload<{
   select: typeof subcategorySelect;
 }>;
 
-function toSubcategoryContract(row: SubcategoryRow): SubcategoryContract {
-  return {
-    id: row.id,
-    userId: row.userId,
-    categoryId: row.categoryId,
-    name: row.name,
-    createdAt: row.createdAt.toISOString(),
-    updatedAt: row.updatedAt.toISOString(),
-  };
-}
-
 @Injectable()
 export class SubcategoriesRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(userId?: string): Promise<SubcategoryContract[]> {
+  async findAll(userId: string): Promise<SubcategoryContract[]> {
     const records = await this.prisma.subcategory.findMany({
       select: subcategorySelect,
-      where: userId ? { userId } : undefined,
+      where: { userId },
       orderBy: { createdAt: 'desc' },
     });
 
-    return records.map(toSubcategoryContract);
+    return records.map(record => mapSubcategoryFromPersistence(record as SubcategoryRow));
   }
 
-  async findById(
-    id: string,
-    userId?: string,
-  ): Promise<SubcategoryContract | null> {
-    const record = await this.prisma.subcategory.findFirst({
+  async findById(id: string, userId: string): Promise<SubcategoryContract | null> {
+    const record = await this.prisma.subcategory.findUnique({
       select: subcategorySelect,
-      where: userId ? { id, userId } : { id },
+      where: {
+        id_userId: {
+          id,
+          userId,
+        },
+      },
     });
 
-    return record ? toSubcategoryContract(record) : null;
+    return record ? mapSubcategoryFromPersistence(record as SubcategoryRow) : null;
   }
 
   async create(input: CreateSubcategoryContract): Promise<SubcategoryContract> {
@@ -62,35 +55,61 @@ export class SubcategoriesRepository {
       select: subcategorySelect,
       data: {
         user: { connect: { id: input.userId } },
-        category: { connect: { id: input.categoryId } },
+        category: {
+          connect: {
+            id_userId: {
+              id: input.categoryId,
+              userId: input.userId,
+            },
+          },
+        },
         name: input.name,
       },
     });
 
-    return toSubcategoryContract(record);
+    return mapSubcategoryFromPersistence(record as SubcategoryRow);
   }
 
   async update(
     id: string,
+    userId: string,
     input: UpdateSubcategoryContract,
   ): Promise<SubcategoryContract> {
     const record = await this.prisma.subcategory.update({
       select: subcategorySelect,
-      where: { id },
+      where: {
+        id_userId: {
+          id,
+          userId,
+        },
+      },
       data: {
         name: input.name,
+        isArchived: input.isArchived,
         category: input.categoryId
           ? {
-              connect: { id: input.categoryId },
+              connect: {
+                id_userId: {
+                  id: input.categoryId,
+                  userId,
+                },
+              },
             }
           : undefined,
       },
     });
 
-    return toSubcategoryContract(record);
+    return mapSubcategoryFromPersistence(record as SubcategoryRow);
   }
 
-  async delete(id: string): Promise<void> {
-    await this.prisma.subcategory.delete({ where: { id } });
+  async delete(id: string, userId: string): Promise<void> {
+    await this.prisma.subcategory.delete({
+      where: {
+        id_userId: {
+          id,
+          userId,
+        },
+      },
+    });
   }
 }

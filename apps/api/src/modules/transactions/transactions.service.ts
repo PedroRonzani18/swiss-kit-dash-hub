@@ -14,11 +14,11 @@ export class TransactionsService {
     private readonly transactionsRepository: TransactionsRepository,
   ) {}
 
-  findAll(userId?: string): Promise<TransactionContract[]> {
+  findAll(userId: string): Promise<TransactionContract[]> {
     return this.transactionsRepository.findAll(userId);
   }
 
-  async findOne(id: string, userId?: string): Promise<TransactionContract> {
+  async findOne(id: string, userId: string): Promise<TransactionContract> {
     const transaction = await this.transactionsRepository.findById(id, userId);
     if (!transaction) {
       throw new NotFoundException('Transaction not found');
@@ -27,10 +27,13 @@ export class TransactionsService {
     return transaction;
   }
 
-  create(input: CreateTransactionDto): Promise<TransactionContract> {
+  async create(
+    userId: string,
+    input: CreateTransactionDto,
+  ): Promise<TransactionContract> {
     const payload: CreateTransactionContract = {
-      userId: input.userId,
-      type: input.type,
+      userId,
+      type: input.type as CreateTransactionContract['type'],
       amountCents: input.amountCents,
       accountId: input.accountId,
       categoryId: input.categoryId,
@@ -39,35 +42,56 @@ export class TransactionsService {
       note: input.note,
     };
 
+    await this.transactionsRepository.assertTransactionRelations({
+      userId,
+      accountId: payload.accountId,
+      categoryId: payload.categoryId,
+      subcategoryId: payload.subcategoryId,
+      currentCategoryId: payload.categoryId,
+    });
+
     return this.transactionsRepository.create(payload);
   }
 
   async update(
     id: string,
+    userId: string,
     input: UpdateTransactionDto,
-    userId?: string,
   ): Promise<TransactionContract> {
-    await this.findOne(id, userId);
+    const currentTransaction = await this.findOne(id, userId);
 
     const payload: UpdateTransactionContract = {
-      type: input.type,
+      type: input.type as UpdateTransactionContract['type'],
       amountCents: input.amountCents,
       accountId: input.accountId,
       categoryId: input.categoryId,
       occurredAt: input.occurredAt,
-      note: input.note,
     };
+
+    if (Object.prototype.hasOwnProperty.call(input, 'note')) {
+      payload.note = input.note ?? null;
+    }
 
     if (Object.prototype.hasOwnProperty.call(input, 'subcategoryId')) {
       payload.subcategoryId = input.subcategoryId ?? null;
     }
 
-    return this.transactionsRepository.update(id, payload);
+    await this.transactionsRepository.assertTransactionRelations({
+      userId,
+      accountId: payload.accountId,
+      categoryId: payload.categoryId,
+      subcategoryId: Object.prototype.hasOwnProperty.call(payload, 'subcategoryId')
+        ? payload.subcategoryId
+        : undefined,
+      currentCategoryId: payload.categoryId ?? currentTransaction.categoryId,
+    });
+
+    return this.transactionsRepository.update(id, userId, payload);
   }
 
-  async remove(id: string, userId?: string): Promise<{ deleted: true }> {
+  async remove(id: string, userId: string): Promise<{ deleted: true }> {
     await this.findOne(id, userId);
-    await this.transactionsRepository.delete(id);
+    await this.transactionsRepository.delete(id, userId);
 
     return { deleted: true };
   }

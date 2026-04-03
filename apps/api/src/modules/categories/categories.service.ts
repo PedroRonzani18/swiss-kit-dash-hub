@@ -12,11 +12,11 @@ import { CategoriesRepository } from './repositories/categories.repository';
 export class CategoriesService {
   constructor(private readonly categoriesRepository: CategoriesRepository) {}
 
-  findAll(userId?: string): Promise<CategoryContract[]> {
+  findAll(userId: string): Promise<CategoryContract[]> {
     return this.categoriesRepository.findAll(userId);
   }
 
-  async findOne(id: string, userId?: string): Promise<CategoryContract> {
+  async findOne(id: string, userId: string): Promise<CategoryContract> {
     const category = await this.categoriesRepository.findById(id, userId);
     if (!category) {
       throw new NotFoundException('Category not found');
@@ -25,11 +25,11 @@ export class CategoriesService {
     return category;
   }
 
-  create(input: CreateCategoryDto): Promise<CategoryContract> {
+  create(userId: string, input: CreateCategoryDto): Promise<CategoryContract> {
     const payload: CreateCategoryContract = {
-      userId: input.userId,
+      userId,
       name: input.name,
-      type: input.type,
+      type: input.type as CreateCategoryContract['type'],
     };
 
     return this.categoriesRepository.create(payload);
@@ -37,22 +37,23 @@ export class CategoriesService {
 
   async update(
     id: string,
+    userId: string,
     input: UpdateCategoryDto,
-    userId?: string,
   ): Promise<CategoryContract> {
     await this.findOne(id, userId);
 
     const payload: UpdateCategoryContract = {
       name: input.name,
-      type: input.type,
+      type: input.type as UpdateCategoryContract['type'],
+      isArchived: input.isArchived,
     };
 
-    return this.categoriesRepository.update(id, payload);
+    return this.categoriesRepository.update(id, userId, payload);
   }
 
-  async remove(id: string, userId?: string): Promise<{ deleted: true }> {
+  async remove(id: string, userId: string): Promise<{ deleted: true }> {
     await this.findOne(id, userId);
-    await this.categoriesRepository.delete(id);
+    await this.categoriesRepository.delete(id, userId);
 
     return { deleted: true };
   }

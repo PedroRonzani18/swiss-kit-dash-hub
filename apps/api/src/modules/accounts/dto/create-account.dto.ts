@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsOptional, IsString, IsUUID, MaxLength, Min } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString, MaxLength, Min } from 'class-validator';
 
 export enum AccountTypeDto {
   CHECKING = 'checking',
@@ -9,10 +9,6 @@ export enum AccountTypeDto {
 }
 
 export class CreateAccountDto {
-  @ApiProperty({ format: 'uuid' })
-  @IsUUID()
-  userId: string;
-
   @ApiProperty({ example: 'Nubank' })
   @IsString()
   @MaxLength(80)
@@ -29,6 +25,13 @@ export class CreateAccountDto {
 
   @ApiPropertyOptional({ example: 0, default: 0 })
   @IsOptional()
+  @IsInt()
   @Min(0)
   openingBalanceCents?: number;
+
+  @ApiPropertyOptional({ example: 'Inter', nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  institution?: string;
 }

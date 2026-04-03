@@ -20,6 +20,8 @@ async function main() {
     create: {
       email: 'demo@swisskit.app',
       name: 'Demo User',
+      provider: 'google',
+      providerUserId: 'demo-google-user-id',
     },
   });
 
@@ -37,6 +39,7 @@ async function main() {
       type: 'checking',
       currency: 'BRL',
       openingBalanceCents: 0,
+      institution: 'Demo Bank',
     },
   });
 

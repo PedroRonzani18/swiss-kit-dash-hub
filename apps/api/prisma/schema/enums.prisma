@@ -9,3 +9,7 @@ enum TransactionType {
   income
   expense
 }
+
+enum AuthProvider {
+  google
+}

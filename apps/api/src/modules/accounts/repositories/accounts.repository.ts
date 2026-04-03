@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
+import { PrismaService } from '@/prisma/prisma.service';
 import {
   AccountContract,
   CreateAccountContract,
   UpdateAccountContract,
 } from '@/common/contracts';
+import { mapAccountFromPersistence } from '@/common/mappers';
 
 const accountSelect = {
   id: true,
@@ -14,48 +15,41 @@ const accountSelect = {
   type: true,
   currency: true,
   openingBalanceCents: true,
+  institution: true,
   isArchived: true,
+  archivedAt: true,
   createdAt: true,
   updatedAt: true,
 } satisfies Prisma.AccountSelect;
 
 type AccountRow = Prisma.AccountGetPayload<{ select: typeof accountSelect }>;
 
-function toAccountContract(row: AccountRow): AccountContract {
-  return {
-    id: row.id,
-    userId: row.userId,
-    name: row.name,
-    type: row.type,
-    currency: row.currency,
-    openingBalanceCents: row.openingBalanceCents,
-    isArchived: row.isArchived,
-    createdAt: row.createdAt.toISOString(),
-    updatedAt: row.updatedAt.toISOString(),
-  };
-}
-
 @Injectable()
 export class AccountsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(userId?: string): Promise<AccountContract[]> {
+  async findAll(userId: string): Promise<AccountContract[]> {
     const records = await this.prisma.account.findMany({
       select: accountSelect,
-      where: userId ? { userId } : undefined,
+      where: { userId },
       orderBy: { createdAt: 'desc' },
     });
 
-    return records.map(toAccountContract);
+    return records.map(record => mapAccountFromPersistence(record as AccountRow));
   }
 
-  async findById(id: string, userId?: string): Promise<AccountContract | null> {
-    const record = await this.prisma.account.findFirst({
+  async findById(id: string, userId: string): Promise<AccountContract | null> {
+    const record = await this.prisma.account.findUnique({
       select: accountSelect,
-      where: userId ? { id, userId } : { id },
+      where: {
+        id_userId: {
+          id,
+          userId,
+        },
+      },
     });
 
-    return record ? toAccountContract(record) : null;
+    return record ? mapAccountFromPersistence(record as AccountRow) : null;
   }
 
   async create(input: CreateAccountContract): Promise<AccountContract> {
@@ -67,29 +61,54 @@ export class AccountsRepository {
         type: input.type,
         currency: input.currency ?? 'BRL',
         openingBalanceCents: input.openingBalanceCents ?? 0,
+        institution: input.institution ?? null,
       },
     });
 
-    return toAccountContract(record);
+    return mapAccountFromPersistence(record as AccountRow);
   }
 
-  async update(id: string, input: UpdateAccountContract): Promise<AccountContract> {
+  async update(
+    id: string,
+    userId: string,
+    input: UpdateAccountContract,
+  ): Promise<AccountContract> {
+    const shouldChangeArchivedAt = input.isArchived !== undefined;
+
     const record = await this.prisma.account.update({
       select: accountSelect,
-      where: { id },
+      where: {
+        id_userId: {
+          id,
+          userId,
+        },
+      },
       data: {
         name: input.name,
         type: input.type,
         currency: input.currency,
         openingBalanceCents: input.openingBalanceCents,
+        institution: input.institution,
         isArchived: input.isArchived,
+        archivedAt: shouldChangeArchivedAt
+          ? input.isArchived
+            ? new Date()
+            : null
+          : undefined,
       },
     });
 
-    return toAccountContract(record);
+    return mapAccountFromPersistence(record as AccountRow);
   }
 
-  async delete(id: string): Promise<void> {
-    await this.prisma.account.delete({ where: { id } });
+  async delete(id: string, userId: string): Promise<void> {
+    await this.prisma.account.delete({
+      where: {
+        id_userId: {
+          id,
+          userId,
+        },
+      },
+    });
   }
 }

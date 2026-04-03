@@ -12,11 +12,11 @@ import { AccountsRepository } from './repositories/accounts.repository';
 export class AccountsService {
   constructor(private readonly accountsRepository: AccountsRepository) {}
 
-  findAll(userId?: string): Promise<AccountContract[]> {
+  findAll(userId: string): Promise<AccountContract[]> {
     return this.accountsRepository.findAll(userId);
   }
 
-  async findOne(id: string, userId?: string): Promise<AccountContract> {
+  async findOne(id: string, userId: string): Promise<AccountContract> {
     const account = await this.accountsRepository.findById(id, userId);
     if (!account) {
       throw new NotFoundException('Account not found');
@@ -25,13 +25,14 @@ export class AccountsService {
     return account;
   }
 
-  create(input: CreateAccountDto): Promise<AccountContract> {
+  create(userId: string, input: CreateAccountDto): Promise<AccountContract> {
     const payload: CreateAccountContract = {
-      userId: input.userId,
+      userId,
       name: input.name,
-      type: input.type,
+      type: input.type as CreateAccountContract['type'],
       currency: input.currency,
       openingBalanceCents: input.openingBalanceCents,
+      institution: input.institution,
     };
 
     return this.accountsRepository.create(payload);
@@ -39,25 +40,26 @@ export class AccountsService {
 
   async update(
     id: string,
+    userId: string,
     input: UpdateAccountDto,
-    userId?: string,
   ): Promise<AccountContract> {
     await this.findOne(id, userId);
 
     const payload: UpdateAccountContract = {
       name: input.name,
-      type: input.type,
+      type: input.type as UpdateAccountContract['type'],
       currency: input.currency,
       openingBalanceCents: input.openingBalanceCents,
+      institution: input.institution,
       isArchived: input.isArchived,
     };
 
-    return this.accountsRepository.update(id, payload);
+    return this.accountsRepository.update(id, userId, payload);
   }
 
-  async remove(id: string, userId?: string): Promise<{ deleted: true }> {
+  async remove(id: string, userId: string): Promise<{ deleted: true }> {
     await this.findOne(id, userId);
-    await this.accountsRepository.delete(id);
+    await this.accountsRepository.delete(id, userId);
 
     return { deleted: true };
   }

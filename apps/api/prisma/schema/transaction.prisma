@@ -12,14 +12,14 @@ model Transaction {
   updatedAt     DateTime        @updatedAt
 
   user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  account       Account         @relation(fields: [accountId], references: [id], onDelete: Restrict)
-  category      Category        @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  account       Account         @relation("AccountTransactions", fields: [accountId, userId], references: [id, userId], onDelete: Restrict)
+  category      Category        @relation("CategoryTransactions", fields: [categoryId, userId], references: [id, userId], onDelete: Restrict)
   subcategory   Subcategory?    @relation(fields: [subcategoryId], references: [id], onDelete: SetNull)
 
-  @@index([userId])
   @@index([userId, occurredAt])
   @@index([userId, type])
   @@index([accountId])
   @@index([categoryId])
   @@index([subcategoryId])
+  @@unique([id, userId])
 }

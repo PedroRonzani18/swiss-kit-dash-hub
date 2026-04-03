@@ -14,11 +14,11 @@ export class SubcategoriesService {
     private readonly subcategoriesRepository: SubcategoriesRepository,
   ) {}
 
-  findAll(userId?: string): Promise<SubcategoryContract[]> {
+  findAll(userId: string): Promise<SubcategoryContract[]> {
     return this.subcategoriesRepository.findAll(userId);
   }
 
-  async findOne(id: string, userId?: string): Promise<SubcategoryContract> {
+  async findOne(id: string, userId: string): Promise<SubcategoryContract> {
     const subcategory = await this.subcategoriesRepository.findById(id, userId);
     if (!subcategory) {
       throw new NotFoundException('Subcategory not found');
@@ -27,9 +27,9 @@ export class SubcategoriesService {
     return subcategory;
   }
 
-  create(input: CreateSubcategoryDto): Promise<SubcategoryContract> {
+  create(userId: string, input: CreateSubcategoryDto): Promise<SubcategoryContract> {
     const payload: CreateSubcategoryContract = {
-      userId: input.userId,
+      userId,
       categoryId: input.categoryId,
       name: input.name,
     };
@@ -39,22 +39,23 @@ export class SubcategoriesService {
 
   async update(
     id: string,
+    userId: string,
     input: UpdateSubcategoryDto,
-    userId?: string,
   ): Promise<SubcategoryContract> {
     await this.findOne(id, userId);
 
     const payload: UpdateSubcategoryContract = {
       name: input.name,
       categoryId: input.categoryId,
+      isArchived: input.isArchived,
     };
 
-    return this.subcategoriesRepository.update(id, payload);
+    return this.subcategoriesRepository.update(id, userId, payload);
   }
 
-  async remove(id: string, userId?: string): Promise<{ deleted: true }> {
+  async remove(id: string, userId: string): Promise<{ deleted: true }> {
     await this.findOne(id, userId);
-    await this.subcategoriesRepository.delete(id);
+    await this.subcategoriesRepository.delete(id, userId);
 
     return { deleted: true };
   }

@@ -32,6 +32,15 @@ async function bootstrap() {
     .setTitle('SwissKit Finance API')
     .setDescription('Backend foundation for personal finance app')
     .setVersion('1.0.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'JWT access token returned by /auth/google/callback',
+      },
+      'access-token',
+    )
     .build();
 
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);

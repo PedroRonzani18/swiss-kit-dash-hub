@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
 
 export class UpdateSubcategoryDto {
   @ApiPropertyOptional({ format: 'uuid' })
@@ -12,4 +12,9 @@ export class UpdateSubcategoryDto {
   @IsString()
   @MaxLength(80)
   name?: string;
+
+  @ApiPropertyOptional({ example: false })
+  @IsOptional()
+  @IsBoolean()
+  isArchived?: boolean;
 }

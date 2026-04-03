@@ -24,7 +24,11 @@ export class UpdateTransactionDto {
   @IsUUID()
   categoryId?: string;
 
-  @ApiPropertyOptional({ format: 'uuid', nullable: true, description: 'Set null to remove subcategory' })
+  @ApiPropertyOptional({
+    format: 'uuid',
+    nullable: true,
+    description: 'Set null to remove subcategory',
+  })
   @IsOptional()
   @IsUUID()
   subcategoryId?: string | null;
@@ -38,5 +42,5 @@ export class UpdateTransactionDto {
   @IsOptional()
   @IsString()
   @MaxLength(300)
-  note?: string;
+  note?: string | null;
 }

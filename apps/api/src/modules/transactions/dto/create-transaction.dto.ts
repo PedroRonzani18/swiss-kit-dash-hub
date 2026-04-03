@@ -7,10 +7,6 @@ export enum TransactionTypeDto {
 }
 
 export class CreateTransactionDto {
-  @ApiProperty({ format: 'uuid' })
-  @IsUUID()
-  userId: string;
-
   @ApiProperty({ enum: TransactionTypeDto, example: TransactionTypeDto.EXPENSE })
   @IsEnum(TransactionTypeDto)
   type: TransactionTypeDto;
@@ -31,13 +27,13 @@ export class CreateTransactionDto {
   @ApiPropertyOptional({ format: 'uuid', nullable: true })
   @IsOptional()
   @IsUUID()
-  subcategoryId?: string;
+  subcategoryId?: string | null;
 
   @ApiProperty({ example: '2026-04-02T12:00:00.000Z' })
   @IsDateString()
   occurredAt: string;
 
-  @ApiPropertyOptional({ example: 'Gasolina complemento' })
+  @ApiPropertyOptional({ example: 'Gasolina complemento', nullable: true })
   @IsOptional()
   @IsString()
   @MaxLength(300)

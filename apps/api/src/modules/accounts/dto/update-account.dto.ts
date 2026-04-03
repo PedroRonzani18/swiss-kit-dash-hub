@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsEnum, IsOptional, IsString, MaxLength, Min } from 'class-validator';
+import { IsBoolean, IsEnum, IsInt, IsOptional, IsString, MaxLength, Min } from 'class-validator';
 import { AccountTypeDto } from './create-account.dto';
 
 export class UpdateAccountDto {
@@ -21,8 +21,15 @@ export class UpdateAccountDto {
 
   @ApiPropertyOptional({ example: 5000 })
   @IsOptional()
+  @IsInt()
   @Min(0)
   openingBalanceCents?: number;
+
+  @ApiPropertyOptional({ example: 'Itaú', nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  institution?: string | null;
 
   @ApiPropertyOptional({ example: false })
   @IsOptional()
