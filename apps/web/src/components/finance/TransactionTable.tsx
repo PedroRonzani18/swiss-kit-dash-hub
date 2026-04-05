@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Transaction, Category, accounts } from "@/data/mockData";
+import { Transaction, Category } from "@/types/finance";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,15 +37,17 @@ import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 
 interface TransactionTableProps {
+  accounts: string[];
   transactions: Transaction[];
   categories: Category[];
   getCategoryName: (id: string) => string;
   getSubcategoryName: (catId: string, subId: string) => string;
   onEdit: (transaction: Transaction) => void;
-  onDelete: (id: string) => void;
+  onDelete: (id: string) => Promise<void>;
 }
 
 export function TransactionTable({
+  accounts,
   transactions,
   categories,
   getCategoryName,
@@ -61,6 +63,7 @@ export function TransactionTable({
   const [filterCategoryId, setFilterCategoryId] = useState("");
   const [filterSubcategoryId, setFilterSubcategoryId] = useState("");
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const toggleAccount = (acc: string) => {
     setSelectedAccounts((prev) =>
@@ -112,11 +115,18 @@ export function TransactionTable({
     setFilterSubcategoryId("");
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (deleteId) {
-      onDelete(deleteId);
-      toast.success("Transação removida");
-      setDeleteId(null);
+      setIsDeleting(true);
+      try {
+        await onDelete(deleteId);
+        toast.success("Transação removida");
+        setDeleteId(null);
+      } catch {
+        toast.error("Não foi possível remover a transação");
+      } finally {
+        setIsDeleting(false);
+      }
     }
   };
 
@@ -291,7 +301,9 @@ export function TransactionTable({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmDelete}>Excluir</AlertDialogAction>
+            <AlertDialogAction onClick={handleConfirmDelete} disabled={isDeleting}>
+              {isDeleting ? "Excluindo..." : "Excluir"}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

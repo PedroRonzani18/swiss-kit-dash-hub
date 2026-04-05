@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Transaction, Category } from "@/data/mockData";
+import { Transaction, Category } from "@/types/finance";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import {

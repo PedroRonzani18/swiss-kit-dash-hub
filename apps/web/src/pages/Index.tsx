@@ -15,13 +15,19 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Transaction } from "@/data/mockData";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/auth";
+import { Transaction } from "@/types/finance";
 import { toast } from "sonner";
 
 const Index = () => {
+  const { isAuthenticated, isLoading: isAuthLoading, loginWithGoogle } = useAuth();
   const {
+    accounts,
     categories,
     transactions,
+    isLoading,
+    error,
     addCategory,
     updateCategory,
     deleteCategory,
@@ -47,21 +53,97 @@ const Index = () => {
     setDialogOpen(true);
   };
 
-  const handleSave = (data: Omit<Transaction, "id">) => {
-    if (editingTransaction) {
-      updateTransaction(editingTransaction.id, data);
-      toast.success("Transação atualizada");
-    } else {
-      addTransaction(data);
-      toast.success("Transação adicionada");
+  const handleSave = async (data: Omit<Transaction, "id">) => {
+    try {
+      if (editingTransaction) {
+        await updateTransaction(editingTransaction.id, data);
+        toast.success("Transação atualizada");
+      } else {
+        await addTransaction(data);
+        toast.success("Transação adicionada");
+      }
+      setDialogOpen(false);
+      setEditingTransaction(null);
+    } catch (errorSave) {
+      const message =
+        errorSave instanceof Error
+          ? errorSave.message
+          : "Não foi possível salvar a transação";
+      toast.error(message);
     }
-    setDialogOpen(false);
-    setEditingTransaction(null);
   };
 
-  const handleDelete = (id: string) => {
-    deleteTransaction(id);
+  const handleDelete = async (id: string) => {
+    await deleteTransaction(id);
   };
+
+  const handleLogin = async () => {
+    try {
+      await loginWithGoogle();
+      toast.success("Login realizado com sucesso");
+    } catch (errorLogin) {
+      const message =
+        errorLogin instanceof Error ? errorLogin.message : "Falha ao autenticar com Google";
+      toast.error(message);
+    }
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <AppLayout breadcrumbs={["SwissKit", "Financeiro"]}>
+        <div className="max-w-xl mx-auto pt-24">
+          <Card>
+            <CardHeader>
+              <CardTitle>Acesse seu dashboard financeiro</CardTitle>
+              <CardDescription>
+                Faça login com Google para carregar seus dados reais da API.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button onClick={handleLogin} disabled={isAuthLoading}>
+                {isAuthLoading ? "Entrando..." : "Entrar com Google"}
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <AppLayout breadcrumbs={["SwissKit", "Financeiro"]}>
+        <div className="max-w-xl mx-auto pt-24">
+          <Card>
+            <CardHeader>
+              <CardTitle>Carregando dados financeiros...</CardTitle>
+              <CardDescription>
+                Estamos buscando contas, categorias e transações na API.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <AppLayout breadcrumbs={["SwissKit", "Financeiro"]}>
+        <div className="max-w-xl mx-auto pt-24">
+          <Card>
+            <CardHeader>
+              <CardTitle>Erro ao carregar dados</CardTitle>
+              <CardDescription>
+                Não foi possível carregar os recursos financeiros da API. Atualize a página
+                ou confira sua autenticação.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout breadcrumbs={["SwissKit", "Financeiro"]}>
@@ -99,6 +181,7 @@ const Index = () => {
 
           <TabsContent value="transactions">
             <TransactionTable
+              accounts={accounts}
               transactions={transactions}
               categories={categories}
               getCategoryName={getCategoryName}
@@ -128,6 +211,7 @@ const Index = () => {
               <DialogDescription>Preencha os dados da transação.</DialogDescription>
             </DialogHeader>
             <TransactionForm
+              accounts={accounts}
               categories={categories}
               onSave={handleSave}
               initialData={editingTransaction ?? undefined}

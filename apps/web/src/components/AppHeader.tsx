@@ -1,5 +1,8 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/auth";
+import { toast } from "sonner";
 
 interface AppHeaderProps {
   breadcrumbs?: string[];
@@ -7,9 +10,22 @@ interface AppHeaderProps {
 }
 
 export function AppHeader({ breadcrumbs = ["App", "Financeiro"] }: AppHeaderProps) {
+  const { user, isAuthenticated, isLoading, loginWithGoogle, logout } = useAuth();
+
   const triggerCommand = () => {
     const e = new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true });
     document.dispatchEvent(e);
+  };
+
+  const handleLogin = async () => {
+    try {
+      await loginWithGoogle();
+      toast.success("Login realizado com sucesso");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Não foi possível autenticar com Google";
+      toast.error(message);
+    }
   };
 
   return (
@@ -27,14 +43,33 @@ export function AppHeader({ breadcrumbs = ["App", "Financeiro"] }: AppHeaderProp
           ))}
         </nav>
       </div>
-      <button
-        onClick={triggerCommand}
-        className="flex items-center gap-2 text-xs text-muted-foreground bg-secondary hover:bg-muted px-3 py-1.5 rounded-md transition-colors"
-      >
-        <Search className="h-3 w-3" />
-        <span>Buscar</span>
-        <kbd className="ml-1 font-mono-code text-[10px] bg-muted px-1.5 py-0.5 rounded">⌘K</kbd>
-      </button>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={triggerCommand}
+          className="flex items-center gap-2 text-xs text-muted-foreground bg-secondary hover:bg-muted px-3 py-1.5 rounded-md transition-colors"
+        >
+          <Search className="h-3 w-3" />
+          <span>Buscar</span>
+          <kbd className="ml-1 font-mono-code text-[10px] bg-muted px-1.5 py-0.5 rounded">
+            ⌘K
+          </kbd>
+        </button>
+
+        {isAuthenticated ? (
+          <>
+            <span className="hidden md:inline text-xs text-muted-foreground max-w-48 truncate">
+              {user?.email}
+            </span>
+            <Button variant="outline" size="sm" onClick={logout}>
+              Sair
+            </Button>
+          </>
+        ) : (
+          <Button size="sm" onClick={handleLogin} disabled={isLoading}>
+            {isLoading ? "Entrando..." : "Entrar com Google"}
+          </Button>
+        )}
+      </div>
     </header>
   );
 }

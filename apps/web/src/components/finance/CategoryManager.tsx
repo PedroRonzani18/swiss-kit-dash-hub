@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Category, TransactionType } from "@/data/mockData";
+import { Category, TransactionType } from "@/types/finance";
 import { Plus, ChevronRight, Tag, Pencil, Trash2, Check, X } from "lucide-react";
 import {
   Select,
@@ -24,11 +24,22 @@ import { toast } from "sonner";
 
 interface CategoryManagerProps {
   categories: Category[];
-  onAddCategory: (cat: string, sub: string, type: TransactionType) => "duplicate" | "success";
-  onUpdateCategory: (id: string, newName: string) => "duplicate" | "success";
-  onDeleteCategory: (id: string) => void;
-  onUpdateSubcategory: (catId: string, subId: string, newName: string) => "duplicate" | "success";
-  onDeleteSubcategory: (catId: string, subId: string) => void;
+  onAddCategory: (
+    cat: string,
+    sub: string,
+    type: TransactionType,
+  ) => Promise<"duplicate" | "success">;
+  onUpdateCategory: (
+    id: string,
+    newName: string,
+  ) => Promise<"duplicate" | "success">;
+  onDeleteCategory: (id: string) => Promise<void>;
+  onUpdateSubcategory: (
+    catId: string,
+    subId: string,
+    newName: string,
+  ) => Promise<"duplicate" | "success">;
+  onDeleteSubcategory: (catId: string, subId: string) => Promise<void>;
 }
 
 export function CategoryManager({
@@ -57,49 +68,65 @@ export function CategoryManager({
     [categories]
   );
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!catName.trim() || !subName.trim()) return;
-    const result = onAddCategory(catName.trim(), subName.trim(), type);
-    if (result === "duplicate") {
-      toast.error("Esta subcategoria já existe nessa categoria");
-    } else {
-      toast.success("Categoria adicionada");
-      setSubName("");
+    try {
+      const result = await onAddCategory(catName.trim(), subName.trim(), type);
+      if (result === "duplicate") {
+        toast.error("Esta subcategoria já existe nessa categoria");
+      } else {
+        toast.success("Categoria adicionada");
+        setSubName("");
+      }
+    } catch {
+      toast.error("Não foi possível adicionar a categoria");
     }
   };
 
-  const handleSaveCategory = (id: string) => {
+  const handleSaveCategory = async (id: string) => {
     if (!editingCatName.trim()) return;
-    const result = onUpdateCategory(id, editingCatName.trim());
-    if (result === "duplicate") {
-      toast.error("Esta categoria já existe");
-    } else {
-      toast.success("Categoria renomeada");
-      setEditingCatId(null);
+    try {
+      const result = await onUpdateCategory(id, editingCatName.trim());
+      if (result === "duplicate") {
+        toast.error("Esta categoria já existe");
+      } else {
+        toast.success("Categoria renomeada");
+        setEditingCatId(null);
+      }
+    } catch {
+      toast.error("Não foi possível renomear a categoria");
     }
   };
 
-  const handleSaveSubcategory = (catId: string, subId: string) => {
+  const handleSaveSubcategory = async (catId: string, subId: string) => {
     if (!editingSubName.trim()) return;
-    const result = onUpdateSubcategory(catId, subId, editingSubName.trim());
-    if (result === "duplicate") {
-      toast.error("Esta subcategoria já existe");
-    } else {
-      toast.success("Subcategoria renomeada");
-      setEditingSubKey(null);
+    try {
+      const result = await onUpdateSubcategory(catId, subId, editingSubName.trim());
+      if (result === "duplicate") {
+        toast.error("Esta subcategoria já existe");
+      } else {
+        toast.success("Subcategoria renomeada");
+        setEditingSubKey(null);
+      }
+    } catch {
+      toast.error("Não foi possível renomear a subcategoria");
     }
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (!deleteTarget) return;
-    if (deleteTarget.type === "category") {
-      onDeleteCategory(deleteTarget.id);
-      toast.success("Categoria removida");
-    } else {
-      onDeleteSubcategory(deleteTarget.catId, deleteTarget.subId);
-      toast.success("Subcategoria removida");
+    try {
+      if (deleteTarget.type === "category") {
+        await onDeleteCategory(deleteTarget.id);
+        toast.success("Categoria removida");
+      } else {
+        await onDeleteSubcategory(deleteTarget.catId, deleteTarget.subId);
+        toast.success("Subcategoria removida");
+      }
+      setDeleteTarget(null);
+    } catch {
+      toast.error("Não foi possível excluir o item selecionado");
     }
-    setDeleteTarget(null);
   };
 
   return (

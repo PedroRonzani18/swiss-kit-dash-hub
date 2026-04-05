@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Category, Transaction, accounts } from "@/data/mockData";
+import { Category, Transaction } from "@/types/finance";
 import { Plus, Save } from "lucide-react";
 import {
   Select,
@@ -18,12 +18,18 @@ import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 
 interface TransactionFormProps {
+  accounts: string[];
   categories: Category[];
-  onSave: (t: Omit<Transaction, "id">) => void;
+  onSave: (t: Omit<Transaction, "id">) => Promise<void>;
   initialData?: Transaction;
 }
 
-export function TransactionForm({ categories, onSave, initialData }: TransactionFormProps) {
+export function TransactionForm({
+  accounts,
+  categories,
+  onSave,
+  initialData,
+}: TransactionFormProps) {
   const [account, setAccount] = useState("");
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [description, setDescription] = useState("");
@@ -31,6 +37,7 @@ export function TransactionForm({ categories, onSave, initialData }: Transaction
   const [type, setType] = useState<"income" | "expense">("expense");
   const [categoryId, setCategoryId] = useState("");
   const [subcategoryId, setSubcategoryId] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (initialData) {
@@ -41,24 +48,38 @@ export function TransactionForm({ categories, onSave, initialData }: Transaction
       setType(initialData.type);
       setCategoryId(initialData.categoryId);
       setSubcategoryId(initialData.subcategoryId);
+      return;
     }
+
+    setAccount("");
+    setDate(undefined);
+    setDescription("");
+    setAmount("");
+    setType("expense");
+    setCategoryId("");
+    setSubcategoryId("");
   }, [initialData]);
 
   const selectedCategory = categories.find((c) => c.id === categoryId);
   const filteredCategories = categories.filter((c) => c.type === type);
   const isEditing = !!initialData;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!account || !description || !amount || !categoryId || !subcategoryId) return;
-    onSave({
-      account,
-      date: date ? format(date, "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd"),
-      description,
-      amount: parseFloat(amount),
-      type,
-      categoryId,
-      subcategoryId,
-    });
+    setIsSubmitting(true);
+    try {
+      await onSave({
+        account,
+        date: date ? format(date, "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd"),
+        description,
+        amount: parseFloat(amount),
+        type,
+        categoryId,
+        subcategoryId,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -163,9 +184,13 @@ export function TransactionForm({ categories, onSave, initialData }: Transaction
         </Select>
       </div>
 
-      <Button onClick={handleSubmit} className="w-full gap-1">
+      <Button onClick={handleSubmit} className="w-full gap-1" disabled={isSubmitting}>
         {isEditing ? <Save className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-        {isEditing ? "Salvar Alterações" : "Adicionar Transação"}
+        {isSubmitting
+          ? "Salvando..."
+          : isEditing
+            ? "Salvar Alterações"
+            : "Adicionar Transação"}
       </Button>
     </div>
   );
