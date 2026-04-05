@@ -1,10 +1,11 @@
-import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient } from '@prisma/client';
+import 'dotenv/config';
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "@prisma/client";
 
 const databaseUrl = process.env.DATABASE_URL;
 
 if (!databaseUrl) {
-  throw new Error('DATABASE_URL is required to run prisma seed');
+  throw new Error("DATABASE_URL is required to run prisma seed");
 }
 
 const prisma = new PrismaClient({
@@ -15,13 +16,13 @@ const prisma = new PrismaClient({
 
 async function main() {
   const user = await prisma.user.upsert({
-    where: { email: 'demo@swisskit.app' },
+    where: { email: "demo@swisskit.app" },
     update: {},
     create: {
-      email: 'demo@swisskit.app',
-      name: 'Demo User',
-      provider: 'google',
-      providerUserId: 'demo-google-user-id',
+      email: "demo@swisskit.app",
+      name: "Demo User",
+      provider: "google",
+      providerUserId: "demo-google-user-id",
     },
   });
 
@@ -29,17 +30,17 @@ async function main() {
     where: {
       userId_name: {
         userId: user.id,
-        name: 'Main account',
+        name: "Main account",
       },
     },
     update: {},
     create: {
       userId: user.id,
-      name: 'Main account',
-      type: 'checking',
-      currency: 'BRL',
+      name: "Main account",
+      type: "checking",
+      currency: "BRL",
       openingBalanceCents: 0,
-      institution: 'Demo Bank',
+      institution: "Demo Bank",
     },
   });
 
@@ -47,21 +48,21 @@ async function main() {
     where: {
       userId_name_type: {
         userId: user.id,
-        name: 'General',
-        type: 'expense',
+        name: "General",
+        type: "expense",
       },
     },
     update: {},
     create: {
       userId: user.id,
-      name: 'General',
-      type: 'expense',
+      name: "General",
+      type: "expense",
     },
   });
 }
 
 main()
-  .catch(error => {
+  .catch((error) => {
     console.error(error);
     process.exit(1);
   })
