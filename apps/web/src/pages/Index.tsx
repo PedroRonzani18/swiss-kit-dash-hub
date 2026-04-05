@@ -3,6 +3,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { TransactionForm } from "@/components/finance/TransactionForm";
 import { TransactionTable } from "@/components/finance/TransactionTable";
 import { CategoryManager } from "@/components/finance/CategoryManager";
+import { AccountManager } from "@/components/finance/AccountManager";
 import { AdvancedAnalyticsPanel } from "@/components/finance/AdvancedAnalyticsPanel";
 import { useFinanceStore } from "@/hooks/useFinanceStore";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -24,10 +25,12 @@ const Index = () => {
   const { isAuthenticated, isLoading: isAuthLoading, loginWithGoogle } = useAuth();
   const {
     accounts,
+    accountItems,
     categories,
     transactions,
     isLoading,
     error,
+    addAccount,
     addCategory,
     updateCategory,
     deleteCategory,
@@ -167,6 +170,7 @@ const Index = () => {
           <TabsList className="bg-secondary">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="transactions">Transações</TabsTrigger>
+            <TabsTrigger value="accounts">Contas</TabsTrigger>
             <TabsTrigger value="categories">Categorias</TabsTrigger>
           </TabsList>
 
@@ -189,6 +193,10 @@ const Index = () => {
               onEdit={handleEdit}
               onDelete={handleDelete}
             />
+          </TabsContent>
+
+          <TabsContent value="accounts">
+            <AccountManager accounts={accountItems} onAddAccount={addAccount} />
           </TabsContent>
 
           <TabsContent value="categories">

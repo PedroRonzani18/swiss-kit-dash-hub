@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ApiError } from '@/types/api';
 import type {
   Account,
+  AccountType,
   Category,
   CategoryBase,
   Subcategory,
@@ -28,7 +29,7 @@ import {
   listTransactions,
   updateTransaction as updateTransactionRequest,
 } from '@/api/transactions';
-import { listAccounts } from '@/api/accounts';
+import { createAccount, listAccounts } from '@/api/accounts';
 import { financeKeys } from '@/api/queryKeys';
 
 const DAY_ANCHOR_TIME = 'T12:00:00.000Z';
@@ -207,7 +208,21 @@ export function useFinanceStore() {
     },
   });
 
+  const createAccountMutation = useMutation({
+    mutationFn: createAccount,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: financeKeys.accounts() });
+    },
+  });
+
   const accounts = accountsQuery.data || [];
+  const activeAccounts = useMemo(
+    () =>
+      accounts
+        .filter(account => !account.isArchived)
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [accounts],
+  );
   const categories = useMemo(
     () => mapGroupedCategories(categoriesQuery.data || [], subcategoriesQuery.data || []),
     [categoriesQuery.data, subcategoriesQuery.data],
@@ -219,8 +234,36 @@ export function useFinanceStore() {
   );
 
   const accountNames = useMemo(
-    () => accounts.filter(account => !account.isArchived).map(account => account.name),
-    [accounts],
+    () => activeAccounts.map(account => account.name),
+    [activeAccounts],
+  );
+
+  const addAccount = useCallback(
+    async (input: {
+      name: string;
+      type: AccountType;
+      institution?: string;
+      openingBalance?: number;
+    }): Promise<'duplicate' | 'success'> => {
+      try {
+        await createAccountMutation.mutateAsync({
+          name: input.name.trim(),
+          type: input.type,
+          currency: 'BRL',
+          openingBalanceCents: toAmountCents(Math.max(0, input.openingBalance || 0)),
+          institution: input.institution?.trim() || undefined,
+        });
+
+        return 'success';
+      } catch (error) {
+        if (isConflictError(error)) {
+          return 'duplicate';
+        }
+
+        throw error;
+      }
+    },
+    [createAccountMutation],
   );
 
   const addCategory = useCallback(
@@ -447,10 +490,12 @@ export function useFinanceStore() {
 
   return {
     accounts: accountNames,
+    accountItems: activeAccounts,
     categories,
     transactions,
     isLoading,
     error,
+    addAccount,
     addCategory,
     updateCategory,
     deleteCategory,
