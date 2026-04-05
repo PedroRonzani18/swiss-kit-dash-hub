@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { Transaction, Category } from "@/data/mockData";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Transaction, Category } from "@/types/finance";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -16,7 +16,6 @@ interface AdvancedAnalyticsPanelProps {
 }
 
 const MONTH_NAMES = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
-const AVAILABLE_YEARS = [2025, 2026, 2027];
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -30,11 +29,93 @@ export function AdvancedAnalyticsPanel({
   getCategoryName,
   getSubcategoryName,
 }: AdvancedAnalyticsPanelProps) {
-  const [selectedYears, setSelectedYears] = useState<number[]>([2026]);
-  const [selectedMonths, setSelectedMonths] = useState<number[]>([0, 1, 2]);
-  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>(categories.map((c) => c.id));
+  const [selectedYears, setSelectedYears] = useState<number[]>([]);
+  const [selectedMonths, setSelectedMonths] = useState<number[]>([]);
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [typeFilter, setTypeFilter] = useState<"all" | "income" | "expense">("all");
+  const hasInitializedYears = useRef(false);
+  const hasInitializedMonths = useRef(false);
+  const hasInitializedCategories = useRef(false);
+
+  const availableYears = useMemo(() => {
+    return Array.from(
+      new Set(
+        transactions.map((transaction) => {
+          const date = new Date(transaction.date);
+          return date.getFullYear();
+        }),
+      ),
+    ).sort((a, b) => a - b);
+  }, [transactions]);
+
+  const availableMonths = useMemo(() => {
+    if (transactions.length === 0) {
+      return [];
+    }
+
+    const yearScope = selectedYears.length > 0 ? selectedYears : availableYears;
+    const yearScopeSet = new Set(yearScope);
+
+    return Array.from(
+      new Set(
+        transactions
+          .filter((transaction) => {
+            const date = new Date(transaction.date);
+            return yearScopeSet.has(date.getFullYear());
+          })
+          .map((transaction) => {
+            const date = new Date(transaction.date);
+            return date.getMonth();
+          }),
+      ),
+    ).sort((a, b) => a - b);
+  }, [transactions, selectedYears, availableYears]);
+
+  useEffect(() => {
+    setSelectedYears((previousYears) => {
+      const validYears = previousYears.filter((year) => availableYears.includes(year));
+
+      if (!hasInitializedYears.current && availableYears.length > 0) {
+        hasInitializedYears.current = true;
+        return [...availableYears];
+      }
+
+      return validYears;
+    });
+  }, [availableYears]);
+
+  useEffect(() => {
+    setSelectedMonths((previousMonths) => {
+      const validMonths = previousMonths.filter((month) =>
+        availableMonths.includes(month),
+      );
+
+      if (!hasInitializedMonths.current && availableMonths.length > 0) {
+        hasInitializedMonths.current = true;
+        return [...availableMonths];
+      }
+
+      return validMonths;
+    });
+  }, [availableMonths]);
+
+  useEffect(() => {
+    const categoryIds = categories.map((category) => category.id);
+
+    setSelectedCategoryIds((previousCategoryIds) => {
+      const validCategoryIds = previousCategoryIds.filter((id) =>
+        categoryIds.includes(id),
+      );
+
+      if (!hasInitializedCategories.current && categoryIds.length > 0) {
+        hasInitializedCategories.current = true;
+        return [...categoryIds];
+      }
+
+      return validCategoryIds;
+    });
+  }, [categories]);
 
   // Toggle helpers
   const toggleYear = (y: number) =>
@@ -46,7 +127,11 @@ export function AdvancedAnalyticsPanel({
   const toggleExpanded = (id: string) =>
     setExpandedCategories((prev) => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
       return next;
     });
 
@@ -152,12 +237,15 @@ export function AdvancedAnalyticsPanel({
               </PopoverTrigger>
               <PopoverContent className="w-40 p-3" align="start">
                 <div className="space-y-2">
-                  {AVAILABLE_YEARS.map((y) => (
+                  {availableYears.map((y) => (
                     <label key={y} className="flex items-center gap-2 text-sm cursor-pointer">
                       <Checkbox checked={selectedYears.includes(y)} onCheckedChange={() => toggleYear(y)} />
                       {y}
                     </label>
                   ))}
+                  {availableYears.length === 0 && (
+                    <p className="text-xs text-muted-foreground">Sem anos com transações.</p>
+                  )}
                 </div>
               </PopoverContent>
             </Popover>
@@ -173,16 +261,31 @@ export function AdvancedAnalyticsPanel({
               </PopoverTrigger>
               <PopoverContent className="w-56 p-3" align="start">
                 <div className="flex justify-between mb-2">
-                  <Button variant="ghost" size="sm" className="text-xs h-6 px-2" onClick={() => setSelectedMonths([0,1,2,3,4,5,6,7,8,9,10,11])}>Todos</Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs h-6 px-2"
+                    onClick={() => setSelectedMonths([...availableMonths])}
+                  >
+                    Todos
+                  </Button>
                   <Button variant="ghost" size="sm" className="text-xs h-6 px-2" onClick={() => setSelectedMonths([])}>Nenhum</Button>
                 </div>
                 <div className="grid grid-cols-3 gap-2">
-                  {MONTH_NAMES.map((m, i) => (
-                    <label key={i} className="flex items-center gap-1.5 text-xs cursor-pointer">
-                      <Checkbox checked={selectedMonths.includes(i)} onCheckedChange={() => toggleMonth(i)} />
-                      {m}
+                  {availableMonths.map((month) => (
+                    <label key={month} className="flex items-center gap-1.5 text-xs cursor-pointer">
+                      <Checkbox
+                        checked={selectedMonths.includes(month)}
+                        onCheckedChange={() => toggleMonth(month)}
+                      />
+                      {MONTH_NAMES[month]}
                     </label>
                   ))}
+                  {availableMonths.length === 0 && (
+                    <p className="col-span-3 text-xs text-muted-foreground">
+                      Sem meses com transações.
+                    </p>
+                  )}
                 </div>
               </PopoverContent>
             </Popover>

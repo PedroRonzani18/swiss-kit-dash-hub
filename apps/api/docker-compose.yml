@@ -1,0 +1,16 @@
+services:
+  swisskit-postgres:
+    image: postgres:16
+    container_name: swisskit-api-postgres
+    environment:
+      POSTGRES_DB: swisskit
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - swisskit-postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  swisskit-postgres-data:

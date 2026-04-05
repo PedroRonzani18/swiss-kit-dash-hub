@@ -1,0 +1,16 @@
+model User {
+  id            String        @id @default(uuid())
+  email         String        @unique
+  name          String?
+  avatarUrl     String?
+  provider      AuthProvider  @default(google)
+  providerUserId String       @unique
+  lastLoginAt   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  accounts      Account[]
+  categories    Category[]
+  subcategories Subcategory[]
+  transactions  Transaction[]
+}

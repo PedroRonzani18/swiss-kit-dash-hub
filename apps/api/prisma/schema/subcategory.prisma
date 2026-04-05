@@ -1,0 +1,17 @@
+model Subcategory {
+  id           String        @id @default(uuid())
+  userId       String
+  categoryId   String
+  name         String
+  isArchived   Boolean       @default(false)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category     Category      @relation("CategorySubcategories", fields: [categoryId, userId], references: [id, userId], onDelete: Cascade)
+  transactions Transaction[]
+
+  @@index([userId, categoryId, isArchived])
+  @@unique([userId, categoryId, name])
+  @@unique([id, userId])
+}
