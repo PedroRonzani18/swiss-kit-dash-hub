@@ -23,6 +23,22 @@ type UserRow = Prisma.UserGetPayload<{ select: typeof userSelect }>;
 export class AuthRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  async isAllowedEmail(email: string): Promise<boolean> {
+    const normalizedEmail = email.toLowerCase().trim();
+
+    const record = await this.prisma.allowedEmail.findFirst({
+      select: {
+        id: true,
+      },
+      where: {
+        email: normalizedEmail,
+        isActive: true,
+      },
+    });
+
+    return Boolean(record);
+  }
+
   async findById(id: string): Promise<UserContract | null> {
     const record = await this.prisma.user.findUnique({
       select: userSelect,

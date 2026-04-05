@@ -13,7 +13,6 @@ import { AuthRepository } from './repositories/auth.repository';
 @Injectable()
 export class AuthService {
   private readonly jwtExpiresIn: string;
-  private readonly allowedEmails: Set<string>;
 
   constructor(
     private readonly authRepository: AuthRepository,
@@ -21,26 +20,14 @@ export class AuthService {
     configService: ConfigService,
   ) {
     this.jwtExpiresIn = configService.get<string>('JWT_EXPIRES_IN') || '1d';
-
-    const allowedEmailsRaw =
-      configService.get<string>('AUTH_ALLOWED_EMAILS') ||
-      'pedroaugustogabironzani@gmail.com';
-
-    this.allowedEmails = new Set(
-      allowedEmailsRaw
-        .split(',')
-        .map(email => email.toLowerCase().trim())
-        .filter(Boolean),
-    );
   }
 
   async loginWithGoogle(profile: GoogleAuthProfileContract): Promise<AuthSessionContract> {
-    this.assertAllowedEmail(profile.email);
-
     const normalizedProfile: GoogleAuthProfileContract = {
       ...profile,
       email: profile.email.toLowerCase().trim(),
     };
+    await this.assertAllowedEmail(normalizedProfile.email);
 
     const user = await this.authRepository.upsertGoogleUser(normalizedProfile);
     const payload: JwtPayloadContract = {
@@ -69,9 +56,10 @@ export class AuthService {
     return user;
   }
 
-  private assertAllowedEmail(email: string): void {
-    const normalizedEmail = email.toLowerCase().trim();
-    if (!this.allowedEmails.has(normalizedEmail)) {
+  private async assertAllowedEmail(email: string): Promise<void> {
+    const isAllowed = await this.authRepository.isAllowedEmail(email);
+
+    if (!isAllowed) {
       throw new ForbiddenException('Your Google account is not allowed to access this API');
     }
   }

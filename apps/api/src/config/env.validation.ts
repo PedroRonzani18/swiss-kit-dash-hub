@@ -7,7 +7,6 @@ export type ApiEnv = {
   GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;
   GOOGLE_CALLBACK_URL: string;
-  AUTH_ALLOWED_EMAILS: string;
 };
 
 function getRequiredString(
@@ -43,8 +42,5 @@ export function validateEnv(config: Record<string, unknown>): ApiEnv {
     GOOGLE_CLIENT_ID: getRequiredString(config, 'GOOGLE_CLIENT_ID'),
     GOOGLE_CLIENT_SECRET: getRequiredString(config, 'GOOGLE_CLIENT_SECRET'),
     GOOGLE_CALLBACK_URL: getRequiredString(config, 'GOOGLE_CALLBACK_URL'),
-    AUTH_ALLOWED_EMAILS:
-      (config.AUTH_ALLOWED_EMAILS as string)?.trim() ||
-      'pedroaugustogabironzani@gmail.com',
   };
 }

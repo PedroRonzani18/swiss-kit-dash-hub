@@ -28,6 +28,7 @@ prisma/
   schema/
     schema.prisma
     enums.prisma
+    allowed-email.prisma
     user.prisma
     account.prisma
     category.prisma
@@ -57,7 +58,6 @@ Variáveis obrigatórias:
 - `GOOGLE_CALLBACK_URL`
 - `JWT_SECRET`
 - `JWT_EXPIRES_IN`
-- `AUTH_ALLOWED_EMAILS`
 
 Swagger:
 
@@ -72,8 +72,8 @@ Swagger:
 
 Restrição de acesso atual:
 
-- Apenas e-mails presentes em `AUTH_ALLOWED_EMAILS`
-- Valor inicial recomendado: `pedroaugustogabironzani@gmail.com`
+- Apenas e-mails ativos na tabela `AllowedEmail`
+- Valor inicial incluído no seed: `pedroaugustogabironzani@gmail.com`
 
 ## Banco local com Docker
 

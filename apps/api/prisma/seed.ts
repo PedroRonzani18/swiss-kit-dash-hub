@@ -14,7 +14,22 @@ const prisma = new PrismaClient({
   }),
 });
 
+const PRIMARY_ALLOWED_EMAIL = "pedroaugustogabironzani@gmail.com";
+
 async function main() {
+  await prisma.allowedEmail.upsert({
+    where: { email: PRIMARY_ALLOWED_EMAIL },
+    update: {
+      isActive: true,
+      note: "Primary owner access",
+    },
+    create: {
+      email: PRIMARY_ALLOWED_EMAIL,
+      isActive: true,
+      note: "Primary owner access",
+    },
+  });
+
   const user = await prisma.user.upsert({
     where: { email: "demo@swisskit.app" },
     update: {},
