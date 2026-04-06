@@ -4,11 +4,11 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build",
+    "build": "nest build -p tsconfig.build.json",
     "prebuild": "pnpm run prisma:generate",
     "start": "nest start",
     "start:dev": "nest start --watch",
-    "start:prod": "node dist/src/main",
+    "start:prod": "node dist/main.js",
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" --fix",
     "test": "jest --passWithNoTests",
