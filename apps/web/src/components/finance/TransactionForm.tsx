@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Category, Transaction } from "@/types/finance";
+import { AccountOption, Category, Transaction } from "@/types/finance";
+import type { TransactionDraft } from "@/features/finance/types";
 import { Plus, Save } from "lucide-react";
 import {
   Select,
@@ -18,9 +19,9 @@ import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 
 interface TransactionFormProps {
-  accounts: string[];
+  accounts: AccountOption[];
   categories: Category[];
-  onSave: (t: Omit<Transaction, "id">) => Promise<void>;
+  onSave: (t: TransactionDraft) => Promise<void>;
   initialData?: Transaction;
 }
 
@@ -30,7 +31,7 @@ export function TransactionForm({
   onSave,
   initialData,
 }: TransactionFormProps) {
-  const [account, setAccount] = useState("");
+  const [accountId, setAccountId] = useState("");
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
@@ -41,7 +42,7 @@ export function TransactionForm({
 
   useEffect(() => {
     if (initialData) {
-      setAccount(initialData.account);
+      setAccountId(initialData.accountId);
       setDate(new Date(initialData.date + "T12:00:00"));
       setDescription(initialData.description);
       setAmount(String(initialData.amount));
@@ -51,7 +52,7 @@ export function TransactionForm({
       return;
     }
 
-    setAccount("");
+    setAccountId("");
     setDate(undefined);
     setDescription("");
     setAmount("");
@@ -65,11 +66,11 @@ export function TransactionForm({
   const isEditing = !!initialData;
 
   const handleSubmit = async () => {
-    if (!account || !description || !amount || !categoryId || !subcategoryId) return;
+    if (!accountId || !description || !amount || !categoryId || !subcategoryId) return;
     setIsSubmitting(true);
     try {
       await onSave({
-        account,
+        accountId,
         date: date ? format(date, "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd"),
         description,
         amount: parseFloat(amount),
@@ -84,7 +85,6 @@ export function TransactionForm({
 
   return (
     <div className="space-y-4">
-      {/* Type toggle */}
       <div className="flex gap-1 bg-secondary rounded-md p-1 w-fit">
         <button
           onClick={() => { setType("income"); setCategoryId(""); setSubcategoryId(""); }}
@@ -107,19 +107,17 @@ export function TransactionForm({
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        {/* Account */}
-        <Select value={account} onValueChange={setAccount}>
+        <Select value={accountId} onValueChange={setAccountId}>
           <SelectTrigger>
             <SelectValue placeholder="Conta" />
           </SelectTrigger>
           <SelectContent>
-            {accounts.map((a) => (
-              <SelectItem key={a} value={a}>{a}</SelectItem>
+            {accounts.map((account) => (
+              <SelectItem key={account.id} value={account.id}>{account.label}</SelectItem>
             ))}
           </SelectContent>
         </Select>
 
-        {/* Date */}
         <Popover>
           <PopoverTrigger asChild>
             <Button
@@ -141,14 +139,12 @@ export function TransactionForm({
           </PopoverContent>
         </Popover>
 
-        {/* Description */}
         <Input
           placeholder="Descrição"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
 
-        {/* Amount */}
         <Input
           placeholder="R$ 0,00"
           type="number"
@@ -159,7 +155,6 @@ export function TransactionForm({
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        {/* Category */}
         <Select value={categoryId} onValueChange={(v) => { setCategoryId(v); setSubcategoryId(""); }}>
           <SelectTrigger>
             <SelectValue placeholder="Categoria" />
@@ -171,7 +166,6 @@ export function TransactionForm({
           </SelectContent>
         </Select>
 
-        {/* Subcategory */}
         <Select value={subcategoryId} onValueChange={setSubcategoryId} disabled={!selectedCategory}>
           <SelectTrigger>
             <SelectValue placeholder="Subcategoria" />

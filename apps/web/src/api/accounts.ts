@@ -1,23 +1,28 @@
-import type {
-  Account,
-  CreateAccountInput,
-  UpdateAccountInput,
-} from '@/types/finance';
+import {
+  accountSchema,
+  accountListSchema,
+  type AccountContract,
+} from '@swisskit/contracts';
+import type { CreateAccountInput, UpdateAccountInput } from '@/types/finance';
 import { apiClient } from './client';
+import { parseApiResponse } from './validation';
 
-export async function listAccounts(): Promise<Account[]> {
-  return apiClient.get<Account[]>('/accounts');
+export async function listAccounts(): Promise<AccountContract[]> {
+  const data = await apiClient.get<unknown>('/accounts');
+  return parseApiResponse(accountListSchema, data);
 }
 
-export async function createAccount(input: CreateAccountInput): Promise<Account> {
-  return apiClient.post<Account, CreateAccountInput>('/accounts', input);
+export async function createAccount(input: CreateAccountInput): Promise<AccountContract> {
+  const data = await apiClient.post<unknown, CreateAccountInput>('/accounts', input);
+  return parseApiResponse(accountSchema, data);
 }
 
 export async function updateAccount(
   id: string,
   input: UpdateAccountInput,
-): Promise<Account> {
-  return apiClient.patch<Account, UpdateAccountInput>(`/accounts/${id}`, input);
+): Promise<AccountContract> {
+  const data = await apiClient.patch<unknown, UpdateAccountInput>(`/accounts/${id}`, input);
+  return parseApiResponse(accountSchema, data);
 }
 
 export async function deleteAccount(id: string): Promise<void> {
