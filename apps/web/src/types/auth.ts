@@ -1,4 +1,4 @@
-export type AuthProvider = 'google';
+import type { AuthProvider } from '@swisskit/contracts';
 
 export type AuthUser = {
   id: string;
