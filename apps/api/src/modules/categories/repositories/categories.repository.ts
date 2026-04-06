@@ -85,13 +85,21 @@ export class CategoriesRepository {
   }
 
   async delete(id: string, userId: string): Promise<void> {
-    await this.prisma.category.delete({
-      where: {
-        id_userId: {
-          id,
+    await this.prisma.$transaction([
+      this.prisma.transaction.deleteMany({
+        where: {
           userId,
+          categoryId: id,
         },
-      },
-    });
+      }),
+      this.prisma.category.delete({
+        where: {
+          id_userId: {
+            id,
+            userId,
+          },
+        },
+      }),
+    ]);
   }
 }

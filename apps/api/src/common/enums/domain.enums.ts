@@ -1,3 +1,9 @@
+import type {
+  AccountType,
+  AuthProvider,
+  TransactionType,
+} from '@swisskit/contracts';
+
 export const ACCOUNT_TYPE = {
   CHECKING: 'checking',
   SAVINGS: 'savings',
@@ -14,7 +20,4 @@ export const AUTH_PROVIDER = {
   GOOGLE: 'google',
 } as const;
 
-export type AccountType = (typeof ACCOUNT_TYPE)[keyof typeof ACCOUNT_TYPE];
-export type TransactionType =
-  (typeof TRANSACTION_TYPE)[keyof typeof TRANSACTION_TYPE];
-export type AuthProvider = (typeof AUTH_PROVIDER)[keyof typeof AUTH_PROVIDER];
+export type { AccountType, TransactionType, AuthProvider };
