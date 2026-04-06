@@ -1,28 +1,36 @@
+import {
+  subcategoryListSchema,
+  subcategorySchema,
+  type SubcategoryContract,
+} from '@swisskit/contracts';
 import type {
   CreateSubcategoryInput,
-  Subcategory,
   UpdateSubcategoryInput,
 } from '@/types/finance';
 import { apiClient } from './client';
+import { parseApiResponse } from './validation';
 
-export async function listSubcategories(): Promise<Subcategory[]> {
-  return apiClient.get<Subcategory[]>('/subcategories');
+export async function listSubcategories(): Promise<SubcategoryContract[]> {
+  const data = await apiClient.get<unknown>('/subcategories');
+  return parseApiResponse(subcategoryListSchema, data);
 }
 
 export async function createSubcategory(
   input: CreateSubcategoryInput,
-): Promise<Subcategory> {
-  return apiClient.post<Subcategory, CreateSubcategoryInput>('/subcategories', input);
+): Promise<SubcategoryContract> {
+  const data = await apiClient.post<unknown, CreateSubcategoryInput>('/subcategories', input);
+  return parseApiResponse(subcategorySchema, data);
 }
 
 export async function updateSubcategory(
   id: string,
   input: UpdateSubcategoryInput,
-): Promise<Subcategory> {
-  return apiClient.patch<Subcategory, UpdateSubcategoryInput>(
+): Promise<SubcategoryContract> {
+  const data = await apiClient.patch<unknown, UpdateSubcategoryInput>(
     `/subcategories/${id}`,
     input,
   );
+  return parseApiResponse(subcategorySchema, data);
 }
 
 export async function deleteSubcategory(id: string): Promise<void> {

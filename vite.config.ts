@@ -13,6 +13,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "apps/web/src"),
+      "@swisskit/contracts": path.resolve(__dirname, "packages/contracts/src/index.ts"),
     },
   },
 });

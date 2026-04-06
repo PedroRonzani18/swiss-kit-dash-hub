@@ -103,13 +103,21 @@ export class SubcategoriesRepository {
   }
 
   async delete(id: string, userId: string): Promise<void> {
-    await this.prisma.subcategory.delete({
-      where: {
-        id_userId: {
-          id,
+    await this.prisma.$transaction([
+      this.prisma.transaction.deleteMany({
+        where: {
           userId,
+          subcategoryId: id,
         },
-      },
-    });
+      }),
+      this.prisma.subcategory.delete({
+        where: {
+          id_userId: {
+            id,
+            userId,
+          },
+        },
+      }),
+    ]);
   }
 }

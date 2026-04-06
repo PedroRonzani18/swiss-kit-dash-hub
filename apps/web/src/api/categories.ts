@@ -1,25 +1,30 @@
-import type {
-  CategoryBase,
-  CreateCategoryInput,
-  UpdateCategoryInput,
-} from '@/types/finance';
+import {
+  categoryBaseSchema,
+  categoryListSchema,
+  type CategoryBaseContract,
+} from '@swisskit/contracts';
+import type { CreateCategoryInput, UpdateCategoryInput } from '@/types/finance';
 import { apiClient } from './client';
+import { parseApiResponse } from './validation';
 
-export async function listCategories(): Promise<CategoryBase[]> {
-  return apiClient.get<CategoryBase[]>('/categories');
+export async function listCategories(): Promise<CategoryBaseContract[]> {
+  const data = await apiClient.get<unknown>('/categories');
+  return parseApiResponse(categoryListSchema, data);
 }
 
 export async function createCategory(
   input: CreateCategoryInput,
-): Promise<CategoryBase> {
-  return apiClient.post<CategoryBase, CreateCategoryInput>('/categories', input);
+): Promise<CategoryBaseContract> {
+  const data = await apiClient.post<unknown, CreateCategoryInput>('/categories', input);
+  return parseApiResponse(categoryBaseSchema, data);
 }
 
 export async function updateCategory(
   id: string,
   input: UpdateCategoryInput,
-): Promise<CategoryBase> {
-  return apiClient.patch<CategoryBase, UpdateCategoryInput>(`/categories/${id}`, input);
+): Promise<CategoryBaseContract> {
+  const data = await apiClient.patch<unknown, UpdateCategoryInput>(`/categories/${id}`, input);
+  return parseApiResponse(categoryBaseSchema, data);
 }
 
 export async function deleteCategory(id: string): Promise<void> {

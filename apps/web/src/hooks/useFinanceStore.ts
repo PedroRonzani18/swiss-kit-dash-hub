@@ -2,15 +2,18 @@ import { useCallback, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ApiError } from '@/types/api';
 import type {
-  Account,
   AccountType,
   Category,
-  CategoryBase,
-  Subcategory,
-  Transaction,
-  TransactionResource,
   TransactionType,
 } from '@/types/finance';
+import type { TransactionDraft } from '@/features/finance/types';
+import {
+  mapAccountOptions,
+  mapGroupedCategories,
+  mapTransactions,
+  toAmountCents,
+  toIsoDate,
+} from '@/features/finance/mappers';
 import {
   createCategory,
   deleteCategory as deleteCategoryRequest,
@@ -32,70 +35,8 @@ import {
 import { createAccount, listAccounts } from '@/api/accounts';
 import { financeKeys } from '@/api/queryKeys';
 
-const DAY_ANCHOR_TIME = 'T12:00:00.000Z';
-
 function isConflictError(error: unknown): boolean {
   return error instanceof ApiError && error.status === 409;
-}
-
-function toDateOnly(isoDate: string): string {
-  return isoDate.slice(0, 10);
-}
-
-function toIsoDate(date: string): string {
-  return new Date(`${date}${DAY_ANCHOR_TIME}`).toISOString();
-}
-
-function toAmountCents(amount: number): number {
-  return Math.round(amount * 100);
-}
-
-function toAmountFromCents(amountCents: number): number {
-  return amountCents / 100;
-}
-
-function mapGroupedCategories(
-  baseCategories: CategoryBase[],
-  subcategories: Subcategory[],
-): Category[] {
-  const subByCategory = new Map<string, Subcategory[]>();
-
-  subcategories
-    .filter(sub => !sub.isArchived)
-    .forEach(sub => {
-      const existing = subByCategory.get(sub.categoryId) || [];
-      existing.push(sub);
-      subByCategory.set(sub.categoryId, existing);
-    });
-
-  return baseCategories
-    .filter(category => !category.isArchived)
-    .map(category => ({
-      ...category,
-      subcategories: (subByCategory.get(category.id) || []).sort((a, b) =>
-        a.name.localeCompare(b.name),
-      ),
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name));
-}
-
-function mapTransactions(
-  transactions: TransactionResource[],
-  accounts: Account[],
-): Transaction[] {
-  const accountById = new Map(accounts.map(account => [account.id, account.name]));
-
-  return transactions.map(transaction => ({
-    id: transaction.id,
-    account: accountById.get(transaction.accountId) || 'Conta removida',
-    accountId: transaction.accountId,
-    date: toDateOnly(transaction.occurredAt),
-    description: transaction.note || '',
-    amount: toAmountFromCents(transaction.amountCents),
-    type: transaction.type,
-    categoryId: transaction.categoryId,
-    subcategoryId: transaction.subcategoryId || '',
-  }));
 }
 
 export function useFinanceStore() {
@@ -223,7 +164,13 @@ export function useFinanceStore() {
         .sort((a, b) => a.name.localeCompare(b.name)),
     [accounts],
   );
-  const categories = useMemo(
+
+  const accountOptions = useMemo(
+    () => mapAccountOptions(activeAccounts),
+    [activeAccounts],
+  );
+
+  const categories = useMemo<Category[]>(
     () => mapGroupedCategories(categoriesQuery.data || [], subcategoriesQuery.data || []),
     [categoriesQuery.data, subcategoriesQuery.data],
   );
@@ -231,11 +178,6 @@ export function useFinanceStore() {
   const transactions = useMemo(
     () => mapTransactions(transactionsQuery.data || [], accounts),
     [transactionsQuery.data, accounts],
-  );
-
-  const accountNames = useMemo(
-    () => activeAccounts.map(account => account.name),
-    [activeAccounts],
   );
 
   const addAccount = useCallback(
@@ -351,19 +293,9 @@ export function useFinanceStore() {
 
   const deleteCategory = useCallback(
     async (id: string): Promise<void> => {
-      const relatedTransactions = transactions.filter(
-        transaction => transaction.categoryId === id,
-      );
-
-      await Promise.all(
-        relatedTransactions.map(transaction =>
-          deleteTransactionMutation.mutateAsync(transaction.id),
-        ),
-      );
-
       await deleteCategoryMutation.mutateAsync(id);
     },
-    [transactions, deleteCategoryMutation, deleteTransactionMutation],
+    [deleteCategoryMutation],
   );
 
   const updateSubcategory = useCallback(
@@ -391,54 +323,34 @@ export function useFinanceStore() {
 
   const deleteSubcategory = useCallback(
     async (_catId: string, subId: string): Promise<void> => {
-      const relatedTransactions = transactions.filter(
-        transaction => transaction.subcategoryId === subId,
-      );
-
-      await Promise.all(
-        relatedTransactions.map(transaction =>
-          deleteTransactionMutation.mutateAsync(transaction.id),
-        ),
-      );
-
       await deleteSubcategoryMutation.mutateAsync(subId);
     },
-    [transactions, deleteSubcategoryMutation, deleteTransactionMutation],
+    [deleteSubcategoryMutation],
   );
 
   const addTransaction = useCallback(
-    async (transaction: Omit<Transaction, 'id'>): Promise<void> => {
-      const account = accounts.find(item => item.name === transaction.account);
-      if (!account) {
-        throw new Error('Conta selecionada não encontrada.');
-      }
-
+    async (transaction: TransactionDraft): Promise<void> => {
       await createTransactionMutation.mutateAsync({
         type: transaction.type,
         amountCents: toAmountCents(transaction.amount),
-        accountId: account.id,
+        accountId: transaction.accountId,
         categoryId: transaction.categoryId,
         subcategoryId: transaction.subcategoryId || null,
         occurredAt: toIsoDate(transaction.date),
         note: transaction.description,
       });
     },
-    [accounts, createTransactionMutation],
+    [createTransactionMutation],
   );
 
   const updateTransaction = useCallback(
-    async (id: string, data: Omit<Transaction, 'id'>): Promise<void> => {
-      const account = accounts.find(item => item.name === data.account);
-      if (!account) {
-        throw new Error('Conta selecionada não encontrada.');
-      }
-
+    async (id: string, data: TransactionDraft): Promise<void> => {
       await updateTransactionMutation.mutateAsync({
         id,
         payload: {
           type: data.type,
           amountCents: toAmountCents(data.amount),
-          accountId: account.id,
+          accountId: data.accountId,
           categoryId: data.categoryId,
           subcategoryId: data.subcategoryId || null,
           occurredAt: toIsoDate(data.date),
@@ -446,7 +358,7 @@ export function useFinanceStore() {
         },
       });
     },
-    [accounts, updateTransactionMutation],
+    [updateTransactionMutation],
   );
 
   const deleteTransaction = useCallback(
@@ -489,7 +401,7 @@ export function useFinanceStore() {
     transactionsQuery.error;
 
   return {
-    accounts: accountNames,
+    accounts: accountOptions,
     accountItems: activeAccounts,
     categories,
     transactions,
