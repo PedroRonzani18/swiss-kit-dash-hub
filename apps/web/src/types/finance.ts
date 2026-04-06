@@ -15,6 +15,11 @@ export type Account = {
   updatedAt: string;
 };
 
+export type AccountOption = {
+  id: string;
+  label: string;
+};
+
 export type CategoryBase = {
   id: string;
   userId: string;
@@ -41,8 +46,8 @@ export type Category = CategoryBase & {
 
 export type Transaction = {
   id: string;
-  account: string;
   accountId: string;
+  accountName: string;
   date: string;
   description: string;
   amount: number;

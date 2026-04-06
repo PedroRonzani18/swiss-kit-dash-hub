@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Transaction, Category } from "@/types/finance";
+import { AccountOption, Transaction, Category } from "@/types/finance";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,7 +37,7 @@ import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 
 interface TransactionTableProps {
-  accounts: string[];
+  accounts: AccountOption[];
   transactions: Transaction[];
   categories: Category[];
   getCategoryName: (id: string) => string;
@@ -65,9 +65,9 @@ export function TransactionTable({
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const toggleAccount = (acc: string) => {
+  const toggleAccount = (accountId: string) => {
     setSelectedAccounts((prev) =>
-      prev.includes(acc) ? prev.filter((a) => a !== acc) : [...prev, acc]
+      prev.includes(accountId) ? prev.filter((a) => a !== accountId) : [...prev, accountId]
     );
   };
 
@@ -76,7 +76,7 @@ export function TransactionTable({
   const filtered = useMemo(() => {
     let result = transactions.filter((t) => {
       if (search && !t.description.toLowerCase().includes(search.toLowerCase())) return false;
-      if (selectedAccounts.length > 0 && !selectedAccounts.includes(t.account)) return false;
+      if (selectedAccounts.length > 0 && !selectedAccounts.includes(t.accountId)) return false;
       if (dateFrom) {
         const td = new Date(t.date);
         if (td < dateFrom) return false;
@@ -153,13 +153,13 @@ export function TransactionTable({
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-44 p-2 pointer-events-auto">
-            {accounts.map((acc) => (
-              <label key={acc} className="flex items-center gap-2 py-1 px-1 text-sm cursor-pointer hover:bg-accent rounded">
+            {accounts.map((account) => (
+              <label key={account.id} className="flex items-center gap-2 py-1 px-1 text-sm cursor-pointer hover:bg-accent rounded">
                 <Checkbox
-                  checked={selectedAccounts.includes(acc)}
-                  onCheckedChange={() => toggleAccount(acc)}
+                  checked={selectedAccounts.includes(account.id)}
+                  onCheckedChange={() => toggleAccount(account.id)}
                 />
-                {acc}
+                {account.label}
               </label>
             ))}
           </PopoverContent>
@@ -251,7 +251,7 @@ export function TransactionTable({
           <TableBody>
             {filtered.map((t) => (
               <TableRow key={t.id} className="animate-fade-in group">
-                <TableCell className="text-xs font-mono-code">{t.account}</TableCell>
+                <TableCell className="text-xs font-mono-code">{t.accountName}</TableCell>
                 <TableCell className="text-xs font-mono-code">{formatDate(t.date)}</TableCell>
                 <TableCell className="text-sm">{t.description}</TableCell>
                 <TableCell

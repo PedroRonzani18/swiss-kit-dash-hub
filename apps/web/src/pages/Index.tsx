@@ -56,7 +56,7 @@ const Index = () => {
     setDialogOpen(true);
   };
 
-  const handleSave = async (data: Omit<Transaction, "id">) => {
+  const handleSave = async (data: Omit<Transaction, "id" | "accountName">) => {
     try {
       if (editingTransaction) {
         await updateTransaction(editingTransaction.id, data);

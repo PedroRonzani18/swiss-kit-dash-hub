@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ApiError } from '@/types/api';
 import type {
   Account,
+  AccountOption,
   AccountType,
   Category,
   CategoryBase,
@@ -87,8 +88,8 @@ function mapTransactions(
 
   return transactions.map(transaction => ({
     id: transaction.id,
-    account: accountById.get(transaction.accountId) || 'Conta removida',
     accountId: transaction.accountId,
+    accountName: accountById.get(transaction.accountId) || 'Conta removida',
     date: toDateOnly(transaction.occurredAt),
     description: transaction.note || '',
     amount: toAmountFromCents(transaction.amountCents),
@@ -223,6 +224,12 @@ export function useFinanceStore() {
         .sort((a, b) => a.name.localeCompare(b.name)),
     [accounts],
   );
+
+  const accountOptions = useMemo<AccountOption[]>(
+    () => activeAccounts.map(account => ({ id: account.id, label: account.name })),
+    [activeAccounts],
+  );
+
   const categories = useMemo(
     () => mapGroupedCategories(categoriesQuery.data || [], subcategoriesQuery.data || []),
     [categoriesQuery.data, subcategoriesQuery.data],
@@ -231,11 +238,6 @@ export function useFinanceStore() {
   const transactions = useMemo(
     () => mapTransactions(transactionsQuery.data || [], accounts),
     [transactionsQuery.data, accounts],
-  );
-
-  const accountNames = useMemo(
-    () => activeAccounts.map(account => account.name),
-    [activeAccounts],
   );
 
   const addAccount = useCallback(
@@ -351,19 +353,9 @@ export function useFinanceStore() {
 
   const deleteCategory = useCallback(
     async (id: string): Promise<void> => {
-      const relatedTransactions = transactions.filter(
-        transaction => transaction.categoryId === id,
-      );
-
-      await Promise.all(
-        relatedTransactions.map(transaction =>
-          deleteTransactionMutation.mutateAsync(transaction.id),
-        ),
-      );
-
       await deleteCategoryMutation.mutateAsync(id);
     },
-    [transactions, deleteCategoryMutation, deleteTransactionMutation],
+    [deleteCategoryMutation],
   );
 
   const updateSubcategory = useCallback(
@@ -391,54 +383,34 @@ export function useFinanceStore() {
 
   const deleteSubcategory = useCallback(
     async (_catId: string, subId: string): Promise<void> => {
-      const relatedTransactions = transactions.filter(
-        transaction => transaction.subcategoryId === subId,
-      );
-
-      await Promise.all(
-        relatedTransactions.map(transaction =>
-          deleteTransactionMutation.mutateAsync(transaction.id),
-        ),
-      );
-
       await deleteSubcategoryMutation.mutateAsync(subId);
     },
-    [transactions, deleteSubcategoryMutation, deleteTransactionMutation],
+    [deleteSubcategoryMutation],
   );
 
   const addTransaction = useCallback(
-    async (transaction: Omit<Transaction, 'id'>): Promise<void> => {
-      const account = accounts.find(item => item.name === transaction.account);
-      if (!account) {
-        throw new Error('Conta selecionada não encontrada.');
-      }
-
+    async (transaction: Omit<Transaction, 'id' | 'accountName'>): Promise<void> => {
       await createTransactionMutation.mutateAsync({
         type: transaction.type,
         amountCents: toAmountCents(transaction.amount),
-        accountId: account.id,
+        accountId: transaction.accountId,
         categoryId: transaction.categoryId,
         subcategoryId: transaction.subcategoryId || null,
         occurredAt: toIsoDate(transaction.date),
         note: transaction.description,
       });
     },
-    [accounts, createTransactionMutation],
+    [createTransactionMutation],
   );
 
   const updateTransaction = useCallback(
-    async (id: string, data: Omit<Transaction, 'id'>): Promise<void> => {
-      const account = accounts.find(item => item.name === data.account);
-      if (!account) {
-        throw new Error('Conta selecionada não encontrada.');
-      }
-
+    async (id: string, data: Omit<Transaction, 'id' | 'accountName'>): Promise<void> => {
       await updateTransactionMutation.mutateAsync({
         id,
         payload: {
           type: data.type,
           amountCents: toAmountCents(data.amount),
-          accountId: account.id,
+          accountId: data.accountId,
           categoryId: data.categoryId,
           subcategoryId: data.subcategoryId || null,
           occurredAt: toIsoDate(data.date),
@@ -446,7 +418,7 @@ export function useFinanceStore() {
         },
       });
     },
-    [accounts, updateTransactionMutation],
+    [updateTransactionMutation],
   );
 
   const deleteTransaction = useCallback(
@@ -489,7 +461,7 @@ export function useFinanceStore() {
     transactionsQuery.error;
 
   return {
-    accounts: accountNames,
+    accounts: accountOptions,
     accountItems: activeAccounts,
     categories,
     transactions,
