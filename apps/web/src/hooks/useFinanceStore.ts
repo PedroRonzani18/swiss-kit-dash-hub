@@ -2,16 +2,18 @@ import { useCallback, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ApiError } from '@/types/api';
 import type {
-  Account,
-  AccountOption,
   AccountType,
   Category,
-  CategoryBase,
-  Subcategory,
-  Transaction,
-  TransactionResource,
   TransactionType,
 } from '@/types/finance';
+import type { TransactionDraft } from '@/features/finance/types';
+import {
+  mapAccountOptions,
+  mapGroupedCategories,
+  mapTransactions,
+  toAmountCents,
+  toIsoDate,
+} from '@/features/finance/mappers';
 import {
   createCategory,
   deleteCategory as deleteCategoryRequest,
@@ -33,70 +35,8 @@ import {
 import { createAccount, listAccounts } from '@/api/accounts';
 import { financeKeys } from '@/api/queryKeys';
 
-const DAY_ANCHOR_TIME = 'T12:00:00.000Z';
-
 function isConflictError(error: unknown): boolean {
   return error instanceof ApiError && error.status === 409;
-}
-
-function toDateOnly(isoDate: string): string {
-  return isoDate.slice(0, 10);
-}
-
-function toIsoDate(date: string): string {
-  return new Date(`${date}${DAY_ANCHOR_TIME}`).toISOString();
-}
-
-function toAmountCents(amount: number): number {
-  return Math.round(amount * 100);
-}
-
-function toAmountFromCents(amountCents: number): number {
-  return amountCents / 100;
-}
-
-function mapGroupedCategories(
-  baseCategories: CategoryBase[],
-  subcategories: Subcategory[],
-): Category[] {
-  const subByCategory = new Map<string, Subcategory[]>();
-
-  subcategories
-    .filter(sub => !sub.isArchived)
-    .forEach(sub => {
-      const existing = subByCategory.get(sub.categoryId) || [];
-      existing.push(sub);
-      subByCategory.set(sub.categoryId, existing);
-    });
-
-  return baseCategories
-    .filter(category => !category.isArchived)
-    .map(category => ({
-      ...category,
-      subcategories: (subByCategory.get(category.id) || []).sort((a, b) =>
-        a.name.localeCompare(b.name),
-      ),
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name));
-}
-
-function mapTransactions(
-  transactions: TransactionResource[],
-  accounts: Account[],
-): Transaction[] {
-  const accountById = new Map(accounts.map(account => [account.id, account.name]));
-
-  return transactions.map(transaction => ({
-    id: transaction.id,
-    accountId: transaction.accountId,
-    accountName: accountById.get(transaction.accountId) || 'Conta removida',
-    date: toDateOnly(transaction.occurredAt),
-    description: transaction.note || '',
-    amount: toAmountFromCents(transaction.amountCents),
-    type: transaction.type,
-    categoryId: transaction.categoryId,
-    subcategoryId: transaction.subcategoryId || '',
-  }));
 }
 
 export function useFinanceStore() {
@@ -225,12 +165,12 @@ export function useFinanceStore() {
     [accounts],
   );
 
-  const accountOptions = useMemo<AccountOption[]>(
-    () => activeAccounts.map(account => ({ id: account.id, label: account.name })),
+  const accountOptions = useMemo(
+    () => mapAccountOptions(activeAccounts),
     [activeAccounts],
   );
 
-  const categories = useMemo(
+  const categories = useMemo<Category[]>(
     () => mapGroupedCategories(categoriesQuery.data || [], subcategoriesQuery.data || []),
     [categoriesQuery.data, subcategoriesQuery.data],
   );
@@ -389,7 +329,7 @@ export function useFinanceStore() {
   );
 
   const addTransaction = useCallback(
-    async (transaction: Omit<Transaction, 'id' | 'accountName'>): Promise<void> => {
+    async (transaction: TransactionDraft): Promise<void> => {
       await createTransactionMutation.mutateAsync({
         type: transaction.type,
         amountCents: toAmountCents(transaction.amount),
@@ -404,7 +344,7 @@ export function useFinanceStore() {
   );
 
   const updateTransaction = useCallback(
-    async (id: string, data: Omit<Transaction, 'id' | 'accountName'>): Promise<void> => {
+    async (id: string, data: TransactionDraft): Promise<void> => {
       await updateTransactionMutation.mutateAsync({
         id,
         payload: {

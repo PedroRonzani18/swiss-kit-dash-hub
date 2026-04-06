@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { AccountOption, Category, Transaction } from "@/types/finance";
+import type { TransactionDraft } from "@/features/finance/types";
 import { Plus, Save } from "lucide-react";
 import {
   Select,
@@ -20,7 +21,7 @@ import { cn } from "@/lib/utils";
 interface TransactionFormProps {
   accounts: AccountOption[];
   categories: Category[];
-  onSave: (t: Omit<Transaction, "id" | "accountName">) => Promise<void>;
+  onSave: (t: TransactionDraft) => Promise<void>;
   initialData?: Transaction;
 }
 

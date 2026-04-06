@@ -19,6 +19,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/auth";
 import { Transaction } from "@/types/finance";
+import type { TransactionDraft } from "@/features/finance/types";
 import { toast } from "sonner";
 
 const Index = () => {
@@ -56,7 +57,7 @@ const Index = () => {
     setDialogOpen(true);
   };
 
-  const handleSave = async (data: Omit<Transaction, "id" | "accountName">) => {
+  const handleSave = async (data: TransactionDraft) => {
     try {
       if (editingTransaction) {
         await updateTransaction(editingTransaction.id, data);
