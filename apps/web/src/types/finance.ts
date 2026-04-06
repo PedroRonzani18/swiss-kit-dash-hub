@@ -1,5 +1,5 @@
-export type TransactionType = 'income' | 'expense';
-export type AccountType = 'checking' | 'savings' | 'credit_card' | 'cash';
+import type { AccountType, TransactionType } from '@swisskit/contracts';
+
 
 export type Account = {
   id: string;
@@ -13,6 +13,11 @@ export type Account = {
   archivedAt: string | null;
   createdAt: string;
   updatedAt: string;
+};
+
+export type AccountOption = {
+  id: string;
+  label: string;
 };
 
 export type CategoryBase = {
@@ -41,8 +46,8 @@ export type Category = CategoryBase & {
 
 export type Transaction = {
   id: string;
-  account: string;
   accountId: string;
+  accountName: string;
   date: string;
   description: string;
   amount: number;

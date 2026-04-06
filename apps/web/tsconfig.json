@@ -7,6 +7,9 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@swisskit/contracts": [
+        "../../packages/contracts/src/index.ts"
       ]
     },
     "skipLibCheck": true,
