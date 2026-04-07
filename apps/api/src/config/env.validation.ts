@@ -5,6 +5,7 @@ export type ApiEnv = {
   JWT_SECRET: string;
   JWT_EXPIRES_IN: string;
   AUTH_COOKIE_NAME: string;
+  AUTH_COOKIE_SAME_SITE: 'lax' | 'none' | 'strict';
   WEB_APP_URL: string;
   CORS_ALLOWED_ORIGINS: string;
   GOOGLE_CLIENT_ID: string;
@@ -24,6 +25,18 @@ function getRequiredString(
   return value.trim();
 }
 
+function getCookieSameSite(config: Record<string, unknown>): ApiEnv['AUTH_COOKIE_SAME_SITE'] {
+  const rawSameSite = ((config.AUTH_COOKIE_SAME_SITE as string) || 'lax')
+    .trim()
+    .toLowerCase();
+
+  if (rawSameSite === 'lax' || rawSameSite === 'none' || rawSameSite === 'strict') {
+    return rawSameSite;
+  }
+
+  throw new Error('AUTH_COOKIE_SAME_SITE must be one of: lax, none, strict');
+}
+
 export function validateEnv(config: Record<string, unknown>): ApiEnv {
   const nodeEnv = (config.NODE_ENV as string) || 'development';
   const normalizedNodeEnv =
@@ -40,6 +53,14 @@ export function validateEnv(config: Record<string, unknown>): ApiEnv {
     (config.WEB_APP_URL as string)?.trim() || 'http://localhost:8080';
   const corsAllowedOrigins =
     (config.CORS_ALLOWED_ORIGINS as string)?.trim() || webAppUrl;
+  const authCookieSameSite = getCookieSameSite(config);
+  const authCookieSecure = normalizedNodeEnv === 'production' || authCookieSameSite === 'none';
+
+  if (authCookieSameSite === 'none' && !authCookieSecure) {
+    throw new Error(
+      'Invalid auth cookie configuration: AUTH_COOKIE_SAME_SITE=none requires secure cookies',
+    );
+  }
 
   return {
     NODE_ENV: normalizedNodeEnv,
@@ -49,6 +70,7 @@ export function validateEnv(config: Record<string, unknown>): ApiEnv {
     JWT_EXPIRES_IN: (config.JWT_EXPIRES_IN as string)?.trim() || '1d',
     AUTH_COOKIE_NAME:
       (config.AUTH_COOKIE_NAME as string)?.trim() || 'swisskit_auth',
+    AUTH_COOKIE_SAME_SITE: authCookieSameSite,
     WEB_APP_URL: webAppUrl,
     CORS_ALLOWED_ORIGINS: corsAllowedOrigins,
     GOOGLE_CLIENT_ID: getRequiredString(config, 'GOOGLE_CLIENT_ID'),
