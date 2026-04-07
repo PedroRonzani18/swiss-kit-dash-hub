@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { TransactionForm } from "@/components/finance/TransactionForm";
 import { TransactionTable } from "@/components/finance/TransactionTable";
@@ -46,6 +46,22 @@ const Index = () => {
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const authError = params.get("authError");
+
+    if (!authError) {
+      return;
+    }
+
+    toast.error("Falha ao autenticar com Google");
+
+    params.delete("authError");
+    const nextSearch = params.toString();
+    const nextUrl = `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ""}${window.location.hash}`;
+    window.history.replaceState({}, "", nextUrl);
+  }, []);
 
   const handleOpenNew = () => {
     setEditingTransaction(null);

@@ -39,7 +39,7 @@ export type JwtPayloadContract = {
   provider: AuthProvider;
 };
 
-export type AuthSessionContract = {
+export type AuthLoginResultContract = {
   accessToken: string;
   tokenType: 'Bearer';
   expiresIn: string;

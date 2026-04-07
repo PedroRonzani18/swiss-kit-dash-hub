@@ -1,8 +1,10 @@
 import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import ms, { type StringValue } from 'ms';
+import type { CookieOptions } from 'express';
 import type {
-  AuthSessionContract,
+  AuthLoginResultContract,
   GoogleAuthProfileContract,
   JwtPayloadContract,
   UserContract,
@@ -13,6 +15,11 @@ import { AuthRepository } from './repositories/auth.repository';
 @Injectable()
 export class AuthService {
   private readonly jwtExpiresIn: string;
+  private readonly authCookieName: string;
+  private readonly authCookieMaxAge: number | undefined;
+  private readonly webAppUrl: string;
+  private readonly webAppOrigin: string;
+  private readonly isProduction: boolean;
 
   constructor(
     private readonly authRepository: AuthRepository,
@@ -20,9 +27,25 @@ export class AuthService {
     configService: ConfigService,
   ) {
     this.jwtExpiresIn = configService.get<string>('JWT_EXPIRES_IN') || '1d';
+    this.authCookieName =
+      configService.get<string>('AUTH_COOKIE_NAME') || 'swisskit_auth';
+    const parsedWebAppUrl = new URL(
+      configService.getOrThrow<string>('WEB_APP_URL'),
+    );
+    this.webAppUrl = parsedWebAppUrl.toString();
+    this.webAppOrigin = parsedWebAppUrl.origin;
+    this.isProduction = configService.get<string>('NODE_ENV') === 'production';
+
+    const parsedMaxAge = ms(this.jwtExpiresIn as StringValue);
+    this.authCookieMaxAge =
+      typeof parsedMaxAge === 'number' && parsedMaxAge > 0
+        ? parsedMaxAge
+        : undefined;
   }
 
-  async loginWithGoogle(profile: GoogleAuthProfileContract): Promise<AuthSessionContract> {
+  async loginWithGoogle(
+    profile: GoogleAuthProfileContract,
+  ): Promise<AuthLoginResultContract> {
     const normalizedProfile: GoogleAuthProfileContract = {
       ...profile,
       email: profile.email.toLowerCase().trim(),
@@ -47,6 +70,35 @@ export class AuthService {
     };
   }
 
+  getAuthCookieName(): string {
+    return this.authCookieName;
+  }
+
+  getWebAppUrl(): string {
+    return this.webAppUrl;
+  }
+
+  getWebAppOrigin(): string {
+    return this.webAppOrigin;
+  }
+
+  getAuthCookieOptions(): CookieOptions {
+    const baseOptions = this.getAuthCookieBaseOptions();
+
+    if (!this.authCookieMaxAge) {
+      return baseOptions;
+    }
+
+    return {
+      ...baseOptions,
+      maxAge: this.authCookieMaxAge,
+    };
+  }
+
+  getAuthCookieClearOptions(): CookieOptions {
+    return this.getAuthCookieBaseOptions();
+  }
+
   async getMe(userId: string): Promise<UserContract> {
     const user = await this.authRepository.findById(userId);
     if (!user) {
@@ -62,5 +114,14 @@ export class AuthService {
     if (!isAllowed) {
       throw new ForbiddenException('Your Google account is not allowed to access this API');
     }
+  }
+
+  private getAuthCookieBaseOptions(): CookieOptions {
+    return {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: this.isProduction,
+      path: '/',
+    };
   }
 }

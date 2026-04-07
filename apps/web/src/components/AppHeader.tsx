@@ -28,6 +28,17 @@ export function AppHeader({ breadcrumbs = ["App", "Financeiro"] }: AppHeaderProp
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success("Sessão encerrada");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Não foi possível sair da sessão";
+      toast.error(message);
+    }
+  };
+
   return (
     <header className="h-14 flex items-center justify-between border-b border-border px-4 shrink-0">
       <div className="flex items-center gap-3">
@@ -60,7 +71,7 @@ export function AppHeader({ breadcrumbs = ["App", "Financeiro"] }: AppHeaderProp
             <span className="hidden md:inline text-xs text-muted-foreground max-w-48 truncate">
               {user?.email}
             </span>
-            <Button variant="outline" size="sm" onClick={logout}>
+            <Button variant="outline" size="sm" onClick={handleLogout}>
               Sair
             </Button>
           </>

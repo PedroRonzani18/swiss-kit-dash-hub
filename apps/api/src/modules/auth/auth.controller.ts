@@ -1,13 +1,16 @@
 import {
   Controller,
   Get,
+  HttpCode,
   HttpException,
+  Post,
   Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiCookieAuth,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -18,7 +21,8 @@ import type { Response } from 'express';
 import type { AuthenticatedUserContract } from '@/common/contracts';
 import { CurrentUser, Public, type GoogleAuthRequest } from '@/common/auth';
 import { AuthService } from './auth.service';
-import { AuthSessionDto } from './dto/auth-session.dto';
+import { AuthCallbackDto } from './dto/auth-callback.dto';
+import { AuthStatusDto } from './dto/auth-status.dto';
 import { UserProfileDto } from './dto/user-profile.dto';
 
 @ApiTags('Auth')
@@ -34,6 +38,8 @@ export class AuthController {
       /</g,
       '\\u003c',
     );
+    const targetOrigin = JSON.stringify(this.authService.getWebAppOrigin());
+    const fallbackRedirectUrl = JSON.stringify(this.authService.getWebAppUrl());
 
     return `<!doctype html>
 <html lang="en">
@@ -45,12 +51,31 @@ export class AuthController {
     <script>
       (function () {
         var message = ${serializedPayload};
+        var targetOrigin = ${targetOrigin};
+        var fallbackRedirectUrl = ${fallbackRedirectUrl};
         if (window.opener) {
-          window.opener.postMessage(message, "*");
+          window.opener.postMessage(message, targetOrigin);
           window.close();
           return;
         }
-        document.body.innerText = JSON.stringify(message.payload);
+
+        var redirectUrl = fallbackRedirectUrl;
+        try {
+          var url = new URL(fallbackRedirectUrl);
+          if (message.type === 'swisskit:auth:error') {
+            url.searchParams.set('authError', 'oauth_failed');
+          }
+          redirectUrl = url.toString();
+        } catch (_error) {
+          if (message.type === 'swisskit:auth:error') {
+            redirectUrl =
+              fallbackRedirectUrl +
+              (fallbackRedirectUrl.indexOf('?') >= 0 ? '&' : '?') +
+              'authError=oauth_failed';
+          }
+        }
+
+        window.location.replace(redirectUrl);
       })();
     </script>
   </body>
@@ -69,8 +94,8 @@ export class AuthController {
   @Public()
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  @ApiOperation({ summary: 'Google OAuth callback and JWT issuance' })
-  @ApiOkResponse({ type: AuthSessionDto })
+  @ApiOperation({ summary: 'Google OAuth callback and authentication cookie issuance' })
+  @ApiOkResponse({ type: AuthCallbackDto })
   async googleCallback(
     @Req() request: GoogleAuthRequest,
     @Res() response: Response,
@@ -78,16 +103,28 @@ export class AuthController {
     const acceptsHtml = request.headers.accept?.includes('text/html') ?? false;
 
     try {
-      const session = await this.authService.loginWithGoogle(request.user);
+      const authResult = await this.authService.loginWithGoogle(request.user);
+      response.cookie(
+        this.authService.getAuthCookieName(),
+        authResult.accessToken,
+        this.authService.getAuthCookieOptions(),
+      );
+
+      const callbackPayload = {
+        success: true,
+        user: authResult.user,
+      };
 
       if (acceptsHtml) {
         return response
           .status(200)
           .type('text/html')
-          .send(this.renderOAuthHtmlMessage('swisskit:auth:success', session));
+          .send(
+            this.renderOAuthHtmlMessage('swisskit:auth:success', callbackPayload),
+          );
       }
 
-      return response.status(200).json(session);
+      return response.status(200).json(callbackPayload);
     } catch (error) {
       if (!acceptsHtml) {
         throw error;
@@ -111,7 +148,22 @@ export class AuthController {
     }
   }
 
+  @Public()
+  @Post('logout')
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Clear authentication cookie' })
+  @ApiOkResponse({ type: AuthStatusDto })
+  logout(@Res() response: Response) {
+    response.clearCookie(
+      this.authService.getAuthCookieName(),
+      this.authService.getAuthCookieClearOptions(),
+    );
+
+    return response.status(200).json({ success: true });
+  }
+
   @Get('me')
+  @ApiCookieAuth('cookie')
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get authenticated user profile' })
   @ApiOkResponse({ type: UserProfileDto })

@@ -14,18 +14,14 @@ export type UserProfile = AuthUser & {
   updatedAt: string;
 };
 
-export type AuthSession = {
-  accessToken: string;
-  tokenType: 'Bearer';
-  expiresIn: string;
+export type AuthCallbackResponse = {
+  success: true;
   user: AuthUser;
 };
 
-export type StoredAuthSession = AuthSession;
-
 export type AuthPopupSuccessMessage = {
   type: 'swisskit:auth:success';
-  payload: AuthSession;
+  payload?: AuthCallbackResponse;
 };
 
 export type AuthPopupErrorMessage = {
