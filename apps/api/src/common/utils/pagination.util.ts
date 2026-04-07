@@ -5,7 +5,11 @@ export type PaginationMeta = {
   totalPages: number;
 };
 
-export function buildPaginationMeta(page: number, limit: number, total: number): PaginationMeta {
+export function buildPaginationMeta(
+  page: number,
+  limit: number,
+  total: number,
+): PaginationMeta {
   const safePage = Math.max(page, 1);
   const safeLimit = Math.max(limit, 1);
   const totalPages = Math.ceil(total / safeLimit);

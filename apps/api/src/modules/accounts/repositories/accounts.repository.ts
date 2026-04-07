@@ -35,7 +35,9 @@ export class AccountsRepository {
       orderBy: { createdAt: 'desc' },
     });
 
-    return records.map(record => mapAccountFromPersistence(record as AccountRow));
+    return records.map((record) =>
+      mapAccountFromPersistence(record as AccountRow),
+    );
   }
 
   async findById(id: string, userId: string): Promise<AccountContract | null> {

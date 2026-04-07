@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import type { AuthenticatedUserContract } from '@/common/contracts';
 import { CurrentUser } from '@/common/auth';
@@ -18,7 +26,10 @@ export class TransactionsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @CurrentUser() user: AuthenticatedUserContract) {
+  findOne(
+    @Param('id') id: string,
+    @CurrentUser() user: AuthenticatedUserContract,
+  ) {
     return this.transactionsService.findOne(id, user.id);
   }
 
@@ -40,7 +51,10 @@ export class TransactionsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string, @CurrentUser() user: AuthenticatedUserContract) {
+  remove(
+    @Param('id') id: string,
+    @CurrentUser() user: AuthenticatedUserContract,
+  ) {
     return this.transactionsService.remove(id, user.id);
   }
 }

@@ -27,7 +27,10 @@ export class SubcategoriesService {
     return subcategory;
   }
 
-  create(userId: string, input: CreateSubcategoryDto): Promise<SubcategoryContract> {
+  create(
+    userId: string,
+    input: CreateSubcategoryDto,
+  ): Promise<SubcategoryContract> {
     const payload: CreateSubcategoryContract = {
       userId,
       categoryId: input.categoryId,

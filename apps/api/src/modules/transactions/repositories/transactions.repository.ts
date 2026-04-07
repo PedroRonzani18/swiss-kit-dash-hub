@@ -45,12 +45,15 @@ export class TransactionsRepository {
       orderBy: { occurredAt: 'desc' },
     });
 
-    return records.map(record =>
+    return records.map((record) =>
       mapTransactionFromPersistence(record as TransactionRow),
     );
   }
 
-  async findById(id: string, userId: string): Promise<TransactionContract | null> {
+  async findById(
+    id: string,
+    userId: string,
+  ): Promise<TransactionContract | null> {
     const record = await this.prisma.transaction.findUnique({
       select: transactionSelect,
       where: {
@@ -61,7 +64,9 @@ export class TransactionsRepository {
       },
     });
 
-    return record ? mapTransactionFromPersistence(record as TransactionRow) : null;
+    return record
+      ? mapTransactionFromPersistence(record as TransactionRow)
+      : null;
   }
 
   async assertTransactionRelations(
@@ -93,7 +98,9 @@ export class TransactionsRepository {
         select: { id: true },
       });
       if (!category) {
-        throw new NotFoundException('Category not found for authenticated user');
+        throw new NotFoundException(
+          'Category not found for authenticated user',
+        );
       }
     }
 
@@ -204,7 +211,7 @@ export class TransactionsRepository {
           : undefined,
         type: input.type,
         amountCents: input.amountCents,
-        note: hasNote ? input.note ?? null : undefined,
+        note: hasNote ? (input.note ?? null) : undefined,
         occurredAt: input.occurredAt ? new Date(input.occurredAt) : undefined,
       },
     });
