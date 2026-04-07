@@ -18,6 +18,7 @@ export class AuthService {
   private readonly authCookieName: string;
   private readonly authCookieMaxAge: number | undefined;
   private readonly webAppUrl: string;
+  private readonly webAppOrigin: string;
   private readonly isProduction: boolean;
 
   constructor(
@@ -28,9 +29,11 @@ export class AuthService {
     this.jwtExpiresIn = configService.get<string>('JWT_EXPIRES_IN') || '1d';
     this.authCookieName =
       configService.get<string>('AUTH_COOKIE_NAME') || 'swisskit_auth';
-    this.webAppUrl = new URL(
+    const parsedWebAppUrl = new URL(
       configService.getOrThrow<string>('WEB_APP_URL'),
-    ).origin;
+    );
+    this.webAppUrl = parsedWebAppUrl.toString();
+    this.webAppOrigin = parsedWebAppUrl.origin;
     this.isProduction = configService.get<string>('NODE_ENV') === 'production';
 
     const parsedMaxAge = ms(this.jwtExpiresIn as StringValue);
@@ -73,6 +76,10 @@ export class AuthService {
 
   getWebAppUrl(): string {
     return this.webAppUrl;
+  }
+
+  getWebAppOrigin(): string {
+    return this.webAppOrigin;
   }
 
   getAuthCookieOptions(): CookieOptions {

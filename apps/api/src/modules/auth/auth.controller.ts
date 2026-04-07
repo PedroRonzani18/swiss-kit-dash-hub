@@ -38,7 +38,8 @@ export class AuthController {
       /</g,
       '\\u003c',
     );
-    const targetOrigin = JSON.stringify(this.authService.getWebAppUrl());
+    const targetOrigin = JSON.stringify(this.authService.getWebAppOrigin());
+    const fallbackRedirectUrl = JSON.stringify(this.authService.getWebAppUrl());
 
     return `<!doctype html>
 <html lang="en">
@@ -51,12 +52,30 @@ export class AuthController {
       (function () {
         var message = ${serializedPayload};
         var targetOrigin = ${targetOrigin};
+        var fallbackRedirectUrl = ${fallbackRedirectUrl};
         if (window.opener) {
           window.opener.postMessage(message, targetOrigin);
           window.close();
           return;
         }
-        document.body.innerText = JSON.stringify(message.payload);
+
+        var redirectUrl = fallbackRedirectUrl;
+        try {
+          var url = new URL(fallbackRedirectUrl);
+          if (message.type === 'swisskit:auth:error') {
+            url.searchParams.set('authError', 'oauth_failed');
+          }
+          redirectUrl = url.toString();
+        } catch (_error) {
+          if (message.type === 'swisskit:auth:error') {
+            redirectUrl =
+              fallbackRedirectUrl +
+              (fallbackRedirectUrl.indexOf('?') >= 0 ? '&' : '?') +
+              'authError=oauth_failed';
+          }
+        }
+
+        window.location.replace(redirectUrl);
       })();
     </script>
   </body>
