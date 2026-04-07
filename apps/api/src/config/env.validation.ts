@@ -4,6 +4,9 @@ export type ApiEnv = {
   DATABASE_URL?: string;
   JWT_SECRET: string;
   JWT_EXPIRES_IN: string;
+  AUTH_COOKIE_NAME: string;
+  WEB_APP_URL: string;
+  CORS_ALLOWED_ORIGINS: string;
   GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;
   GOOGLE_CALLBACK_URL: string;
@@ -33,12 +36,21 @@ export function validateEnv(config: Record<string, unknown>): ApiEnv {
     throw new Error('PORT must be a positive number');
   }
 
+  const webAppUrl =
+    (config.WEB_APP_URL as string)?.trim() || 'http://localhost:8080';
+  const corsAllowedOrigins =
+    (config.CORS_ALLOWED_ORIGINS as string)?.trim() || webAppUrl;
+
   return {
     NODE_ENV: normalizedNodeEnv,
     PORT: port,
     DATABASE_URL: (config.DATABASE_URL as string) || undefined,
     JWT_SECRET: getRequiredString(config, 'JWT_SECRET'),
     JWT_EXPIRES_IN: (config.JWT_EXPIRES_IN as string)?.trim() || '1d',
+    AUTH_COOKIE_NAME:
+      (config.AUTH_COOKIE_NAME as string)?.trim() || 'swisskit_auth',
+    WEB_APP_URL: webAppUrl,
+    CORS_ALLOWED_ORIGINS: corsAllowedOrigins,
     GOOGLE_CLIENT_ID: getRequiredString(config, 'GOOGLE_CLIENT_ID'),
     GOOGLE_CLIENT_SECRET: getRequiredString(config, 'GOOGLE_CLIENT_SECRET'),
     GOOGLE_CALLBACK_URL: getRequiredString(config, 'GOOGLE_CALLBACK_URL'),

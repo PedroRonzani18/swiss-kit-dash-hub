@@ -1,5 +1,4 @@
 import { ApiError, type ApiErrorResponse } from '@/types/api';
-import { getStoredAccessToken } from '@/auth/storage';
 
 const DEFAULT_API_URL = '/api';
 
@@ -22,14 +21,9 @@ function buildUrl(path: string): string {
 
 function buildHeaders(init?: HeadersInit, withJsonBody?: boolean): Headers {
   const headers = new Headers(init);
-  const token = getStoredAccessToken();
 
   if (withJsonBody && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json');
-  }
-
-  if (token) {
-    headers.set('Authorization', `Bearer ${token}`);
   }
 
   return headers;
@@ -61,6 +55,7 @@ export async function apiRequest<TResponse>(
   const withJsonBody = Boolean(init?.body);
   const response = await fetch(buildUrl(path), {
     ...init,
+    credentials: 'include',
     headers: buildHeaders(init?.headers, withJsonBody),
   });
 

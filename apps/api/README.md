@@ -10,7 +10,7 @@ Backend NestJS para finanças pessoais no monorepo (`apps/api`).
 - Mapeadores de persistência para domínio em `src/common/mappers`
 - Swagger habilitado em `/api/docs`
 - Prisma 7 com `@prisma/adapter-pg`
-- Auth Google + JWT em `src/modules/auth`
+- Auth Google + JWT em cookie HttpOnly (`src/modules/auth`)
 
 ## Módulos
 
@@ -53,6 +53,9 @@ Use `apps/api/.env.example` como base para o seu `.env`.
 Variáveis obrigatórias:
 
 - `DATABASE_URL`
+- `WEB_APP_URL`
+- `CORS_ALLOWED_ORIGINS`
+- `AUTH_COOKIE_NAME`
 - `GOOGLE_CLIENT_ID`
 - `GOOGLE_CLIENT_SECRET`
 - `GOOGLE_CALLBACK_URL`
@@ -66,9 +69,11 @@ Swagger:
 ## Fluxo de autenticação
 
 - Inicie em `GET /api/auth/google`
-- O callback `GET /api/auth/google/callback` retorna `accessToken` JWT
-- Use `Authorization: Bearer <token>` nas rotas protegidas
+- O callback `GET /api/auth/google/callback` emite um JWT e salva em cookie HttpOnly
+- O popup OAuth sinaliza sucesso/erro via `postMessage` restrito ao `WEB_APP_URL`
+- `POST /api/auth/logout` limpa o cookie de autenticação
 - `GET /api/auth/me` retorna o perfil autenticado
+- Rotas protegidas aceitam cookie HttpOnly (com fallback opcional para `Authorization: Bearer`)
 
 Restrição de acesso atual:
 
