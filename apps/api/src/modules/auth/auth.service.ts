@@ -16,6 +16,8 @@ import { AuthRepository } from './repositories/auth.repository';
 export class AuthService {
   private readonly jwtExpiresIn: string;
   private readonly authCookieName: string;
+  private readonly authCookieSameSite: CookieOptions['sameSite'];
+  private readonly authCookieSecure: boolean;
   private readonly authCookieMaxAge: number | undefined;
   private readonly webAppUrl: string;
   private readonly webAppOrigin: string;
@@ -29,12 +31,22 @@ export class AuthService {
     this.jwtExpiresIn = configService.get<string>('JWT_EXPIRES_IN') || '1d';
     this.authCookieName =
       configService.get<string>('AUTH_COOKIE_NAME') || 'swisskit_auth';
+    this.authCookieSameSite =
+      (configService.get<string>('AUTH_COOKIE_SAME_SITE') as CookieOptions['sameSite']) ||
+      'lax';
     const parsedWebAppUrl = new URL(
       configService.getOrThrow<string>('WEB_APP_URL'),
     );
     this.webAppUrl = parsedWebAppUrl.toString();
     this.webAppOrigin = parsedWebAppUrl.origin;
     this.isProduction = configService.get<string>('NODE_ENV') === 'production';
+    this.authCookieSecure = this.isProduction || this.authCookieSameSite === 'none';
+
+    if (this.authCookieSameSite === 'none' && !this.authCookieSecure) {
+      throw new Error(
+        'Invalid auth cookie configuration: AUTH_COOKIE_SAME_SITE=none requires secure=true',
+      );
+    }
 
     const parsedMaxAge = ms(this.jwtExpiresIn as StringValue);
     this.authCookieMaxAge =
@@ -119,8 +131,8 @@ export class AuthService {
   private getAuthCookieBaseOptions(): CookieOptions {
     return {
       httpOnly: true,
-      sameSite: 'lax',
-      secure: this.isProduction,
+      sameSite: this.authCookieSameSite,
+      secure: this.authCookieSecure,
       path: '/',
     };
   }
