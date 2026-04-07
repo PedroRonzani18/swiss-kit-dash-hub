@@ -18,7 +18,7 @@ export class AuthService {
   private readonly authCookieName: string;
   private readonly authCookieSameSite: CookieOptions['sameSite'];
   private readonly authCookieSecure: boolean;
-  private readonly authCookieMaxAge: number | undefined;
+  private readonly authCookieMaxAge: number;
   private readonly webAppUrl: string;
   private readonly webAppOrigin: string;
   private readonly isProduction: boolean;
@@ -48,11 +48,7 @@ export class AuthService {
       );
     }
 
-    const parsedMaxAge = ms(this.jwtExpiresIn as StringValue);
-    this.authCookieMaxAge =
-      typeof parsedMaxAge === 'number' && parsedMaxAge > 0
-        ? parsedMaxAge
-        : undefined;
+    this.authCookieMaxAge = this.parseJwtExpiresInToMs(this.jwtExpiresIn);
   }
 
   async loginWithGoogle(
@@ -95,15 +91,10 @@ export class AuthService {
   }
 
   getAuthCookieOptions(): CookieOptions {
-    const baseOptions = this.getAuthCookieBaseOptions();
-
-    if (!this.authCookieMaxAge) {
-      return baseOptions;
-    }
-
     return {
-      ...baseOptions,
+      ...this.getAuthCookieBaseOptions(),
       maxAge: this.authCookieMaxAge,
+      expires: new Date(Date.now() + this.authCookieMaxAge),
     };
   }
 
@@ -135,5 +126,24 @@ export class AuthService {
       secure: this.authCookieSecure,
       path: '/',
     };
+  }
+
+  private parseJwtExpiresInToMs(rawValue: string): number {
+    const trimmedValue = rawValue.trim();
+    if (/^\d+$/.test(trimmedValue)) {
+      const seconds = Number(trimmedValue);
+      if (Number.isFinite(seconds) && seconds > 0) {
+        return seconds * 1000;
+      }
+    }
+
+    const parsedWithMs = ms(trimmedValue as StringValue);
+    if (typeof parsedWithMs === 'number' && parsedWithMs > 0) {
+      return parsedWithMs;
+    }
+
+    throw new Error(
+      `Invalid JWT_EXPIRES_IN value "${rawValue}". Use a positive duration like 1d, 12h, 30m or 3600.`,
+    );
   }
 }

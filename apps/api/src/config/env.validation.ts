@@ -1,3 +1,5 @@
+import ms, { type StringValue } from 'ms';
+
 export type ApiEnv = {
   NODE_ENV: 'development' | 'test' | 'production';
   PORT: number;
@@ -37,6 +39,28 @@ function getCookieSameSite(config: Record<string, unknown>): ApiEnv['AUTH_COOKIE
   throw new Error('AUTH_COOKIE_SAME_SITE must be one of: lax, none, strict');
 }
 
+function getJwtExpiresIn(config: Record<string, unknown>): string {
+  const rawValue = (config.JWT_EXPIRES_IN as string)?.trim() || '1d';
+
+  if (/^\d+$/.test(rawValue)) {
+    const seconds = Number(rawValue);
+    if (!Number.isFinite(seconds) || seconds <= 0) {
+      throw new Error('JWT_EXPIRES_IN must be a positive duration');
+    }
+
+    return `${seconds}s`;
+  }
+
+  const parsed = ms(rawValue as StringValue);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    throw new Error(
+      'JWT_EXPIRES_IN must be a positive duration (e.g. 1d, 12h, 30m, 3600)',
+    );
+  }
+
+  return rawValue;
+}
+
 export function validateEnv(config: Record<string, unknown>): ApiEnv {
   const nodeEnv = (config.NODE_ENV as string) || 'development';
   const normalizedNodeEnv =
@@ -67,7 +91,7 @@ export function validateEnv(config: Record<string, unknown>): ApiEnv {
     PORT: port,
     DATABASE_URL: (config.DATABASE_URL as string) || undefined,
     JWT_SECRET: getRequiredString(config, 'JWT_SECRET'),
-    JWT_EXPIRES_IN: (config.JWT_EXPIRES_IN as string)?.trim() || '1d',
+    JWT_EXPIRES_IN: getJwtExpiresIn(config),
     AUTH_COOKIE_NAME:
       (config.AUTH_COOKIE_NAME as string)?.trim() || 'swisskit_auth',
     AUTH_COOKIE_SAME_SITE: authCookieSameSite,
