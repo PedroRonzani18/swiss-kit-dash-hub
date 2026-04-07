@@ -1,4 +1,5 @@
 import type {
+  AuthSession,
   AuthCallbackResponse,
   AuthPopupMessage,
   UserProfile,
@@ -23,4 +24,9 @@ export function parseAuthPopupFromText(
   payload: string,
 ): AuthPopupMessage | AuthCallbackResponse {
   return JSON.parse(payload) as AuthPopupMessage | AuthCallbackResponse;
+}
+
+export function toAuthSession(payload: AuthCallbackResponse): AuthSession {
+  const { success: _success, ...session } = payload;
+  return session;
 }

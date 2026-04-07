@@ -65,6 +65,9 @@ export class AuthController {
           if (message.type === 'swisskit:auth:error') {
             url.searchParams.set('authError', 'oauth_failed');
           }
+          if (message.type === 'swisskit:auth:success' && message.payload) {
+            url.hash = 'authSession=' + encodeURIComponent(JSON.stringify(message.payload));
+          }
           redirectUrl = url.toString();
         } catch (_error) {
           if (message.type === 'swisskit:auth:error') {
@@ -72,6 +75,11 @@ export class AuthController {
               fallbackRedirectUrl +
               (fallbackRedirectUrl.indexOf('?') >= 0 ? '&' : '?') +
               'authError=oauth_failed';
+          } else if (message.type === 'swisskit:auth:success' && message.payload) {
+            redirectUrl =
+              fallbackRedirectUrl +
+              '#authSession=' +
+              encodeURIComponent(JSON.stringify(message.payload));
           }
         }
 
@@ -112,6 +120,9 @@ export class AuthController {
 
       const callbackPayload = {
         success: true,
+        accessToken: authResult.accessToken,
+        tokenType: authResult.tokenType,
+        expiresIn: authResult.expiresIn,
         user: authResult.user,
       };
 

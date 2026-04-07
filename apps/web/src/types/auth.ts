@@ -14,9 +14,15 @@ export type UserProfile = AuthUser & {
   updatedAt: string;
 };
 
-export type AuthCallbackResponse = {
-  success: true;
+export type AuthSession = {
+  accessToken: string;
+  tokenType: 'Bearer';
+  expiresIn: string;
   user: AuthUser;
+};
+
+export type AuthCallbackResponse = AuthSession & {
+  success: true;
 };
 
 export type AuthPopupSuccessMessage = {
