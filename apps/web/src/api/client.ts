@@ -1,5 +1,4 @@
 import { ApiError, type ApiErrorResponse } from '@/types/api';
-import { getAccessToken } from '@/auth/session';
 
 const DEFAULT_API_URL = '/api';
 
@@ -22,11 +21,6 @@ function buildUrl(path: string): string {
 
 function buildHeaders(init?: HeadersInit, withJsonBody?: boolean): Headers {
   const headers = new Headers(init);
-  const accessToken = getAccessToken();
-
-  if (accessToken && !headers.has('Authorization')) {
-    headers.set('Authorization', `Bearer ${accessToken}`);
-  }
 
   if (withJsonBody && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json');
