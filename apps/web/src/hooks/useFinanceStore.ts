@@ -156,7 +156,22 @@ export function useFinanceStore() {
     },
   });
 
-  const accounts = accountsQuery.data || [];
+  const accounts = useMemo(
+    () => accountsQuery.data ?? [],
+    [accountsQuery.data],
+  );
+  const baseCategories = useMemo(
+    () => categoriesQuery.data ?? [],
+    [categoriesQuery.data],
+  );
+  const baseSubcategories = useMemo(
+    () => subcategoriesQuery.data ?? [],
+    [subcategoriesQuery.data],
+  );
+  const rawTransactions = useMemo(
+    () => transactionsQuery.data ?? [],
+    [transactionsQuery.data],
+  );
   const activeAccounts = useMemo(
     () =>
       accounts
@@ -171,13 +186,13 @@ export function useFinanceStore() {
   );
 
   const categories = useMemo<Category[]>(
-    () => mapGroupedCategories(categoriesQuery.data || [], subcategoriesQuery.data || []),
-    [categoriesQuery.data, subcategoriesQuery.data],
+    () => mapGroupedCategories(baseCategories, baseSubcategories),
+    [baseCategories, baseSubcategories],
   );
 
   const transactions = useMemo(
-    () => mapTransactions(transactionsQuery.data || [], accounts),
-    [transactionsQuery.data, accounts],
+    () => mapTransactions(rawTransactions, accounts),
+    [rawTransactions, accounts],
   );
 
   const addAccount = useCallback(

@@ -1,0 +1,8 @@
+# Owner padrão do repositório
+* @PedroRonzani18
+
+# Áreas do monorepo
+/apps/api/ @PedroRonzani18
+/apps/web/ @PedroRonzani18
+/packages/contracts/ @PedroRonzani18
+/.github/ @PedroRonzani18

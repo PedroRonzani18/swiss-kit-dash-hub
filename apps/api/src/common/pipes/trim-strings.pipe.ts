@@ -4,7 +4,7 @@ import { Injectable, PipeTransform } from '@nestjs/common';
 export class TrimStringsPipe implements PipeTransform {
   transform(value: unknown): unknown {
     if (Array.isArray(value)) {
-      return value.map(item => this.transform(item));
+      return value.map((item) => this.transform(item));
     }
 
     if (value && typeof value === 'object') {

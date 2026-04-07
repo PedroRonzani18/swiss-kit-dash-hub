@@ -33,10 +33,15 @@ export class SubcategoriesRepository {
       orderBy: { createdAt: 'desc' },
     });
 
-    return records.map(record => mapSubcategoryFromPersistence(record as SubcategoryRow));
+    return records.map((record) =>
+      mapSubcategoryFromPersistence(record as SubcategoryRow),
+    );
   }
 
-  async findById(id: string, userId: string): Promise<SubcategoryContract | null> {
+  async findById(
+    id: string,
+    userId: string,
+  ): Promise<SubcategoryContract | null> {
     const record = await this.prisma.subcategory.findUnique({
       select: subcategorySelect,
       where: {
@@ -47,7 +52,9 @@ export class SubcategoriesRepository {
       },
     });
 
-    return record ? mapSubcategoryFromPersistence(record as SubcategoryRow) : null;
+    return record
+      ? mapSubcategoryFromPersistence(record as SubcategoryRow)
+      : null;
   }
 
   async create(input: CreateSubcategoryContract): Promise<SubcategoryContract> {

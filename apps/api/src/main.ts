@@ -19,8 +19,8 @@ function parseAllowedOrigins(raw: string): Set<string> {
   return new Set(
     raw
       .split(',')
-      .map(origin => origin.trim())
-      .map(origin => normalizeOrigin(origin))
+      .map((origin) => origin.trim())
+      .map((origin) => normalizeOrigin(origin))
       .filter(Boolean),
   );
 }

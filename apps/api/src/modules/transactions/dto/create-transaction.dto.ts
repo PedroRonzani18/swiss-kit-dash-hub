@@ -1,5 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDateString, IsEnum, IsInt, IsOptional, IsString, IsUUID, MaxLength, Min } from 'class-validator';
+import {
+  IsDateString,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 export enum TransactionTypeDto {
   INCOME = 'income',
@@ -7,7 +16,10 @@ export enum TransactionTypeDto {
 }
 
 export class CreateTransactionDto {
-  @ApiProperty({ enum: TransactionTypeDto, example: TransactionTypeDto.EXPENSE })
+  @ApiProperty({
+    enum: TransactionTypeDto,
+    example: TransactionTypeDto.EXPENSE,
+  })
   @IsEnum(TransactionTypeDto)
   type: TransactionTypeDto;
 

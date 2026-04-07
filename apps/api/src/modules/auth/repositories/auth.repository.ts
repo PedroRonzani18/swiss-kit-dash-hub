@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
-import type { GoogleAuthProfileContract, UserContract } from '@/common/contracts';
+import type {
+  GoogleAuthProfileContract,
+  UserContract,
+} from '@/common/contracts';
 import { mapUserFromPersistence } from '@/common/mappers';
 import { AUTH_PROVIDER } from '@/common/enums';
 
@@ -48,7 +51,9 @@ export class AuthRepository {
     return record ? mapUserFromPersistence(record as UserRow) : null;
   }
 
-  async upsertGoogleUser(profile: GoogleAuthProfileContract): Promise<UserContract> {
+  async upsertGoogleUser(
+    profile: GoogleAuthProfileContract,
+  ): Promise<UserContract> {
     const record = await this.prisma.user.upsert({
       select: userSelect,
       where: { email: profile.email },

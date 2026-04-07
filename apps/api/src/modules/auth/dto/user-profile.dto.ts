@@ -10,7 +10,10 @@ export class UserProfileDto {
   @ApiProperty({ nullable: true, example: 'Pedro Ronzani' })
   name: string | null;
 
-  @ApiProperty({ nullable: true, example: 'https://lh3.googleusercontent.com/a/profile-photo' })
+  @ApiProperty({
+    nullable: true,
+    example: 'https://lh3.googleusercontent.com/a/profile-photo',
+  })
   avatarUrl: string | null;
 
   @ApiProperty({ example: 'google' })

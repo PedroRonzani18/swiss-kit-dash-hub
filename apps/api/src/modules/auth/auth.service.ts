@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import type { CookieOptions } from 'express';
@@ -32,8 +36,9 @@ export class AuthService {
     this.authCookieName =
       configService.get<string>('AUTH_COOKIE_NAME') || 'swisskit_auth';
     this.authCookieSameSite =
-      (configService.get<string>('AUTH_COOKIE_SAME_SITE') as CookieOptions['sameSite']) ||
-      'lax';
+      (configService.get<string>(
+        'AUTH_COOKIE_SAME_SITE',
+      ) as CookieOptions['sameSite']) || 'lax';
     this.authCookieSecure =
       configService.getOrThrow<boolean>('AUTH_COOKIE_SECURE');
     this.authCookieDomain =
@@ -117,7 +122,9 @@ export class AuthService {
     const isAllowed = await this.authRepository.isAllowedEmail(email);
 
     if (!isAllowed) {
-      throw new ForbiddenException('Your Google account is not allowed to access this API');
+      throw new ForbiddenException(
+        'Your Google account is not allowed to access this API',
+      );
     }
   }
 

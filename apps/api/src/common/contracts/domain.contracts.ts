@@ -1,4 +1,8 @@
-import type { AccountType, AuthProvider, TransactionType } from '@/common/enums';
+import type {
+  AccountType,
+  AuthProvider,
+  TransactionType,
+} from '@/common/enums';
 
 export type EntityId = string;
 export type IsoDateString = string;
