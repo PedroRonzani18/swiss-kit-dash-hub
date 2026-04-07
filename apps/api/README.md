@@ -57,6 +57,8 @@ Variáveis obrigatórias:
 - `CORS_ALLOWED_ORIGINS`
 - `AUTH_COOKIE_NAME`
 - `AUTH_COOKIE_SAME_SITE` (`lax`, `none` ou `strict`)
+- `AUTH_COOKIE_SECURE` (`true` ou `false`)
+- `AUTH_COOKIE_DOMAIN` (opcional, ex: `.example.com`)
 - `GOOGLE_CLIENT_ID`
 - `GOOGLE_CLIENT_SECRET`
 - `GOOGLE_CALLBACK_URL`
@@ -66,6 +68,7 @@ Variáveis obrigatórias:
 Nota para deploy no Railway (`*.up.railway.app`):
 
 - Use `AUTH_COOKIE_SAME_SITE=none` para permitir envio do cookie em chamadas cross-site entre frontend e API.
+- Use `AUTH_COOKIE_SECURE=true` em produção (especialmente com `sameSite=none`).
 
 Swagger:
 

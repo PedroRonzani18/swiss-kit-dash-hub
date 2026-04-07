@@ -1,7 +1,6 @@
 import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import ms, { type StringValue } from 'ms';
 import type { CookieOptions } from 'express';
 import type {
   AuthLoginResultContract,
@@ -10,6 +9,7 @@ import type {
   UserContract,
 } from '@/common/contracts';
 import { mapAuthenticatedUser } from '@/common/mappers';
+import { parseJwtExpiresInToMs } from '@/config/jwt-duration';
 import { AuthRepository } from './repositories/auth.repository';
 
 @Injectable()
@@ -18,10 +18,10 @@ export class AuthService {
   private readonly authCookieName: string;
   private readonly authCookieSameSite: CookieOptions['sameSite'];
   private readonly authCookieSecure: boolean;
+  private readonly authCookieDomain?: string;
   private readonly authCookieMaxAge: number;
   private readonly webAppUrl: string;
   private readonly webAppOrigin: string;
-  private readonly isProduction: boolean;
 
   constructor(
     private readonly authRepository: AuthRepository,
@@ -34,13 +34,15 @@ export class AuthService {
     this.authCookieSameSite =
       (configService.get<string>('AUTH_COOKIE_SAME_SITE') as CookieOptions['sameSite']) ||
       'lax';
+    this.authCookieSecure =
+      configService.getOrThrow<boolean>('AUTH_COOKIE_SECURE');
+    this.authCookieDomain =
+      configService.get<string>('AUTH_COOKIE_DOMAIN') || undefined;
     const parsedWebAppUrl = new URL(
       configService.getOrThrow<string>('WEB_APP_URL'),
     );
     this.webAppUrl = parsedWebAppUrl.toString();
     this.webAppOrigin = parsedWebAppUrl.origin;
-    this.isProduction = configService.get<string>('NODE_ENV') === 'production';
-    this.authCookieSecure = this.isProduction || this.authCookieSameSite === 'none';
 
     if (this.authCookieSameSite === 'none' && !this.authCookieSecure) {
       throw new Error(
@@ -48,7 +50,7 @@ export class AuthService {
       );
     }
 
-    this.authCookieMaxAge = this.parseJwtExpiresInToMs(this.jwtExpiresIn);
+    this.authCookieMaxAge = parseJwtExpiresInToMs(this.jwtExpiresIn);
   }
 
   async loginWithGoogle(
@@ -125,25 +127,7 @@ export class AuthService {
       sameSite: this.authCookieSameSite,
       secure: this.authCookieSecure,
       path: '/',
+      ...(this.authCookieDomain ? { domain: this.authCookieDomain } : {}),
     };
-  }
-
-  private parseJwtExpiresInToMs(rawValue: string): number {
-    const trimmedValue = rawValue.trim();
-    if (/^\d+$/.test(trimmedValue)) {
-      const seconds = Number(trimmedValue);
-      if (Number.isFinite(seconds) && seconds > 0) {
-        return seconds * 1000;
-      }
-    }
-
-    const parsedWithMs = ms(trimmedValue as StringValue);
-    if (typeof parsedWithMs === 'number' && parsedWithMs > 0) {
-      return parsedWithMs;
-    }
-
-    throw new Error(
-      `Invalid JWT_EXPIRES_IN value "${rawValue}". Use a positive duration like 1d, 12h, 30m or 3600.`,
-    );
   }
 }
