@@ -1,4 +1,4 @@
-import ms, { type StringValue } from 'ms';
+import { normalizeJwtExpiresIn } from './jwt-duration';
 
 export type ApiEnv = {
   NODE_ENV: 'development' | 'test' | 'production';
@@ -8,6 +8,8 @@ export type ApiEnv = {
   JWT_EXPIRES_IN: string;
   AUTH_COOKIE_NAME: string;
   AUTH_COOKIE_SAME_SITE: 'lax' | 'none' | 'strict';
+  AUTH_COOKIE_SECURE: boolean;
+  AUTH_COOKIE_DOMAIN?: string;
   WEB_APP_URL: string;
   CORS_ALLOWED_ORIGINS: string;
   GOOGLE_CLIENT_ID: string;
@@ -39,26 +41,25 @@ function getCookieSameSite(config: Record<string, unknown>): ApiEnv['AUTH_COOKIE
   throw new Error('AUTH_COOKIE_SAME_SITE must be one of: lax, none, strict');
 }
 
-function getJwtExpiresIn(config: Record<string, unknown>): string {
-  const rawValue = (config.JWT_EXPIRES_IN as string)?.trim() || '1d';
-
-  if (/^\d+$/.test(rawValue)) {
-    const seconds = Number(rawValue);
-    if (!Number.isFinite(seconds) || seconds <= 0) {
-      throw new Error('JWT_EXPIRES_IN must be a positive duration');
-    }
-
-    return `${seconds}s`;
+function parseBooleanEnv(value: unknown, key: string): boolean | undefined {
+  if (value === undefined || value === null) {
+    return undefined;
   }
 
-  const parsed = ms(rawValue as StringValue);
-  if (!Number.isFinite(parsed) || parsed <= 0) {
-    throw new Error(
-      'JWT_EXPIRES_IN must be a positive duration (e.g. 1d, 12h, 30m, 3600)',
-    );
+  const normalized = String(value).trim().toLowerCase();
+  if (!normalized) {
+    return undefined;
   }
 
-  return rawValue;
+  if (['1', 'true', 'yes', 'on'].includes(normalized)) {
+    return true;
+  }
+
+  if (['0', 'false', 'no', 'off'].includes(normalized)) {
+    return false;
+  }
+
+  throw new Error(`${key} must be a boolean value (true/false)`);
 }
 
 export function validateEnv(config: Record<string, unknown>): ApiEnv {
@@ -78,7 +79,15 @@ export function validateEnv(config: Record<string, unknown>): ApiEnv {
   const corsAllowedOrigins =
     (config.CORS_ALLOWED_ORIGINS as string)?.trim() || webAppUrl;
   const authCookieSameSite = getCookieSameSite(config);
-  const authCookieSecure = normalizedNodeEnv === 'production' || authCookieSameSite === 'none';
+  const authCookieSecureFromEnv = parseBooleanEnv(
+    config.AUTH_COOKIE_SECURE,
+    'AUTH_COOKIE_SECURE',
+  );
+  const authCookieSecure =
+    authCookieSecureFromEnv ??
+    (normalizedNodeEnv === 'production' || authCookieSameSite === 'none');
+  const authCookieDomain =
+    (config.AUTH_COOKIE_DOMAIN as string | undefined)?.trim() || undefined;
 
   if (authCookieSameSite === 'none' && !authCookieSecure) {
     throw new Error(
@@ -91,10 +100,12 @@ export function validateEnv(config: Record<string, unknown>): ApiEnv {
     PORT: port,
     DATABASE_URL: (config.DATABASE_URL as string) || undefined,
     JWT_SECRET: getRequiredString(config, 'JWT_SECRET'),
-    JWT_EXPIRES_IN: getJwtExpiresIn(config),
+    JWT_EXPIRES_IN: normalizeJwtExpiresIn(config.JWT_EXPIRES_IN as string | undefined),
     AUTH_COOKIE_NAME:
       (config.AUTH_COOKIE_NAME as string)?.trim() || 'swisskit_auth',
     AUTH_COOKIE_SAME_SITE: authCookieSameSite,
+    AUTH_COOKIE_SECURE: authCookieSecure,
+    AUTH_COOKIE_DOMAIN: authCookieDomain,
     WEB_APP_URL: webAppUrl,
     CORS_ALLOWED_ORIGINS: corsAllowedOrigins,
     GOOGLE_CLIENT_ID: getRequiredString(config, 'GOOGLE_CLIENT_ID'),
