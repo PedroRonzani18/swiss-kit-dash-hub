@@ -156,7 +156,7 @@ export function useFinanceStore() {
     },
   });
 
-  const accounts = accountsQuery.data || [];
+  const accounts = useMemo(() => accountsQuery.data ?? [], [accountsQuery.data]);
   const activeAccounts = useMemo(
     () =>
       accounts
