@@ -17,17 +17,6 @@ type ChartContextProps = {
   config: ChartConfig;
 };
 
-type ChartPayloadRecord = Record<string, unknown>;
-
-type ChartPayloadItem = {
-  color?: string;
-  dataKey?: string | number;
-  fill?: string;
-  name?: string;
-  payload?: ChartPayloadRecord;
-  value?: string | number;
-} & ChartPayloadRecord;
-
 const ChartContext = React.createContext<ChartContextProps | null>(null);
 
 function useChart() {
@@ -100,27 +89,36 @@ ${colorConfig
 
 const ChartTooltip = RechartsPrimitive.Tooltip;
 
+type ChartTooltipPayloadItem = {
+  dataKey?: string | number;
+  name?: string;
+  value?: number | string;
+  color?: string;
+  payload?: {
+    fill?: string;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+};
+
 const ChartTooltipContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {
     active?: boolean;
-    payload?: Array<ChartPayloadItem>;
+    payload?: ChartTooltipPayloadItem[];
     label?: string;
     hideLabel?: boolean;
     hideIndicator?: boolean;
     indicator?: "line" | "dot" | "dashed";
     nameKey?: string;
     labelKey?: string;
-    labelFormatter?: (
-      value: React.ReactNode,
-      payload: Array<ChartPayloadItem>,
-    ) => React.ReactNode;
+    labelFormatter?: (value: React.ReactNode, payload: ChartTooltipPayloadItem[]) => React.ReactNode;
     formatter?: (
-      value: ChartPayloadItem["value"],
-      name: ChartPayloadItem["name"],
-      item: ChartPayloadItem,
+      value: ChartTooltipPayloadItem["value"],
+      name: ChartTooltipPayloadItem["name"],
+      item: ChartTooltipPayloadItem,
       index: number,
-      payload: ChartPayloadItem["payload"],
+      payload: ChartTooltipPayloadItem["payload"],
     ) => React.ReactNode;
     color?: string;
     labelClassName?: string;
@@ -257,7 +255,7 @@ const ChartLegend = RechartsPrimitive.Legend;
 const ChartLegendContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {
-    payload?: Array<ChartPayloadItem>;
+    payload?: ChartTooltipPayloadItem[];
     verticalAlign?: "top" | "bottom" | "middle";
     hideIcon?: boolean;
     nameKey?: string;

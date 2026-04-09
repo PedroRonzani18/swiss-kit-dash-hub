@@ -27,6 +27,18 @@ packages/
 - `pnpm lint:web`
 - `pnpm lint:api`
 
+## Contribuição e CI
+
+- Fluxo de contribuição: veja [`CONTRIBUTING.md`](./CONTRIBUTING.md).
+- Política de segurança: veja [`SECURITY.md`](./SECURITY.md).
+- Pull requests devem preencher o template em `.github/pull_request_template.md`.
+- A CI do GitHub Actions (`.github/workflows/ci.yml`) roda em `push` e `pull_request` com:
+  - `pnpm install --frozen-lockfile`
+  - `pnpm lint:ci`
+  - `pnpm typecheck`
+  - `pnpm test:ci`
+  - `pnpm build:ci`
+
 ## Padrões adotados
 
 - Contratos de domínio compartilhados entre frontend e backend via `@swisskit/contracts`.

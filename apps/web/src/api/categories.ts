@@ -2,7 +2,11 @@ import {
   categoryBaseSchema,
   categoryListSchema,
 } from '@swisskit/contracts';
-import type { CategoryBase, CreateCategoryInput, UpdateCategoryInput } from '@/types/finance';
+import type {
+  CategoryBase,
+  CreateCategoryInput,
+  UpdateCategoryInput,
+} from '@/types/finance';
 import { apiClient } from './client';
 import { parseApiResponse } from './validation';
 
