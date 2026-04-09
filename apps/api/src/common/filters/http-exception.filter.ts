@@ -17,6 +17,12 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const request = ctx.getRequest<Request>();
     const response = ctx.getResponse<Response>();
+    const requestIdHeader = request.headers['x-request-id'];
+    const requestId = Array.isArray(requestIdHeader)
+      ? requestIdHeader[0]
+      : requestIdHeader;
+    const path = request.originalUrl.split('?')[0];
+    const isProduction = process.env.NODE_ENV === 'production';
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message: string | string[] = 'Internal server error';
@@ -41,16 +47,38 @@ export class HttpExceptionFilter implements ExceptionFilter {
       error = 'Database Error';
     }
 
-    this.logger.error(
-      `[${request.method}] ${request.url} - ${status} - ${JSON.stringify(message)}`,
-      exception instanceof Error ? exception.stack : undefined,
-    );
+    if (isProduction && status === HttpStatus.INTERNAL_SERVER_ERROR) {
+      message = 'Internal server error';
+      error = 'Internal Server Error';
+    }
+
+    const logPayload = JSON.stringify({
+      event: 'http.exception',
+      requestId: requestId ?? undefined,
+      method: request.method,
+      path,
+      statusCode: status,
+      error,
+      message,
+      exceptionName:
+        exception instanceof Error ? exception.name : 'UnknownError',
+    });
+
+    if (status >= HttpStatus.INTERNAL_SERVER_ERROR) {
+      this.logger.error(
+        logPayload,
+        exception instanceof Error ? exception.stack : undefined,
+      );
+    } else {
+      this.logger.warn(logPayload);
+    }
 
     response.status(status).json({
       statusCode: status,
       error,
       message,
-      path: request.url,
+      path,
+      requestId: requestId ?? undefined,
       timestamp: new Date().toISOString(),
     });
   }

@@ -30,13 +30,20 @@ export class PrismaService
   async onModuleInit(): Promise<void> {
     if (!this.hasDatabaseUrl) {
       this.logger.warn(
-        'DATABASE_URL not configured. Prisma connection is disabled.',
+        JSON.stringify({
+          event: 'database.connection.disabled',
+          reason: 'DATABASE_URL not configured',
+        }),
       );
       return;
     }
 
     await this.$connect();
-    this.logger.log('Prisma connected');
+    this.logger.log(
+      JSON.stringify({
+        event: 'database.connection.ready',
+      }),
+    );
   }
 
   async onModuleDestroy(): Promise<void> {
@@ -45,6 +52,10 @@ export class PrismaService
     }
 
     await this.$disconnect();
-    this.logger.log('Prisma disconnected');
+    this.logger.log(
+      JSON.stringify({
+        event: 'database.connection.closed',
+      }),
+    );
   }
 }
