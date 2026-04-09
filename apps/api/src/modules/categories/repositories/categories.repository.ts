@@ -31,7 +31,9 @@ export class CategoriesRepository {
       orderBy: { createdAt: 'desc' },
     });
 
-    return records.map(record => mapCategoryFromPersistence(record as CategoryRow));
+    return records.map((record) =>
+      mapCategoryFromPersistence(record as CategoryRow),
+    );
   }
 
   async findById(id: string, userId: string): Promise<CategoryContract | null> {

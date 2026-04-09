@@ -80,7 +80,10 @@ export class TransactionsService {
       userId,
       accountId: payload.accountId,
       categoryId: payload.categoryId,
-      subcategoryId: Object.prototype.hasOwnProperty.call(payload, 'subcategoryId')
+      subcategoryId: Object.prototype.hasOwnProperty.call(
+        payload,
+        'subcategoryId',
+      )
         ? payload.subcategoryId
         : undefined,
       currentCategoryId: payload.categoryId ?? currentTransaction.categoryId,

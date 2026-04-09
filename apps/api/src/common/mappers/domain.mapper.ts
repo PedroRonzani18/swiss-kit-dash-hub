@@ -93,7 +93,9 @@ export function mapUserFromPersistence(row: UserPersistence): UserContract {
   };
 }
 
-export function mapAuthenticatedUser(user: UserContract): AuthenticatedUserContract {
+export function mapAuthenticatedUser(
+  user: UserContract,
+): AuthenticatedUserContract {
   return {
     id: user.id,
     email: user.email,
@@ -102,7 +104,9 @@ export function mapAuthenticatedUser(user: UserContract): AuthenticatedUserContr
   };
 }
 
-export function mapAccountFromPersistence(row: AccountPersistence): AccountContract {
+export function mapAccountFromPersistence(
+  row: AccountPersistence,
+): AccountContract {
   return {
     id: row.id,
     userId: row.userId,
@@ -118,7 +122,9 @@ export function mapAccountFromPersistence(row: AccountPersistence): AccountContr
   };
 }
 
-export function mapCategoryFromPersistence(row: CategoryPersistence): CategoryContract {
+export function mapCategoryFromPersistence(
+  row: CategoryPersistence,
+): CategoryContract {
   return {
     id: row.id,
     userId: row.userId,

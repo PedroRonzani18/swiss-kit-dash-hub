@@ -29,12 +29,18 @@ function getRequiredString(
   return value.trim();
 }
 
-function getCookieSameSite(config: Record<string, unknown>): ApiEnv['AUTH_COOKIE_SAME_SITE'] {
+function getCookieSameSite(
+  config: Record<string, unknown>,
+): ApiEnv['AUTH_COOKIE_SAME_SITE'] {
   const rawSameSite = ((config.AUTH_COOKIE_SAME_SITE as string) || 'lax')
     .trim()
     .toLowerCase();
 
-  if (rawSameSite === 'lax' || rawSameSite === 'none' || rawSameSite === 'strict') {
+  if (
+    rawSameSite === 'lax' ||
+    rawSameSite === 'none' ||
+    rawSameSite === 'strict'
+  ) {
     return rawSameSite;
   }
 
@@ -100,7 +106,9 @@ export function validateEnv(config: Record<string, unknown>): ApiEnv {
     PORT: port,
     DATABASE_URL: (config.DATABASE_URL as string) || undefined,
     JWT_SECRET: getRequiredString(config, 'JWT_SECRET'),
-    JWT_EXPIRES_IN: normalizeJwtExpiresIn(config.JWT_EXPIRES_IN as string | undefined),
+    JWT_EXPIRES_IN: normalizeJwtExpiresIn(
+      config.JWT_EXPIRES_IN as string | undefined,
+    ),
     AUTH_COOKIE_NAME:
       (config.AUTH_COOKIE_NAME as string)?.trim() || 'swisskit_auth',
     AUTH_COOKIE_SAME_SITE: authCookieSameSite,

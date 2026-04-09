@@ -94,7 +94,9 @@ export class AuthController {
   @Public()
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  @ApiOperation({ summary: 'Google OAuth callback and authentication cookie issuance' })
+  @ApiOperation({
+    summary: 'Google OAuth callback and authentication cookie issuance',
+  })
   @ApiOkResponse({ type: AuthCallbackDto })
   async googleCallback(
     @Req() request: GoogleAuthRequest,
@@ -120,7 +122,10 @@ export class AuthController {
           .status(200)
           .type('text/html')
           .send(
-            this.renderOAuthHtmlMessage('swisskit:auth:success', callbackPayload),
+            this.renderOAuthHtmlMessage(
+              'swisskit:auth:success',
+              callbackPayload,
+            ),
           );
       }
 
@@ -137,14 +142,11 @@ export class AuthController {
           ? error.message
           : 'Authentication failed during Google callback';
 
-      return response
-        .status(statusCode)
-        .type('text/html')
-        .send(
-          this.renderOAuthHtmlMessage('swisskit:auth:error', {
-            message,
-          }),
-        );
+      return response.status(statusCode).type('text/html').send(
+        this.renderOAuthHtmlMessage('swisskit:auth:error', {
+          message,
+        }),
+      );
     }
   }
 

@@ -27,11 +27,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
       const payload = exception.getResponse();
 
       if (typeof payload === 'object' && payload !== null) {
-        message = (payload as { message?: string | string[] }).message ??
+        message =
+          (payload as { message?: string | string[] }).message ??
           exception.message;
-        error =
-          (payload as { error?: string }).error ??
-          exception.name;
+        error = (payload as { error?: string }).error ?? exception.name;
       } else {
         message = String(payload);
         error = exception.name;
@@ -67,7 +66,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
     }
   }
 
-  private getPrismaMessage(error: Prisma.PrismaClientKnownRequestError): string {
+  private getPrismaMessage(
+    error: Prisma.PrismaClientKnownRequestError,
+  ): string {
     switch (error.code) {
       case 'P2002':
         return 'Unique constraint violation';
