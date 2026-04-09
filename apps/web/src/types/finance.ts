@@ -1,5 +1,6 @@
 import type { AccountType, TransactionType } from '@swisskit/contracts';
 
+export type { AccountType, TransactionType } from '@swisskit/contracts';
 
 export type Account = {
   id: string;
