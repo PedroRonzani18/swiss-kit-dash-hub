@@ -6,7 +6,6 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "node ./scripts/run-web-workspace.mjs dev",
     "build": "turbo run build",
     "build:ci": "pnpm build",
     "build:dev": "node ./scripts/run-web-workspace.mjs build:dev",
@@ -19,6 +18,7 @@
     "typecheck": "turbo run typecheck",
     "typecheck:api": "turbo run typecheck --filter=api",
     "typecheck:web": "turbo run typecheck --filter=web",
+    "dev": "turbo run dev --filter=api --filter=web",
     "dev:web": "pnpm --filter web dev",
     "dev:api": "pnpm --filter api start:dev",
     "build:web": "turbo run build --filter=web",

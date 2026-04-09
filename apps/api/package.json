@@ -4,6 +4,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "dev": "pnpm start:dev",
     "build": "nest build -p tsconfig.build.json",
     "prebuild": "pnpm run prisma:generate",
     "typecheck": "tsc --noEmit -p tsconfig.json",
