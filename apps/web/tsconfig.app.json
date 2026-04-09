@@ -1,4 +1,5 @@
 {
+  "extends": "@swisskit/tsconfig/base.json",
   "compilerOptions": {
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
@@ -21,7 +22,6 @@
         "./src/*"
       ]
     },
-    "skipLibCheck": true,
     "strict": false,
     "target": "ES2020",
     "types": [
