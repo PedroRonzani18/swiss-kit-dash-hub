@@ -35,7 +35,7 @@ const PIE_COLORS = [
 
 export function AnalyticsPanel({
   transactions,
-  categories,
+  categories: _categories,
   getCategoryName,
   getSubcategoryName,
 }: AnalyticsPanelProps) {
