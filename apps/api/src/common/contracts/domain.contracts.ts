@@ -1,11 +1,24 @@
 import type {
+  AccountContract as SharedAccountContract,
   AccountType,
   AuthProvider,
+  CategoryContract as SharedCategoryContract,
+  CreateAccountInputContract,
+  CreateCategoryInputContract,
+  CreateSubcategoryInputContract,
+  CreateTransactionInputContract,
+  EntityId,
+  IsoDateString,
+  SubcategoryContract as SharedSubcategoryContract,
+  TransactionContract as SharedTransactionContract,
   TransactionType,
-} from '@/common/enums';
+  UpdateAccountInputContract,
+  UpdateCategoryInputContract,
+  UpdateSubcategoryInputContract,
+  UpdateTransactionInputContract,
+} from '@swisskit/contracts';
 
-export type EntityId = string;
-export type IsoDateString = string;
+export type { EntityId, IsoDateString };
 
 export type BaseDomainContract = {
   id: EntityId;
@@ -52,103 +65,29 @@ export type AuthLoginResultContract = {
 
 export type AccountTypeContract = AccountType;
 
-export type AccountContract = BaseDomainContract & {
+export type AccountContract = SharedAccountContract;
+export type CategoryContract = SharedCategoryContract;
+export type SubcategoryContract = SharedSubcategoryContract;
+export type TransactionContract = SharedTransactionContract;
+
+export type CreateAccountContract = CreateAccountInputContract & {
   userId: EntityId;
-  name: string;
-  type: AccountType;
-  currency: string;
-  openingBalanceCents: number;
-  institution: string | null;
-  isArchived: boolean;
-  archivedAt: IsoDateString | null;
 };
+export type UpdateAccountContract = UpdateAccountInputContract;
 
-export type CreateAccountContract = {
+export type CreateCategoryContract = CreateCategoryInputContract & {
   userId: EntityId;
-  name: string;
-  type: AccountType;
-  currency?: string;
-  openingBalanceCents?: number;
-  institution?: string;
 };
+export type UpdateCategoryContract = UpdateCategoryInputContract;
 
-export type UpdateAccountContract = {
-  name?: string;
-  type?: AccountType;
-  currency?: string;
-  openingBalanceCents?: number;
-  institution?: string | null;
-  isArchived?: boolean;
-};
-
-export type CategoryContract = BaseDomainContract & {
+export type CreateSubcategoryContract = CreateSubcategoryInputContract & {
   userId: EntityId;
-  name: string;
-  type: TransactionType;
-  isArchived: boolean;
 };
-
-export type CreateCategoryContract = {
-  userId: EntityId;
-  name: string;
-  type: TransactionType;
-};
-
-export type UpdateCategoryContract = {
-  name?: string;
-  type?: TransactionType;
-  isArchived?: boolean;
-};
-
-export type SubcategoryContract = BaseDomainContract & {
-  userId: EntityId;
-  categoryId: EntityId;
-  name: string;
-  isArchived: boolean;
-};
-
-export type CreateSubcategoryContract = {
-  userId: EntityId;
-  categoryId: EntityId;
-  name: string;
-};
-
-export type UpdateSubcategoryContract = {
-  categoryId?: EntityId;
-  name?: string;
-  isArchived?: boolean;
-};
+export type UpdateSubcategoryContract = UpdateSubcategoryInputContract;
 
 export type TransactionTypeContract = TransactionType;
 
-export type TransactionContract = BaseDomainContract & {
+export type CreateTransactionContract = CreateTransactionInputContract & {
   userId: EntityId;
-  accountId: EntityId;
-  categoryId: EntityId;
-  subcategoryId: EntityId | null;
-  type: TransactionType;
-  amountCents: number;
-  note: string | null;
-  occurredAt: IsoDateString;
 };
-
-export type CreateTransactionContract = {
-  userId: EntityId;
-  accountId: EntityId;
-  categoryId: EntityId;
-  subcategoryId?: EntityId | null;
-  type: TransactionType;
-  amountCents: number;
-  note?: string;
-  occurredAt: IsoDateString;
-};
-
-export type UpdateTransactionContract = {
-  accountId?: EntityId;
-  categoryId?: EntityId;
-  subcategoryId?: EntityId | null;
-  type?: TransactionType;
-  amountCents?: number;
-  note?: string | null;
-  occurredAt?: IsoDateString;
-};
+export type UpdateTransactionContract = UpdateTransactionInputContract;
