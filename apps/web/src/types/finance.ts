@@ -1,45 +1,31 @@
-import type { AccountType, TransactionType } from '@swisskit/contracts';
+import type {
+  AccountContract,
+  AccountType,
+  CategoryContract,
+  CreateAccountInputContract,
+  CreateCategoryInputContract,
+  CreateSubcategoryInputContract,
+  CreateTransactionInputContract,
+  SubcategoryContract,
+  TransactionContract,
+  TransactionType,
+  UpdateAccountInputContract,
+  UpdateCategoryInputContract,
+  UpdateSubcategoryInputContract,
+  UpdateTransactionInputContract,
+} from '@swisskit/contracts';
 
 export type { AccountType, TransactionType };
 
-export type Account = {
-  id: string;
-  userId: string;
-  name: string;
-  type: AccountType;
-  currency: string;
-  openingBalanceCents: number;
-  institution: string | null;
-  isArchived: boolean;
-  archivedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-};
+export type Account = AccountContract;
 
 export type AccountOption = {
   id: string;
   label: string;
 };
 
-export type CategoryBase = {
-  id: string;
-  userId: string;
-  name: string;
-  type: TransactionType;
-  isArchived: boolean;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type Subcategory = {
-  id: string;
-  userId: string;
-  categoryId: string;
-  name: string;
-  isArchived: boolean;
-  createdAt: string;
-  updatedAt: string;
-};
+export type CategoryBase = CategoryContract;
+export type Subcategory = SubcategoryContract;
 
 export type Category = CategoryBase & {
   subcategories: Subcategory[];
@@ -57,71 +43,13 @@ export type Transaction = {
   subcategoryId: string;
 };
 
-export type TransactionResource = {
-  id: string;
-  userId: string;
-  accountId: string;
-  categoryId: string;
-  subcategoryId: string | null;
-  type: TransactionType;
-  amountCents: number;
-  note: string | null;
-  occurredAt: string;
-  createdAt: string;
-  updatedAt: string;
-};
+export type TransactionResource = TransactionContract;
 
-export type CreateAccountInput = {
-  name: string;
-  type: AccountType;
-  currency?: string;
-  openingBalanceCents?: number;
-  institution?: string;
-};
-
-export type UpdateAccountInput = Partial<CreateAccountInput> & {
-  institution?: string | null;
-  isArchived?: boolean;
-};
-
-export type CreateCategoryInput = {
-  name: string;
-  type: TransactionType;
-};
-
-export type UpdateCategoryInput = {
-  name?: string;
-  type?: TransactionType;
-  isArchived?: boolean;
-};
-
-export type CreateSubcategoryInput = {
-  categoryId: string;
-  name: string;
-};
-
-export type UpdateSubcategoryInput = {
-  categoryId?: string;
-  name?: string;
-  isArchived?: boolean;
-};
-
-export type CreateTransactionInput = {
-  type: TransactionType;
-  amountCents: number;
-  accountId: string;
-  categoryId: string;
-  subcategoryId?: string | null;
-  occurredAt: string;
-  note?: string;
-};
-
-export type UpdateTransactionInput = {
-  type?: TransactionType;
-  amountCents?: number;
-  accountId?: string;
-  categoryId?: string;
-  subcategoryId?: string | null;
-  occurredAt?: string;
-  note?: string | null;
-};
+export type CreateAccountInput = CreateAccountInputContract;
+export type UpdateAccountInput = UpdateAccountInputContract;
+export type CreateCategoryInput = CreateCategoryInputContract;
+export type UpdateCategoryInput = UpdateCategoryInputContract;
+export type CreateSubcategoryInput = CreateSubcategoryInputContract;
+export type UpdateSubcategoryInput = UpdateSubcategoryInputContract;
+export type CreateTransactionInput = CreateTransactionInputContract;
+export type UpdateTransactionInput = UpdateTransactionInputContract;

@@ -32,6 +32,7 @@
     "@prisma/adapter-pg": "^7.1.0",
     "@prisma/client": "^7.1.0",
     "@types/cookie-parser": "^1.4.10",
+    "@swisskit/contracts": "workspace:*",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "cookie-parser": "^1.4.7",

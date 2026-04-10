@@ -17,7 +17,7 @@ export const accountSchema = z.object({
   updatedAt: z.string(),
 });
 
-export const categoryBaseSchema = z.object({
+export const categorySchema = z.object({
   id: z.string(),
   userId: z.string(),
   name: z.string(),
@@ -51,12 +51,80 @@ export const transactionResourceSchema = z.object({
   updatedAt: z.string(),
 });
 
+export const createAccountInputSchema = z.object({
+  name: z.string(),
+  type: accountTypeSchema,
+  currency: z.string().optional(),
+  openingBalanceCents: z.number().int().nonnegative().optional(),
+  institution: z.string().optional(),
+});
+
+export const updateAccountInputSchema = createAccountInputSchema
+  .partial()
+  .extend({
+    institution: z.string().nullable().optional(),
+    isArchived: z.boolean().optional(),
+  });
+
+export const createCategoryInputSchema = z.object({
+  name: z.string(),
+  type: transactionTypeSchema,
+});
+
+export const updateCategoryInputSchema = createCategoryInputSchema
+  .partial()
+  .extend({
+    isArchived: z.boolean().optional(),
+  });
+
+export const createSubcategoryInputSchema = z.object({
+  categoryId: z.string(),
+  name: z.string(),
+});
+
+export const updateSubcategoryInputSchema = createSubcategoryInputSchema
+  .partial()
+  .extend({
+    isArchived: z.boolean().optional(),
+  });
+
+export const createTransactionInputSchema = z.object({
+  type: transactionTypeSchema,
+  amountCents: z.number().int().positive(),
+  accountId: z.string(),
+  categoryId: z.string(),
+  subcategoryId: z.string().nullable().optional(),
+  occurredAt: z.string(),
+  note: z.string().optional(),
+});
+
+export const updateTransactionInputSchema = createTransactionInputSchema
+  .partial()
+  .extend({
+    note: z.string().nullable().optional(),
+  });
+
 export const accountListSchema = z.array(accountSchema);
-export const categoryListSchema = z.array(categoryBaseSchema);
+export const categoryListSchema = z.array(categorySchema);
 export const subcategoryListSchema = z.array(subcategorySchema);
 export const transactionResourceListSchema = z.array(transactionResourceSchema);
 
 export type AccountContract = z.infer<typeof accountSchema>;
-export type CategoryBaseContract = z.infer<typeof categoryBaseSchema>;
+export type CategoryContract = z.infer<typeof categorySchema>;
 export type SubcategoryContract = z.infer<typeof subcategorySchema>;
+export type TransactionContract = z.infer<typeof transactionResourceSchema>;
+
+export type CreateAccountInputContract = z.infer<typeof createAccountInputSchema>;
+export type UpdateAccountInputContract = z.infer<typeof updateAccountInputSchema>;
+export type CreateCategoryInputContract = z.infer<typeof createCategoryInputSchema>;
+export type UpdateCategoryInputContract = z.infer<typeof updateCategoryInputSchema>;
+export type CreateSubcategoryInputContract = z.infer<typeof createSubcategoryInputSchema>;
+export type UpdateSubcategoryInputContract = z.infer<typeof updateSubcategoryInputSchema>;
+export type CreateTransactionInputContract = z.infer<typeof createTransactionInputSchema>;
+export type UpdateTransactionInputContract = z.infer<typeof updateTransactionInputSchema>;
+
+// Backwards-compatible aliases
+export const categoryBaseSchema = categorySchema;
+export type CategoryBaseContract = CategoryContract;
+export const transactionSchema = transactionResourceSchema;
 export type TransactionResourceContract = z.infer<typeof transactionResourceSchema>;
