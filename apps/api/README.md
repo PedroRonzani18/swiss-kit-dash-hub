@@ -74,6 +74,31 @@ Swagger:
 
 - `http://localhost:3001/api/docs`
 
+## Operação (produção)
+
+Health checks:
+
+- `GET /api/health/live`: liveness da aplicação (processo ativo)
+- `GET /api/health/ready`: readiness (valida dependência crítica do banco via Prisma)
+- `GET /api/health`: alias de compatibilidade para readiness
+
+Comportamento esperado:
+
+- `live` responde `200` com `status=ok` quando o processo está de pé
+- `ready` responde `200` com `status=ready` quando o banco está acessível
+- `ready` responde `503` com `status=not_ready` quando o banco está indisponível ou sem `DATABASE_URL`
+
+Logging operacional:
+
+- Logs HTTP incluem `requestId`, método, path (sem query string), status e latência
+- Em produção, respostas de erro interno (`500`) são sanitizadas para não expor detalhes sensíveis
+- O header `x-request-id` é retornado em todas as respostas para facilitar correlação de logs
+
+Hardening HTTP:
+
+- `helmet` habilitado no bootstrap da API
+- `contentSecurityPolicy` e `crossOriginEmbedderPolicy` desativados para manter compatibilidade com Swagger em `/api/docs`
+
 ## Fluxo de autenticação
 
 - Inicie em `GET /api/auth/google`
