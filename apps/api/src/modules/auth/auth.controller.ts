@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   HttpCode,
-  HttpException,
   Post,
   Req,
   Res,
@@ -24,63 +23,17 @@ import { AuthService } from './auth.service';
 import { AuthCallbackDto } from './dto/auth-callback.dto';
 import { AuthStatusDto } from './dto/auth-status.dto';
 import { UserProfileDto } from './dto/user-profile.dto';
+import {
+  buildAuthCallbackPayload,
+  getOAuthErrorDetails,
+  renderOAuthHtmlMessage,
+  shouldRenderOAuthHtml,
+} from './utils/oauth-callback.util';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
-  private renderOAuthHtmlMessage(
-    type: 'swisskit:auth:success' | 'swisskit:auth:error',
-    payload: unknown,
-  ): string {
-    const serializedPayload = JSON.stringify({ type, payload }).replace(
-      /</g,
-      '\\u003c',
-    );
-    const targetOrigin = JSON.stringify(this.authService.getWebAppOrigin());
-    const fallbackRedirectUrl = JSON.stringify(this.authService.getWebAppUrl());
-
-    return `<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>SwissKit Auth</title>
-  </head>
-  <body>
-    <script>
-      (function () {
-        var message = ${serializedPayload};
-        var targetOrigin = ${targetOrigin};
-        var fallbackRedirectUrl = ${fallbackRedirectUrl};
-        if (window.opener) {
-          window.opener.postMessage(message, targetOrigin);
-          window.close();
-          return;
-        }
-
-        var redirectUrl = fallbackRedirectUrl;
-        try {
-          var url = new URL(fallbackRedirectUrl);
-          if (message.type === 'swisskit:auth:error') {
-            url.searchParams.set('authError', 'oauth_failed');
-          }
-          redirectUrl = url.toString();
-        } catch (_error) {
-          if (message.type === 'swisskit:auth:error') {
-            redirectUrl =
-              fallbackRedirectUrl +
-              (fallbackRedirectUrl.indexOf('?') >= 0 ? '&' : '?') +
-              'authError=oauth_failed';
-          }
-        }
-
-        window.location.replace(redirectUrl);
-      })();
-    </script>
-  </body>
-</html>`;
-  }
 
   @Public()
   @Get('google')
@@ -102,7 +55,7 @@ export class AuthController {
     @Req() request: GoogleAuthRequest,
     @Res() response: Response,
   ) {
-    const acceptsHtml = request.headers.accept?.includes('text/html') ?? false;
+    const acceptsHtml = shouldRenderOAuthHtml(request.headers.accept);
 
     try {
       const authResult = await this.authService.loginWithGoogle(request.user);
@@ -112,20 +65,19 @@ export class AuthController {
         this.authService.getAuthCookieOptions(),
       );
 
-      const callbackPayload = {
-        success: true,
-        user: authResult.user,
-      };
+      const callbackPayload = buildAuthCallbackPayload(authResult.user);
 
       if (acceptsHtml) {
         return response
           .status(200)
           .type('text/html')
           .send(
-            this.renderOAuthHtmlMessage(
-              'swisskit:auth:success',
-              callbackPayload,
-            ),
+            renderOAuthHtmlMessage({
+              type: 'swisskit:auth:success',
+              payload: callbackPayload,
+              targetOrigin: this.authService.getWebAppOrigin(),
+              fallbackRedirectUrl: this.authService.getWebAppUrl(),
+            }),
           );
       }
 
@@ -135,18 +87,21 @@ export class AuthController {
         throw error;
       }
 
-      const statusCode =
-        error instanceof HttpException ? error.getStatus() : 401;
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Authentication failed during Google callback';
+      const { statusCode, message } = getOAuthErrorDetails(error);
 
-      return response.status(statusCode).type('text/html').send(
-        this.renderOAuthHtmlMessage('swisskit:auth:error', {
-          message,
-        }),
-      );
+      return response
+        .status(statusCode)
+        .type('text/html')
+        .send(
+          renderOAuthHtmlMessage({
+            type: 'swisskit:auth:error',
+            payload: {
+              message,
+            },
+            targetOrigin: this.authService.getWebAppOrigin(),
+            fallbackRedirectUrl: this.authService.getWebAppUrl(),
+          }),
+        );
     }
   }
 
