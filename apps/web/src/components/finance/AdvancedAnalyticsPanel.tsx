@@ -149,11 +149,6 @@ export function AdvancedAnalyticsPanel({
     [transactions, selectedYears, selectedMonths, selectedCategoryIds]
   );
 
-  const filteredByType = useMemo(
-    () => (typeFilter === "all" ? filtered : filtered.filter((t) => t.type === typeFilter)),
-    [filtered, typeFilter]
-  );
-
   // Totals
   const totalIncome = useMemo(() => filtered.filter((t) => t.type === "income").reduce((s, t) => s + t.amount, 0), [filtered]);
   const totalExpense = useMemo(() => filtered.filter((t) => t.type === "expense").reduce((s, t) => s + t.amount, 0), [filtered]);

@@ -1,10 +1,9 @@
 {
   "extends": "@swisskit/tsconfig/base.json",
   "compilerOptions": {
-    "allowJs": true,
-    "noImplicitAny": false,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "paths": {
       "@/*": [
         "./src/*"
@@ -13,7 +12,7 @@
         "../../packages/contracts/src/index.ts"
       ]
     },
-    "strictNullChecks": false
+    "strictNullChecks": true
   },
   "files": [],
   "references": [
