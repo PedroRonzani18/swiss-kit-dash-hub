@@ -7,12 +7,21 @@ import {
   listTransactions,
   updateTransaction as updateTransactionRequest,
 } from '@/api/transactions';
-import { toAmountCents, toIsoDate } from '@/features/finance/mappers';
+import {
+  mapTransactions,
+  toAmountCents,
+  toIsoDate,
+} from '@/features/finance/mappers';
 import type { TransactionDraft } from '@/features/finance/types';
 import type {
+  Account,
   CreateTransactionInput,
   UpdateTransactionInput,
 } from '@/types/finance';
+
+type UseTransactionsOptions = {
+  accounts?: Account[];
+};
 
 function toTransactionPayload(transaction: TransactionDraft): CreateTransactionInput {
   return {
@@ -26,7 +35,8 @@ function toTransactionPayload(transaction: TransactionDraft): CreateTransactionI
   };
 }
 
-export function useTransactions() {
+export function useTransactions(options: UseTransactionsOptions = {}) {
+  const { accounts = [] } = options;
   const queryClient = useQueryClient();
 
   const transactionsQuery = useQuery({
@@ -56,9 +66,14 @@ export function useTransactions() {
     },
   });
 
-  const transactions = useMemo(
+  const rawTransactions = useMemo(
     () => transactionsQuery.data ?? [],
     [transactionsQuery.data],
+  );
+
+  const transactions = useMemo(
+    () => mapTransactions(rawTransactions, accounts),
+    [rawTransactions, accounts],
   );
 
   const addTransaction = useCallback(
@@ -86,6 +101,7 @@ export function useTransactions() {
   );
 
   return {
+    rawTransactions,
     transactions,
     addTransaction,
     updateTransaction,
