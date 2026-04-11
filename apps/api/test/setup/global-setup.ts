@@ -1,5 +1,4 @@
 import { execFileSync } from 'node:child_process';
-import { randomUUID } from 'node:crypto';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import {
@@ -19,15 +18,11 @@ function resolveBaseDatabaseUrl(): string {
 
 function buildRuntimeEnv(): RuntimeTestEnv {
   const baseDatabaseUrl = resolveBaseDatabaseUrl();
-  const schema = `itest_${Date.now()}_${randomUUID().replace(/-/g, '').slice(0, 8)}`;
-
   const databaseUrl = new URL(baseDatabaseUrl);
-  databaseUrl.searchParams.set('schema', schema);
+  databaseUrl.searchParams.delete('schema');
 
   return {
     DATABASE_URL: databaseUrl.toString(),
-    TEST_DB_SCHEMA: schema,
-    TEST_BASE_DATABASE_URL: baseDatabaseUrl,
   };
 }
 

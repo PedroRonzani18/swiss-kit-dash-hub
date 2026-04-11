@@ -1,11 +1,9 @@
 import path from 'node:path';
 
-export const API_ROOT_DIR = path.resolve(__dirname, '../..');
-export const RUNTIME_ENV_PATH = path.join(
+export const API_ROOT_DIR = process.cwd();
+export const RUNTIME_ENV_PATH = path.resolve(
   API_ROOT_DIR,
-  'test',
-  'setup',
-  '.runtime-test-env.json',
+  'test/setup/.runtime-test-env.json',
 );
 
 export const DEFAULT_TEST_ENV = {
@@ -25,6 +23,4 @@ export const DEFAULT_TEST_ENV = {
 
 export type RuntimeTestEnv = {
   DATABASE_URL: string;
-  TEST_DB_SCHEMA: string;
-  TEST_BASE_DATABASE_URL: string;
 };
