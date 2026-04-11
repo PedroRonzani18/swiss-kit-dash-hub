@@ -7,6 +7,33 @@ import {
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
 
+function buildAdapterConnectionString(databaseUrl: string): string {
+  const parsedDatabaseUrl = new URL(databaseUrl);
+  const schema = parsedDatabaseUrl.searchParams.get('schema');
+
+  if (!schema) {
+    return parsedDatabaseUrl.toString();
+  }
+
+  const currentOptions = parsedDatabaseUrl.searchParams.get('options') ?? '';
+  const hasSearchPathOption = /\bsearch_path\s*=/.test(currentOptions);
+
+  if (!hasSearchPathOption) {
+    const searchPathOption = `-c search_path=${schema}`;
+    const mergedOptions = currentOptions
+      ? `${currentOptions} ${searchPathOption}`
+      : searchPathOption;
+
+    parsedDatabaseUrl.searchParams.set('options', mergedOptions);
+  }
+
+  // "schema" is interpreted by Prisma engines, but PG adapter connections
+  // rely on search_path through "options".
+  parsedDatabaseUrl.searchParams.delete('schema');
+
+  return parsedDatabaseUrl.toString();
+}
+
 @Injectable()
 export class PrismaService
   extends PrismaClient
@@ -16,11 +43,13 @@ export class PrismaService
   private readonly hasDatabaseUrl = Boolean(process.env.DATABASE_URL);
 
   constructor() {
+    const databaseUrl = process.env.DATABASE_URL;
+
     super(
-      process.env.DATABASE_URL
+      databaseUrl
         ? {
             adapter: new PrismaPg({
-              connectionString: process.env.DATABASE_URL,
+              connectionString: buildAdapterConnectionString(databaseUrl),
             }),
           }
         : {},
