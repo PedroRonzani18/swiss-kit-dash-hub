@@ -24,9 +24,9 @@ import { AuthCallbackDto } from './dto/auth-callback.dto';
 import { AuthStatusDto } from './dto/auth-status.dto';
 import { UserProfileDto } from './dto/user-profile.dto';
 import {
-  buildAuthCallbackPayload,
-  getOAuthErrorDetails,
-  renderOAuthHtmlMessage,
+  buildOAuthErrorCallbackResponse,
+  buildOAuthSuccessCallbackResponse,
+  type OAuthCallbackResponseBody,
   shouldRenderOAuthHtml,
 } from './utils/oauth-callback.util';
 
@@ -55,7 +55,11 @@ export class AuthController {
     @Req() request: GoogleAuthRequest,
     @Res() response: Response,
   ) {
-    const acceptsHtml = shouldRenderOAuthHtml(request.headers.accept);
+    const prefersHtmlCallback = shouldRenderOAuthHtml(request.headers.accept);
+    const callbackContext = {
+      targetOrigin: this.authService.getWebAppOrigin(),
+      fallbackRedirectUrl: this.authService.getWebAppUrl(),
+    };
 
     try {
       const authResult = await this.authService.loginWithGoogle(request.user);
@@ -65,43 +69,24 @@ export class AuthController {
         this.authService.getAuthCookieOptions(),
       );
 
-      const callbackPayload = buildAuthCallbackPayload(authResult.user);
+      const successResponse = buildOAuthSuccessCallbackResponse({
+        user: authResult.user,
+        prefersHtml: prefersHtmlCallback,
+        ...callbackContext,
+      });
 
-      if (acceptsHtml) {
-        return response
-          .status(200)
-          .type('text/html')
-          .send(
-            renderOAuthHtmlMessage({
-              type: 'swisskit:auth:success',
-              payload: callbackPayload,
-              targetOrigin: this.authService.getWebAppOrigin(),
-              fallbackRedirectUrl: this.authService.getWebAppUrl(),
-            }),
-          );
-      }
-
-      return response.status(200).json(callbackPayload);
+      return this.sendOAuthCallbackResponse(response, successResponse);
     } catch (error) {
-      if (!acceptsHtml) {
+      if (!prefersHtmlCallback) {
         throw error;
       }
 
-      const { statusCode, message } = getOAuthErrorDetails(error);
+      const errorResponse = buildOAuthErrorCallbackResponse({
+        error,
+        ...callbackContext,
+      });
 
-      return response
-        .status(statusCode)
-        .type('text/html')
-        .send(
-          renderOAuthHtmlMessage({
-            type: 'swisskit:auth:error',
-            payload: {
-              message,
-            },
-            targetOrigin: this.authService.getWebAppOrigin(),
-            fallbackRedirectUrl: this.authService.getWebAppUrl(),
-          }),
-        );
+      return this.sendOAuthCallbackResponse(response, errorResponse);
     }
   }
 
@@ -126,5 +111,21 @@ export class AuthController {
   @ApiOkResponse({ type: UserProfileDto })
   me(@CurrentUser() user: AuthenticatedUserContract) {
     return this.authService.getMe(user.id);
+  }
+
+  private sendOAuthCallbackResponse(
+    response: Response,
+    callbackResponse: OAuthCallbackResponseBody,
+  ) {
+    if (callbackResponse.kind === 'json') {
+      return response
+        .status(callbackResponse.statusCode)
+        .json(callbackResponse.body);
+    }
+
+    return response
+      .status(callbackResponse.statusCode)
+      .type('text/html')
+      .send(callbackResponse.body);
   }
 }
