@@ -59,6 +59,8 @@ export class TransactionsService {
     input: UpdateTransactionDto,
   ): Promise<TransactionContract> {
     const currentTransaction = await this.findOne(id, userId);
+    const hasSubcategoryId = input.subcategoryId !== undefined;
+    const hasNote = input.note !== undefined;
 
     const payload: UpdateTransactionContract = {
       type: input.type as UpdateTransactionContract['type'],
@@ -68,11 +70,11 @@ export class TransactionsService {
       occurredAt: input.occurredAt,
     };
 
-    if (Object.prototype.hasOwnProperty.call(input, 'note')) {
+    if (hasNote) {
       payload.note = input.note ?? null;
     }
 
-    if (Object.prototype.hasOwnProperty.call(input, 'subcategoryId')) {
+    if (hasSubcategoryId) {
       payload.subcategoryId = input.subcategoryId ?? null;
     }
 
@@ -80,12 +82,9 @@ export class TransactionsService {
       userId,
       accountId: payload.accountId,
       categoryId: payload.categoryId,
-      subcategoryId: Object.prototype.hasOwnProperty.call(
-        payload,
-        'subcategoryId',
-      )
+      subcategoryId: hasSubcategoryId
         ? payload.subcategoryId
-        : undefined,
+        : (currentTransaction.subcategoryId ?? undefined),
       currentCategoryId: payload.categoryId ?? currentTransaction.categoryId,
     });
 
