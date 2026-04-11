@@ -2,6 +2,7 @@
 import eslint from '@eslint/js';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import globals from 'globals';
+import { createUnusedVarsRule } from '@swisskit/eslint-config';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
@@ -36,14 +37,7 @@ export default tseslint.config(
     rules: {
       // === Regras de TypeScript (Critérios Médios) ===
       '@typescript-eslint/no-explicit-any': 'warn', // Permite any mas avisa
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
-        },
-      ],
+      '@typescript-eslint/no-unused-vars': createUnusedVarsRule(),
       '@typescript-eslint/explicit-function-return-type': 'off', // Muito restritivo
       '@typescript-eslint/explicit-module-boundary-types': 'off', // Muito restritivo
       '@typescript-eslint/no-floating-promises': 'warn', // Importante para async/await
