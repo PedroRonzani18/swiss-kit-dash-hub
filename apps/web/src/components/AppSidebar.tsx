@@ -1,11 +1,8 @@
 import {
-  Wallet,
-  Tv,
-  Wrench,
-  Settings,
   ChevronLeft,
   Layers,
 } from "lucide-react";
+import { APP_MODULES } from "@/app/navigation/modules";
 import { NavLink } from "@/components/NavLink";
 import {
   Sidebar,
@@ -20,13 +17,6 @@ import {
   SidebarFooter,
   useSidebar,
 } from "@/components/ui/sidebar";
-
-const items = [
-  { title: "Financeiro", url: "/", icon: Wallet },
-  { title: "Animes", url: "/animes", icon: Tv },
-  { title: "Ferramentas", url: "/ferramentas", icon: Wrench },
-  { title: "Configurações", url: "/configuracoes", icon: Settings },
-];
 
 export function AppSidebar() {
   const { state, toggleSidebar } = useSidebar();
@@ -49,17 +39,17 @@ export function AppSidebar() {
           <SidebarGroupLabel>Módulos</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
+              {APP_MODULES.map((module) => (
+                <SidebarMenuItem key={module.id}>
                   <SidebarMenuButton asChild>
                     <NavLink
-                      to={item.url}
+                      to={module.path}
                       end
                       className="hover:bg-sidebar-accent/60"
                       activeClassName="bg-sidebar-accent text-primary font-medium"
                     >
-                      <item.icon className="mr-2 h-4 w-4 shrink-0" />
-                      {!collapsed && <span>{item.title}</span>}
+                      <module.icon className="mr-2 h-4 w-4 shrink-0" />
+                      {!collapsed && <span>{module.label}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
