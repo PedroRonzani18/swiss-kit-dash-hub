@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   CommandDialog,
   CommandEmpty,
@@ -7,17 +8,12 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Wallet, Tv, Wrench, Settings } from "lucide-react";
-
-const routes = [
-  { label: "Financeiro", icon: Wallet, path: "/" },
-  { label: "Animes", icon: Tv, path: "/animes" },
-  { label: "Ferramentas", icon: Wrench, path: "/ferramentas" },
-  { label: "Configurações", icon: Settings, path: "/configuracoes" },
-];
+import { APP_MODULES } from "@/app/navigation/modules";
 
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -30,16 +26,30 @@ export function CommandPalette() {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
+  const handleSelectModule = (path: string) => {
+    setOpen(false);
+
+    if (location.pathname !== path) {
+      navigate(path);
+    }
+  };
+
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
       <CommandInput placeholder="Buscar módulos..." />
       <CommandList>
         <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
         <CommandGroup heading="Navegação">
-          {routes.map((r) => (
-            <CommandItem key={r.path} onSelect={() => setOpen(false)}>
-              <r.icon className="mr-2 h-4 w-4" />
-              <span>{r.label}</span>
+          {APP_MODULES.map((module) => (
+            <CommandItem
+              key={module.id}
+              onSelect={() => handleSelectModule(module.path)}
+            >
+              <module.icon className="mr-2 h-4 w-4" />
+              <span className="font-medium">{module.label}</span>
+              <span className="ml-2 text-xs text-muted-foreground">
+                {module.description}
+              </span>
             </CommandItem>
           ))}
         </CommandGroup>
