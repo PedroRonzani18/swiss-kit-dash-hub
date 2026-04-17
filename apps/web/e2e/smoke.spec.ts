@@ -19,7 +19,7 @@ async function mockUnauthenticatedSession(page: Page) {
   );
 }
 
-test.describe("Smoke | Modules", () => {
+test.describe("Smoke | Finance", () => {
   test("redirects to finance and shows unauthenticated state", async ({ page }) => {
     const pageErrors: Error[] = [];
     page.on("pageerror", error => pageErrors.push(error));
@@ -38,32 +38,17 @@ test.describe("Smoke | Modules", () => {
     expect(pageErrors).toEqual([]);
   });
 
-  test("navigates between module pages via sidebar", async ({ page }) => {
+  test("keeps finance as entrypoint and unknown routes go to 404", async ({ page }) => {
     const pageErrors: Error[] = [];
     page.on("pageerror", error => pageErrors.push(error));
 
     await mockUnauthenticatedSession(page);
 
-    await page.goto("/animes");
-    await expect(page.getByRole("heading", { name: "Hub de Animes" })).toBeVisible();
+    await page.goto("/rota-inexistente");
+    await expect(page.getByRole("heading", { name: "404" })).toBeVisible();
 
-    await page.getByRole("link", { name: "Ferramentas" }).click();
-    await expect(page).toHaveURL(/\/ferramentas$/);
-    await expect(
-      page.getByRole("heading", { name: "Central de Ferramentas" }),
-    ).toBeVisible();
-
-    await page.getByRole("link", { name: "Configuracoes" }).click();
-    await expect(page).toHaveURL(/\/configuracoes$/);
-    await expect(
-      page.getByRole("heading", { name: "Preferências da Plataforma" }),
-    ).toBeVisible();
-
-    await page.getByRole("link", { name: "Financeiro" }).click();
+    await page.goto("/");
     await expect(page).toHaveURL(/\/financeiro$/);
-    await expect(
-      page.getByRole("heading", { name: "Acesse seu dashboard financeiro" }),
-    ).toBeVisible();
     expect(pageErrors).toEqual([]);
   });
 });

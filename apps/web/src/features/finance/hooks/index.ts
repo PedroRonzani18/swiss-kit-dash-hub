@@ -7,3 +7,6 @@ export {
   useFinanceDashboardData,
   type FinanceDashboardData,
 } from './useFinanceDashboardData';
+export { useAdvancedAnalytics } from './useAdvancedAnalytics';
+export { useTransactionTableFilters } from './useTransactionTableFilters';
+export { useCategoryManagerState } from './useCategoryManagerState';
