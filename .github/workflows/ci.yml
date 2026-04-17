@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   ci:
-    name: Lint, Typecheck, Test and Build
+    name: Lint, Typecheck, Test, E2E and Build
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -51,6 +51,12 @@ jobs:
 
       - name: Test
         run: pnpm test:ci
+
+      - name: Install Playwright browser
+        run: pnpm --filter web exec playwright install --with-deps chromium
+
+      - name: E2E Smoke (Web)
+        run: pnpm test:web:e2e
 
       - name: Build
         run: pnpm build:ci
