@@ -1,19 +1,96 @@
+import { useEffect } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { AppLayout } from '@/components/AppLayout';
 import {
   useFinanceDashboardData,
   useTransactionDialogState,
 } from '@/features/finance/hooks';
+import {
+  buildFinancePath,
+  FINANCE_ACTION_ROUTES,
+  parseFinanceTabRoute,
+  type FinanceTabRoute,
+} from '@/modules/finance/navigation';
+import type { Transaction } from '@/types/finance';
 import { FinanceErrorState } from '../states/FinanceErrorState';
 import { FinanceLoadingState } from '../states/FinanceLoadingState';
 import { FinanceDashboardContent } from './FinanceDashboardContent';
 import { FinanceTransactionDialog } from './FinanceTransactionDialog';
 
 export function FinanceDashboardPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { tab: tabParam, action: actionParam } = useParams<{
+    tab?: string;
+    action?: string;
+  }>();
   const finance = useFinanceDashboardData();
-  const transactionDialog = useTransactionDialogState({
+  const {
+    isDialogOpen,
+    editingTransaction,
+    openNewTransactionDialog,
+    openEditTransactionDialog,
+    onDialogOpenChange,
+    saveTransaction,
+  } = useTransactionDialogState({
     addTransaction: finance.transactions.addTransaction,
     updateTransaction: finance.transactions.updateTransaction,
   });
+  const activeTab = parseFinanceTabRoute(tabParam);
+  const isNewTransactionAction =
+    activeTab === 'transactions' &&
+    actionParam === FINANCE_ACTION_ROUTES.newTransaction;
+  const canonicalPath = buildFinancePath(
+    activeTab,
+    isNewTransactionAction ? FINANCE_ACTION_ROUTES.newTransaction : undefined,
+  );
+
+  useEffect(() => {
+    if (location.pathname !== canonicalPath) {
+      navigate(canonicalPath, { replace: true });
+    }
+  }, [canonicalPath, location.pathname, navigate]);
+
+  useEffect(() => {
+    if (isNewTransactionAction && !isDialogOpen) {
+      openNewTransactionDialog();
+    }
+  }, [isDialogOpen, isNewTransactionAction, openNewTransactionDialog]);
+
+  useEffect(() => {
+    if (activeTab !== 'transactions' && isDialogOpen) {
+      onDialogOpenChange(false);
+    }
+  }, [activeTab, isDialogOpen, onDialogOpenChange]);
+
+  const handleTabChange = (tab: FinanceTabRoute) => {
+    navigate(buildFinancePath(tab));
+  };
+
+  const handleOpenNewTransaction = () => {
+    navigate(
+      buildFinancePath(
+        'transactions',
+        FINANCE_ACTION_ROUTES.newTransaction,
+      ),
+    );
+  };
+
+  const handleEditTransaction = (transaction: Transaction) => {
+    if (activeTab !== 'transactions') {
+      navigate(buildFinancePath('transactions'));
+    }
+
+    openEditTransactionDialog(transaction);
+  };
+
+  const handleDialogOpenChange = (open: boolean) => {
+    onDialogOpenChange(open);
+
+    if (!open && isNewTransactionAction) {
+      navigate(buildFinancePath('transactions'), { replace: true });
+    }
+  };
 
   const isLoading =
     finance.accounts.isLoading ||
@@ -32,21 +109,23 @@ export function FinanceDashboardPage() {
       {!isLoading && !error && (
         <>
           <FinanceDashboardContent
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
             accounts={finance.accounts}
             categories={finance.categories}
             transactions={finance.transactions}
-            onOpenNewTransaction={transactionDialog.openNewTransactionDialog}
-            onEditTransaction={transactionDialog.openEditTransactionDialog}
+            onOpenNewTransaction={handleOpenNewTransaction}
+            onEditTransaction={handleEditTransaction}
             onDeleteTransaction={finance.transactions.deleteTransaction}
           />
 
           <FinanceTransactionDialog
-            open={transactionDialog.isDialogOpen}
-            editingTransaction={transactionDialog.editingTransaction}
+            open={isDialogOpen}
+            editingTransaction={editingTransaction}
             accountOptions={finance.accounts.accountOptions}
             categories={finance.categories.categories}
-            onOpenChange={transactionDialog.onDialogOpenChange}
-            onSave={transactionDialog.saveTransaction}
+            onOpenChange={handleDialogOpenChange}
+            onSave={saveTransaction}
           />
         </>
       )}

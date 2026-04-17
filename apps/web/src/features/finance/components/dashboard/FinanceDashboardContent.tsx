@@ -1,9 +1,12 @@
 import type { FinanceDashboardData } from '@/features/finance/hooks';
+import type { FinanceTabRoute } from '@/modules/finance/navigation';
 import type { Transaction } from '@/types/finance';
 import { FinanceDashboardHeader } from './FinanceDashboardHeader';
 import { FinanceDashboardTabs } from './FinanceDashboardTabs';
 
 type FinanceDashboardContentProps = {
+  activeTab: FinanceTabRoute;
+  onTabChange: (tab: FinanceTabRoute) => void;
   accounts: FinanceDashboardData['accounts'];
   categories: FinanceDashboardData['categories'];
   transactions: FinanceDashboardData['transactions'];
@@ -13,6 +16,8 @@ type FinanceDashboardContentProps = {
 };
 
 export function FinanceDashboardContent({
+  activeTab,
+  onTabChange,
   accounts,
   categories,
   transactions,
@@ -25,6 +30,8 @@ export function FinanceDashboardContent({
       <FinanceDashboardHeader onOpenNewTransaction={onOpenNewTransaction} />
 
       <FinanceDashboardTabs
+        activeTab={activeTab}
+        onTabChange={onTabChange}
         accountOptions={accounts.accountOptions}
         accountItems={accounts.activeAccounts}
         categories={categories.categories}
