@@ -5,6 +5,10 @@ import { TransactionTable } from '@/components/finance/TransactionTable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { AddAccountInput } from '@/features/finance/hooks/useAccounts';
 import type { MutationResult } from '@/features/finance/types';
+import {
+  isFinanceTabRoute,
+  type FinanceTabRoute,
+} from '@/modules/finance/navigation';
 import type {
   Account,
   AccountOption,
@@ -14,6 +18,8 @@ import type {
 } from '@/types/finance';
 
 type FinanceDashboardTabsProps = {
+  activeTab: FinanceTabRoute;
+  onTabChange: (tab: FinanceTabRoute) => void;
   accountOptions: AccountOption[];
   accountItems: Account[];
   categories: Category[];
@@ -39,6 +45,8 @@ type FinanceDashboardTabsProps = {
 };
 
 export function FinanceDashboardTabs({
+  activeTab,
+  onTabChange,
   accountOptions,
   accountItems,
   categories,
@@ -55,7 +63,15 @@ export function FinanceDashboardTabs({
   onDeleteTransaction,
 }: FinanceDashboardTabsProps) {
   return (
-    <Tabs defaultValue="dashboard" className="space-y-4">
+    <Tabs
+      value={activeTab}
+      onValueChange={(value) => {
+        if (isFinanceTabRoute(value)) {
+          onTabChange(value);
+        }
+      }}
+      className="space-y-4"
+    >
       <TabsList className="bg-secondary">
         <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
         <TabsTrigger value="transactions">Transações</TabsTrigger>

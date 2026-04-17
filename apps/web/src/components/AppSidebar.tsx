@@ -44,7 +44,6 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <NavLink
                       to={module.path}
-                      end
                       className="hover:bg-sidebar-accent/60"
                       activeClassName="bg-sidebar-accent text-primary font-medium"
                     >

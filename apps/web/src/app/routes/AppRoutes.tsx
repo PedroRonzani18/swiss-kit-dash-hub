@@ -3,6 +3,7 @@ import {
   DEFAULT_MODULE_ROUTE,
   MODULE_ROUTES,
 } from "@/app/navigation/modules";
+import { buildFinancePath, DEFAULT_FINANCE_TAB_ROUTE } from "@/modules/finance/navigation";
 import { AnimesModulePage } from "@/modules/animes/pages/AnimesModulePage";
 import { FinanceModulePage } from "@/modules/finance/pages/FinanceModulePage";
 import { SettingsModulePage } from "@/modules/settings/pages/SettingsModulePage";
@@ -24,11 +25,28 @@ function RootModuleRedirect() {
   );
 }
 
+function FinanceRootRedirect() {
+  const location = useLocation();
+
+  return (
+    <Navigate
+      to={{
+        pathname: buildFinancePath(DEFAULT_FINANCE_TAB_ROUTE),
+        search: location.search,
+        hash: location.hash,
+      }}
+      replace
+    />
+  );
+}
+
 export function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<RootModuleRedirect />} />
-      <Route path={MODULE_ROUTES.finance} element={<FinanceModulePage />} />
+      <Route path={MODULE_ROUTES.finance} element={<FinanceRootRedirect />} />
+      <Route path={`${MODULE_ROUTES.finance}/:tab`} element={<FinanceModulePage />} />
+      <Route path={`${MODULE_ROUTES.finance}/:tab/:action`} element={<FinanceModulePage />} />
       <Route path={MODULE_ROUTES.animes} element={<AnimesModulePage />} />
       <Route path={MODULE_ROUTES.tools} element={<ToolsModulePage />} />
       <Route path={MODULE_ROUTES.settings} element={<SettingsModulePage />} />
