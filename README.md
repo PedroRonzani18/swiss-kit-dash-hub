@@ -91,6 +91,7 @@ URLs locais padrão:
 - Arquitetura: [`docs/architecture.md`](./docs/architecture.md)
 - Variáveis de ambiente: [`docs/env.md`](./docs/env.md)
 - Deploy: [`docs/deployment.md`](./docs/deployment.md)
+- Fronteiras de frontend (web): [`apps/web/docs/frontend-boundaries.md`](./apps/web/docs/frontend-boundaries.md)
 - ADRs: [`docs/adr/`](./docs/adr)
 - Contribuição: [`CONTRIBUTING.md`](./CONTRIBUTING.md)
 - Segurança: [`SECURITY.md`](./SECURITY.md)

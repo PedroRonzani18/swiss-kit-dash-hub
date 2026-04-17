@@ -12,7 +12,7 @@ import { APP_MODULES } from "@/app/navigation/modules";
 import {
   buildFinancePath,
   FINANCE_ACTION_ROUTES,
-} from "@/modules/finance/navigation";
+} from "@/features/finance/navigation";
 import { CirclePlus, ListChecks, Tags, WalletCards } from "lucide-react";
 
 type TaskCommand = {
