@@ -40,16 +40,17 @@ export function FinanceDashboardPage() {
   const isNewTransactionAction =
     activeTab === 'transactions' &&
     actionParam === FINANCE_ACTION_ROUTES.newTransaction;
+  const hasTabSegment = Boolean(tabParam);
   const canonicalPath = buildFinancePath(
     activeTab,
     isNewTransactionAction ? FINANCE_ACTION_ROUTES.newTransaction : undefined,
   );
 
   useEffect(() => {
-    if (location.pathname !== canonicalPath) {
+    if (hasTabSegment && location.pathname !== canonicalPath) {
       navigate(canonicalPath, { replace: true });
     }
-  }, [canonicalPath, location.pathname, navigate]);
+  }, [canonicalPath, hasTabSegment, location.pathname, navigate]);
 
   useEffect(() => {
     if (isNewTransactionAction && !isDialogOpen) {
@@ -92,10 +93,11 @@ export function FinanceDashboardPage() {
     }
   };
 
-  const isLoading =
-    finance.accounts.isLoading ||
-    finance.categories.isLoading ||
-    finance.transactions.isLoading;
+  const hasFetchedAll =
+    finance.accounts.hasFetched &&
+    finance.categories.hasFetched &&
+    finance.transactions.hasFetched;
+  const isInitialLoading = !hasFetchedAll;
 
   const error =
     finance.accounts.error ||
@@ -104,9 +106,9 @@ export function FinanceDashboardPage() {
 
   return (
     <AppLayout breadcrumbs={['SwissKit', 'Financeiro']}>
-      {isLoading && <FinanceLoadingState />}
-      {!isLoading && error && <FinanceErrorState />}
-      {!isLoading && !error && (
+      {isInitialLoading && !error && <FinanceLoadingState />}
+      {!isInitialLoading && error && <FinanceErrorState />}
+      {!isInitialLoading && !error && (
         <>
           <FinanceDashboardContent
             activeTab={activeTab}

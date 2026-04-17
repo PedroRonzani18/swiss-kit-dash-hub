@@ -103,6 +103,7 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
     updateTransaction,
     deleteTransaction,
     isLoading: transactionsQuery.isLoading,
+    hasFetched: transactionsQuery.isFetched,
     error: transactionsQuery.error,
   };
 }

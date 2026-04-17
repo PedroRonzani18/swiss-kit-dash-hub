@@ -1,9 +1,11 @@
 import { useEffect } from "react";
 import { useAuth } from "@/auth";
+import { AppLayout } from "@/components/AppLayout";
 import {
   FinanceDashboardPage,
   UnauthenticatedFinanceState,
 } from "@/features/finance/components";
+import { FinanceLoadingState } from "@/features/finance/components/states";
 import { toast } from "@/components/ui/sonner";
 
 export function FinanceModulePage() {
@@ -35,6 +37,14 @@ export function FinanceModulePage() {
       toast.error(message);
     }
   };
+
+  if (isAuthLoading && !isAuthenticated) {
+    return (
+      <AppLayout breadcrumbs={["SwissKit", "Financeiro"]}>
+        <FinanceLoadingState />
+      </AppLayout>
+    );
+  }
 
   if (!isAuthenticated) {
     return (

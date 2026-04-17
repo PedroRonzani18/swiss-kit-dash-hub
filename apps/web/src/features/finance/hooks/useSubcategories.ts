@@ -98,6 +98,7 @@ export function useSubcategories() {
     updateSubcategory,
     deleteSubcategory,
     isLoading: subcategoriesQuery.isLoading,
+    hasFetched: subcategoriesQuery.isFetched,
     error: subcategoriesQuery.error,
   };
 }

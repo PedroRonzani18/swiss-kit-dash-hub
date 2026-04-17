@@ -74,6 +74,7 @@ export function useAccounts() {
     accountOptions,
     addAccount,
     isLoading: accountsQuery.isLoading,
+    hasFetched: accountsQuery.isFetched,
     error: accountsQuery.error,
   };
 }
