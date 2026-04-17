@@ -22,6 +22,23 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        brand: {
+          DEFAULT: "hsl(var(--brand))",
+          foreground: "hsl(var(--brand-foreground))",
+          soft: "hsl(var(--brand-soft))",
+          strong: "hsl(var(--brand-strong))",
+        },
+        surface: {
+          app: "hsl(var(--surface-app))",
+          panel: "hsl(var(--surface-panel))",
+          subtle: "hsl(var(--surface-subtle))",
+          raised: "hsl(var(--surface-raised))",
+        },
+        status: {
+          success: "hsl(var(--success))",
+          warning: "hsl(var(--warning))",
+          info: "hsl(var(--info))",
+        },
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -65,6 +82,13 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      boxShadow: {
+        "business-sm": "0 1px 2px hsl(var(--shadow-color) / 0.10)",
+        "business-md":
+          "0 12px 28px -18px hsl(var(--shadow-color) / 0.28), 0 4px 10px -6px hsl(var(--shadow-color) / 0.20)",
+        "business-lg":
+          "0 24px 56px -30px hsl(var(--shadow-color) / 0.34), 0 10px 24px -14px hsl(var(--shadow-color) / 0.22)",
       },
       keyframes: {
         "accordion-down": {

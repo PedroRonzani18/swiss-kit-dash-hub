@@ -33,7 +33,7 @@ import { ArrowUpDown, Search, Pencil, Trash2, CalendarIcon, X } from "lucide-rea
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 
 interface TransactionTableProps {
@@ -256,7 +256,7 @@ export function TransactionTable({
                 <TableCell className="text-sm">{t.description}</TableCell>
                 <TableCell
                   className={`text-right text-sm font-medium font-mono-code ${
-                    t.type === "income" ? "text-primary" : "text-destructive"
+                    t.type === "income" ? "text-status-success" : "text-destructive"
                   }`}
                 >
                   {t.type === "income" ? "+" : "-"} {formatCurrency(t.amount)}

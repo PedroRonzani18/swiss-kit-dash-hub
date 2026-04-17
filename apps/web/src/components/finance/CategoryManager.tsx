@@ -20,7 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/sonner";
 
 interface CategoryManagerProps {
   categories: Category[];
@@ -193,7 +193,7 @@ export function CategoryManager({
                     <span
                       className={`text-[10px] px-1.5 py-0.5 rounded font-mono-code ${
                         cat.type === "income"
-                          ? "bg-primary/15 text-primary"
+                          ? "bg-status-success/15 text-status-success"
                           : "bg-destructive/15 text-destructive"
                       }`}
                     >

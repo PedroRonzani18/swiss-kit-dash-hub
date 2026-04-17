@@ -25,9 +25,27 @@ export default tseslint.config(
     },
   },
   {
+    files: ["src/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@radix-ui/*"],
+              message:
+                "Importe Radix apenas em src/components/ui. Fora disso, use wrappers de @/components/ui.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ["src/components/ui/**/*.tsx", "src/auth/AuthContext.tsx"],
     rules: {
       "react-refresh/only-export-components": "off",
+      "no-restricted-imports": "off",
     },
   },
 );

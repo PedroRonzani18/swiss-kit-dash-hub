@@ -4,7 +4,7 @@ import {
   FinanceDashboardPage,
   UnauthenticatedFinanceState,
 } from "@/features/finance/components";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/sonner";
 
 export function FinanceModulePage() {
   const { isAuthenticated, isLoading: isAuthLoading, loginWithGoogle } = useAuth();

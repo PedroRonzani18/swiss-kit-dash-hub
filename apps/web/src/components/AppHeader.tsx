@@ -2,7 +2,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/auth";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/sonner";
 
 interface AppHeaderProps {
   breadcrumbs?: string[];
@@ -40,10 +40,10 @@ export function AppHeader({ breadcrumbs = ["App", "Financeiro"] }: AppHeaderProp
   };
 
   return (
-    <header className="h-14 flex items-center justify-between border-b border-border px-4 shrink-0">
-      <div className="flex items-center gap-3">
+    <header className="app-topbar flex h-14 shrink-0 items-center justify-between gap-3 border-b border-border/70 px-4 md:px-5">
+      <div className="flex min-w-0 items-center gap-3">
         <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
-        <nav className="flex items-center gap-1 text-sm text-muted-foreground">
+        <nav className="flex items-center gap-1 truncate text-sm text-muted-foreground">
           {breadcrumbs.map((crumb, i) => (
             <span key={i} className="flex items-center gap-1">
               {i > 0 && <span className="text-border">/</span>}
@@ -54,21 +54,21 @@ export function AppHeader({ breadcrumbs = ["App", "Financeiro"] }: AppHeaderProp
           ))}
         </nav>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex shrink-0 items-center gap-2">
         <button
           onClick={triggerCommand}
-          className="flex items-center gap-2 text-xs text-muted-foreground bg-secondary hover:bg-muted px-3 py-1.5 rounded-md transition-colors"
+          className="group flex items-center gap-2 rounded-md border border-border/80 bg-surface-subtle px-3 py-1.5 text-xs text-muted-foreground shadow-business-sm transition-colors hover:border-brand/35 hover:bg-brand-soft hover:text-foreground"
         >
           <Search className="h-3 w-3" />
           <span>Buscar</span>
-          <kbd className="ml-1 font-mono-code text-[10px] bg-muted px-1.5 py-0.5 rounded">
+          <kbd className="app-kbd ml-1 group-hover:border-brand/40 group-hover:bg-surface-panel">
             ⌘K
           </kbd>
         </button>
 
         {isAuthenticated ? (
           <>
-            <span className="hidden md:inline text-xs text-muted-foreground max-w-48 truncate">
+            <span className="hidden max-w-48 truncate text-xs text-muted-foreground md:inline">
               {user?.email}
             </span>
             <Button variant="outline" size="sm" onClick={handleLogout}>

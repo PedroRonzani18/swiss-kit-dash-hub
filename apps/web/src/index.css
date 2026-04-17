@@ -6,34 +6,62 @@
 
 @layer base {
   :root {
-    --background: 220 14% 96%;
-    --foreground: 220 20% 10%;
+    --background: 206 36% 97%;
+    --foreground: 216 28% 14%;
     --card: 0 0% 100%;
-    --card-foreground: 220 20% 10%;
+    --card-foreground: 216 28% 14%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 10%;
-    --primary: 142 60% 45%;
+    --popover-foreground: 216 28% 14%;
+    --primary: 164 71% 31%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 14% 90%;
-    --secondary-foreground: 220 20% 10%;
-    --muted: 220 14% 92%;
-    --muted-foreground: 220 10% 50%;
-    --accent: 142 60% 45%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 72% 51%;
+    --secondary: 206 28% 93%;
+    --secondary-foreground: 216 24% 20%;
+    --muted: 206 22% 95%;
+    --muted-foreground: 216 12% 43%;
+    --accent: 208 28% 91%;
+    --accent-foreground: 216 28% 14%;
+    --destructive: 0 75% 52%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 14% 88%;
-    --input: 220 14% 88%;
-    --ring: 142 60% 45%;
-    --radius: 0.625rem;
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 220 10% 40%;
-    --sidebar-primary: 142 60% 45%;
+    --border: 210 20% 86%;
+    --input: 210 20% 86%;
+    --ring: 164 71% 31%;
+    --radius: 0.75rem;
+
+    --brand: 164 71% 31%;
+    --brand-foreground: 0 0% 100%;
+    --brand-soft: 164 46% 92%;
+    --brand-strong: 164 74% 24%;
+    --surface-app: 205 42% 97%;
+    --surface-panel: 0 0% 100%;
+    --surface-subtle: 205 28% 94%;
+    --surface-raised: 0 0% 100%;
+    --text-subtle: 216 12% 43%;
+    --text-strong: 216 28% 14%;
+    --success: 164 71% 31%;
+    --success-foreground: 0 0% 100%;
+    --warning: 34 95% 46%;
+    --warning-foreground: 24 56% 12%;
+    --info: 206 85% 46%;
+    --info-foreground: 0 0% 100%;
+    --focus: 164 71% 31%;
+    --shadow-color: 216 38% 20%;
+
+    --sidebar-background: 208 38% 99%;
+    --sidebar-foreground: 216 14% 34%;
+    --sidebar-primary: 164 71% 31%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 14% 95%;
-    --sidebar-accent-foreground: 220 20% 10%;
-    --sidebar-border: 220 14% 90%;
-    --sidebar-ring: 142 60% 45%;
+    --sidebar-accent: 164 44% 93%;
+    --sidebar-accent-foreground: 164 74% 24%;
+    --sidebar-border: 210 24% 90%;
+    --sidebar-ring: 164 71% 31%;
+
+    --chart-income: 152 65% 35%;
+    --chart-expense: 0 75% 52%;
+    --chart-cat-1: 164 71% 31%;
+    --chart-cat-2: 206 85% 46%;
+    --chart-cat-3: 34 95% 46%;
+    --chart-cat-4: 262 60% 58%;
+    --chart-cat-5: 0 75% 52%;
   }
 
   .dark {
@@ -56,7 +84,25 @@
     --border: 225 12% 16%;
     --input: 225 12% 18%;
     --ring: 142 60% 50%;
-    --radius: 0.625rem;
+    --radius: 0.75rem;
+    --brand: 142 60% 50%;
+    --brand-foreground: 225 16% 8%;
+    --brand-soft: 142 32% 18%;
+    --brand-strong: 142 64% 56%;
+    --surface-app: 225 16% 8%;
+    --surface-panel: 225 14% 11%;
+    --surface-subtle: 225 12% 14%;
+    --surface-raised: 225 14% 13%;
+    --text-subtle: 220 10% 55%;
+    --text-strong: 210 20% 92%;
+    --success: 142 60% 50%;
+    --success-foreground: 225 16% 8%;
+    --warning: 34 95% 56%;
+    --warning-foreground: 24 56% 12%;
+    --info: 206 88% 58%;
+    --info-foreground: 225 16% 8%;
+    --focus: 142 60% 50%;
+    --shadow-color: 220 40% 4%;
     --sidebar-background: 225 16% 6%;
     --sidebar-foreground: 220 10% 60%;
     --sidebar-primary: 142 60% 50%;
@@ -81,7 +127,36 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans antialiased;
+    background-color: hsl(var(--surface-app));
+    background-image:
+      radial-gradient(circle at 12% 18%, hsl(var(--brand) / 0.09), transparent 32%),
+      radial-gradient(circle at 88% 9%, hsl(var(--info) / 0.07), transparent 30%),
+      linear-gradient(180deg, hsl(var(--surface-app)) 0%, hsl(var(--background)) 100%);
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    background: hsl(var(--brand-soft));
+    color: hsl(var(--text-strong));
+  }
+}
+
+@layer components {
+  .app-shell {
+    @apply min-h-screen;
+  }
+
+  .app-main-surface {
+    @apply flex flex-1 flex-col overflow-hidden rounded-2xl border border-border/70 bg-surface-raised/90 shadow-business-md backdrop-blur-[1px];
+  }
+
+  .app-topbar {
+    @apply bg-surface-panel/80 backdrop-blur;
+  }
+
+  .app-kbd {
+    @apply rounded border border-border bg-surface-subtle px-1.5 py-0.5 font-mono-code text-[10px] text-muted-foreground;
   }
 }
 
