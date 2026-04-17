@@ -1,5 +1,5 @@
 import type { FinanceDashboardData } from '@/features/finance/hooks';
-import type { FinanceTabRoute } from '@/modules/finance/navigation';
+import type { FinanceTabRoute } from '@/features/finance/navigation';
 import type { Transaction } from '@/types/finance';
 import { FinanceDashboardHeader } from './FinanceDashboardHeader';
 import { FinanceDashboardTabs } from './FinanceDashboardTabs';

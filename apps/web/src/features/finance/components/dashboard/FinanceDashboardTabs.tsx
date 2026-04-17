@@ -8,7 +8,7 @@ import type { MutationResult } from '@/features/finance/types';
 import {
   isFinanceTabRoute,
   type FinanceTabRoute,
-} from '@/modules/finance/navigation';
+} from '@/features/finance/navigation';
 import type {
   Account,
   AccountOption,

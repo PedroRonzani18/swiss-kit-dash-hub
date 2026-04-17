@@ -10,7 +10,7 @@ import {
   FINANCE_ACTION_ROUTES,
   parseFinanceTabRoute,
   type FinanceTabRoute,
-} from '@/modules/finance/navigation';
+} from '@/features/finance/navigation';
 import type { Transaction } from '@/types/finance';
 import { FinanceErrorState } from '../states/FinanceErrorState';
 import { FinanceLoadingState } from '../states/FinanceLoadingState';
