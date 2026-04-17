@@ -1,4 +1,4 @@
-import { TransactionForm } from '@/components/finance/TransactionForm';
+import { TransactionForm } from '@/features/finance/components/management';
 import {
   Dialog,
   DialogContent,
