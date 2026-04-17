@@ -6,6 +6,7 @@ import { AppRoutes } from "@/app/routes/AppRoutes";
 import { AuthProvider } from "@/auth";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { FinanceDataPrefetcher } from "@/features/finance/components";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,6 +31,7 @@ const App = () => (
         enableSystem={false}
       >
         <AuthProvider>
+          <FinanceDataPrefetcher />
           <TooltipProvider>
             <SonnerToaster />
             <BrowserRouter>

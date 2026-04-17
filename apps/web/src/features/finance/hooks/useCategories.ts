@@ -26,6 +26,7 @@ export function useCategories() {
     updateSubcategory: updateSubcategoryById,
     deleteSubcategory: deleteSubcategoryById,
     isLoading: isSubcategoriesLoading,
+    hasFetched: hasSubcategoriesFetched,
     error: subcategoriesError,
   } = useSubcategories();
 
@@ -196,6 +197,7 @@ export function useCategories() {
   );
 
   const isLoading = categoriesQuery.isLoading || isSubcategoriesLoading;
+  const hasFetched = categoriesQuery.isFetched && hasSubcategoriesFetched;
   const error = categoriesQuery.error || subcategoriesError;
 
   return {
@@ -211,6 +213,7 @@ export function useCategories() {
     getCategoryName,
     getSubcategoryName,
     isLoading,
+    hasFetched,
     error,
   };
 }
