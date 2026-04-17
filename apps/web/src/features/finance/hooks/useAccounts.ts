@@ -1,8 +1,12 @@
 import { useCallback, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createAccount, listAccounts } from '@/api/accounts';
-import { financeKeys } from '@/api/queryKeys';
 import { mapAccountOptions, toAmountCents } from '@/features/finance/mappers';
+import {
+  accountsKeys,
+  accountsQueries,
+  accountsService,
+  invalidateQueryKeys,
+} from '@/features/finance/services';
 import type { MutationResult } from '@/features/finance/types';
 import type { AccountType } from '@/types/finance';
 import { isConflictError } from './errors';
@@ -17,15 +21,12 @@ export type AddAccountInput = {
 export function useAccounts() {
   const queryClient = useQueryClient();
 
-  const accountsQuery = useQuery({
-    queryKey: financeKeys.accounts(),
-    queryFn: listAccounts,
-  });
+  const accountsQuery = useQuery(accountsQueries.list());
 
   const createAccountMutation = useMutation({
-    mutationFn: createAccount,
+    mutationFn: accountsService.create,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: financeKeys.accounts() });
+      return invalidateQueryKeys(queryClient, [accountsKeys.all]);
     },
   });
 

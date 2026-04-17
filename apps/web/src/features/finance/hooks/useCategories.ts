@@ -1,13 +1,14 @@
 import { useCallback, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  createCategory,
-  deleteCategory as deleteCategoryRequest,
-  listCategories,
-  updateCategory as updateCategoryRequest,
-} from '@/api/categories';
-import { financeKeys } from '@/api/queryKeys';
 import { mapGroupedCategories } from '@/features/finance/mappers';
+import {
+  categoriesKeys,
+  categoriesQueries,
+  categoriesService,
+  invalidateQueryKeys,
+  subcategoriesKeys,
+  transactionsKeys,
+} from '@/features/finance/services';
 import type { MutationResult } from '@/features/finance/types';
 import type { CategoryBase, TransactionType } from '@/types/finance';
 import { isConflictError } from './errors';
@@ -28,32 +29,31 @@ export function useCategories() {
     error: subcategoriesError,
   } = useSubcategories();
 
-  const categoriesQuery = useQuery({
-    queryKey: financeKeys.categories(),
-    queryFn: listCategories,
-  });
+  const categoriesQuery = useQuery(categoriesQueries.list());
 
   const createCategoryMutation = useMutation({
-    mutationFn: createCategory,
+    mutationFn: categoriesService.create,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: financeKeys.categories() });
+      return invalidateQueryKeys(queryClient, [categoriesKeys.all]);
     },
   });
 
   const updateCategoryMutation = useMutation({
     mutationFn: ({ id, name }: { id: string; name: string }) =>
-      updateCategoryRequest(id, { name }),
+      categoriesService.update(id, { name }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: financeKeys.categories() });
+      return invalidateQueryKeys(queryClient, [categoriesKeys.all]);
     },
   });
 
   const deleteCategoryMutation = useMutation({
-    mutationFn: deleteCategoryRequest,
+    mutationFn: categoriesService.remove,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: financeKeys.categories() });
-      queryClient.invalidateQueries({ queryKey: financeKeys.subcategories() });
-      queryClient.invalidateQueries({ queryKey: financeKeys.transactions() });
+      return invalidateQueryKeys(queryClient, [
+        categoriesKeys.all,
+        subcategoriesKeys.all,
+        transactionsKeys.all,
+      ]);
     },
   });
 
