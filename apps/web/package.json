@@ -12,6 +12,8 @@
     "typecheck": "tsc -b",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
     "ui-deps:audit": "node ./scripts/audit-ui-deps.mjs --check",
     "ui-deps:audit:update": "node ./scripts/audit-ui-deps.mjs --write"
   },
