@@ -187,7 +187,7 @@ export function SettingsModulePage() {
           </CardContent>
         </Card>
 
-        <div className="grid gap-6 xl:grid-cols-[1fr,1fr]">
+        <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
@@ -311,7 +311,7 @@ export function SettingsModulePage() {
           </Card>
         </div>
 
-        <div className="grid gap-6 xl:grid-cols-[1fr,1fr]">
+        <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">

@@ -1,0 +1,36 @@
+@utility container {
+  margin-inline: auto;
+  padding-inline: 2rem;
+
+  @media (width >= --theme(--breakpoint-sm)) {
+    max-width: none;
+  }
+
+  @media (width >= 1400px) {
+    max-width: 1400px;
+  }
+}
+
+@utility app-shell {
+  @apply min-h-screen;
+}
+
+@utility app-main-surface {
+  @apply flex flex-1 flex-col overflow-hidden rounded-2xl border border-border/70 bg-surface-raised/90 shadow-business-md backdrop-blur-[1px];
+}
+
+@utility app-topbar {
+  @apply bg-surface-panel/80 backdrop-blur-sm;
+}
+
+@utility app-kbd {
+  @apply rounded border border-border bg-surface-subtle px-1.5 py-0.5 font-mono-code text-[10px] text-muted-foreground;
+}
+
+@utility font-display {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+}
+
+@utility font-mono-code {
+  font-family: 'JetBrains Mono', monospace;
+}
