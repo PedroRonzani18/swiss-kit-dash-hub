@@ -1,17 +1,16 @@
 import { useCallback, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { financeKeys } from '@/api/queryKeys';
-import {
-  createTransaction,
-  deleteTransaction as deleteTransactionRequest,
-  listTransactions,
-  updateTransaction as updateTransactionRequest,
-} from '@/api/transactions';
 import {
   mapTransactions,
   toAmountCents,
   toIsoDate,
 } from '@/features/finance/mappers';
+import {
+  invalidateQueryKeys,
+  transactionsKeys,
+  transactionsQueries,
+  transactionsService,
+} from '@/features/finance/services';
 import type { TransactionDraft } from '@/features/finance/types';
 import type {
   Account,
@@ -39,30 +38,27 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
   const { accounts = [] } = options;
   const queryClient = useQueryClient();
 
-  const transactionsQuery = useQuery({
-    queryKey: financeKeys.transactions(),
-    queryFn: listTransactions,
-  });
+  const transactionsQuery = useQuery(transactionsQueries.list());
 
   const createTransactionMutation = useMutation({
-    mutationFn: createTransaction,
+    mutationFn: transactionsService.create,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: financeKeys.transactions() });
+      return invalidateQueryKeys(queryClient, [transactionsKeys.all]);
     },
   });
 
   const updateTransactionMutation = useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: UpdateTransactionInput }) =>
-      updateTransactionRequest(id, payload),
+      transactionsService.update(id, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: financeKeys.transactions() });
+      return invalidateQueryKeys(queryClient, [transactionsKeys.all]);
     },
   });
 
   const deleteTransactionMutation = useMutation({
-    mutationFn: deleteTransactionRequest,
+    mutationFn: transactionsService.remove,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: financeKeys.transactions() });
+      return invalidateQueryKeys(queryClient, [transactionsKeys.all]);
     },
   });
 

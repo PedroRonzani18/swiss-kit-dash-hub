@@ -1,43 +1,42 @@
 import { useCallback, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  createSubcategory,
-  deleteSubcategory as deleteSubcategoryRequest,
-  listSubcategories,
-  updateSubcategory as updateSubcategoryRequest,
-} from '@/api/subcategories';
-import { financeKeys } from '@/api/queryKeys';
+  invalidateQueryKeys,
+  subcategoriesKeys,
+  subcategoriesQueries,
+  subcategoriesService,
+  transactionsKeys,
+} from '@/features/finance/services';
 import type { MutationResult } from '@/features/finance/types';
 import { isConflictError } from './errors';
 
 export function useSubcategories() {
   const queryClient = useQueryClient();
 
-  const subcategoriesQuery = useQuery({
-    queryKey: financeKeys.subcategories(),
-    queryFn: listSubcategories,
-  });
+  const subcategoriesQuery = useQuery(subcategoriesQueries.list());
 
   const createSubcategoryMutation = useMutation({
-    mutationFn: createSubcategory,
+    mutationFn: subcategoriesService.create,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: financeKeys.subcategories() });
+      return invalidateQueryKeys(queryClient, [subcategoriesKeys.all]);
     },
   });
 
   const updateSubcategoryMutation = useMutation({
     mutationFn: ({ subId, name }: { subId: string; name: string }) =>
-      updateSubcategoryRequest(subId, { name }),
+      subcategoriesService.update(subId, { name }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: financeKeys.subcategories() });
+      return invalidateQueryKeys(queryClient, [subcategoriesKeys.all]);
     },
   });
 
   const deleteSubcategoryMutation = useMutation({
-    mutationFn: deleteSubcategoryRequest,
+    mutationFn: subcategoriesService.remove,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: financeKeys.subcategories() });
-      queryClient.invalidateQueries({ queryKey: financeKeys.transactions() });
+      return invalidateQueryKeys(queryClient, [
+        subcategoriesKeys.all,
+        transactionsKeys.all,
+      ]);
     },
   });
 
