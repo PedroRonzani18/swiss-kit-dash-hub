@@ -72,7 +72,7 @@ export function FinanceDashboardTabs({
       }}
       className="space-y-4"
     >
-      <TabsList className="bg-secondary">
+      <TabsList>
         <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
         <TabsTrigger value="transactions">Transações</TabsTrigger>
         <TabsTrigger value="accounts">Contas</TabsTrigger>
