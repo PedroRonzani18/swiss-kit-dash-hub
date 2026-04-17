@@ -36,6 +36,11 @@ export default tseslint.config(
               message:
                 "Importe Radix apenas em src/components/ui. Fora disso, use wrappers de @/components/ui.",
             },
+            {
+              group: ["@/components/finance/*"],
+              message:
+                "Componentes de domínio financeiro devem viver em src/features/finance/components.",
+            },
           ],
         },
       ],

@@ -1,7 +1,9 @@
-import { AccountManager } from '@/components/finance/AccountManager';
-import { AdvancedAnalyticsPanel } from '@/components/finance/AdvancedAnalyticsPanel';
-import { CategoryManager } from '@/components/finance/CategoryManager';
-import { TransactionTable } from '@/components/finance/TransactionTable';
+import {
+  AccountManager,
+  AdvancedAnalyticsPanel,
+  CategoryManager,
+  TransactionTable,
+} from '@/features/finance/components/management';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { AddAccountInput } from '@/features/finance/hooks/useAccounts';
 import type { MutationResult } from '@/features/finance/types';
