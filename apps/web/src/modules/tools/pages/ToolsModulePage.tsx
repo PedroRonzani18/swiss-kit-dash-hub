@@ -275,7 +275,7 @@ export function ToolsModulePage() {
           </CardContent>
         </Card>
 
-        <div className="grid gap-6 xl:grid-cols-[1.15fr,0.85fr]">
+        <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Catálogo</CardTitle>

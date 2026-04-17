@@ -408,7 +408,7 @@ export function AnimesModulePage() {
           </CardContent>
         </Card>
 
-        <div className="grid gap-6 xl:grid-cols-[360px,1fr]">
+        <div className="grid gap-6 xl:grid-cols-[360px_1fr]">
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Novo Anime</CardTitle>

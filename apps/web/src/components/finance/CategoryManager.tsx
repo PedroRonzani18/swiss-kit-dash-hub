@@ -247,7 +247,7 @@ export function CategoryManager({
                       </div>
                     ) : (
                       <>
-                        <ChevronRight className="h-3 w-3 flex-shrink-0" />
+                        <ChevronRight className="h-3 w-3 shrink-0" />
                         <span className="flex-1">{sub.name}</span>
                         <div className="flex gap-0.5 opacity-0 group-hover/sub:opacity-100 transition-opacity">
                           <Button

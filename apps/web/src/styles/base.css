@@ -1,0 +1,35 @@
+/*
+  Tailwind v4 changed the default border color to `currentcolor`.
+  This compatibility layer preserves the visual behavior we had in v3
+  while we keep explicit border token usage across the app.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    background-color: hsl(var(--surface-app));
+    background-image:
+      radial-gradient(circle at 12% 18%, hsl(var(--brand) / 0.09), transparent 32%),
+      radial-gradient(circle at 88% 9%, hsl(var(--info) / 0.07), transparent 30%),
+      linear-gradient(180deg, hsl(var(--surface-app)) 0%, hsl(var(--background)) 100%);
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    background: hsl(var(--brand-soft));
+    color: hsl(var(--text-strong));
+  }
+}
