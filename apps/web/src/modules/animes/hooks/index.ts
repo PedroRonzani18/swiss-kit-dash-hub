@@ -1,0 +1,1 @@
+export { useAnimeCatalog } from "./useAnimeCatalog";
