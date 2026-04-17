@@ -320,7 +320,7 @@ export function AdvancedAnalyticsPanel({
                   key={t}
                   onClick={() => setTypeFilter(t)}
                   className={`px-2.5 py-1 text-xs rounded transition-colors font-medium ${
-                    typeFilter === t ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                    typeFilter === t ? "bg-status-success text-primary-foreground" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {t === "all" ? "Todos" : t === "income" ? "Receitas" : "Despesas"}
@@ -336,11 +336,11 @@ export function AdvancedAnalyticsPanel({
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-xs text-muted-foreground font-normal flex items-center gap-1.5">
-              <TrendingUp className="h-3.5 w-3.5 text-primary" /> Receita Total
+              <TrendingUp className="h-3.5 w-3.5 text-status-success" /> Receita Total
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xl font-bold font-mono text-primary">{fmt(totalIncome)}</p>
+            <p className="text-xl font-bold font-mono text-status-success">{fmt(totalIncome)}</p>
             <p className="text-[10px] text-muted-foreground mt-1">Média: {fmt(extraStats.avgIncome)}/mês</p>
           </CardContent>
         </Card>
@@ -362,7 +362,7 @@ export function AdvancedAnalyticsPanel({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className={`text-xl font-bold font-mono ${balance >= 0 ? "text-primary" : "text-destructive"}`}>{fmt(balance)}</p>
+            <p className={`text-xl font-bold font-mono ${balance >= 0 ? "text-status-success" : "text-destructive"}`}>{fmt(balance)}</p>
             <p className="text-[10px] text-muted-foreground mt-1">{extraStats.numMonths} mês(es) selecionado(s)</p>
           </CardContent>
         </Card>
@@ -373,8 +373,8 @@ export function AdvancedAnalyticsPanel({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className={`text-xl font-bold font-mono ${savingsRate >= 0 ? "text-primary" : "text-destructive"}`}>{savingsRate.toFixed(1)}%</p>
-            <Progress value={Math.max(0, savingsRate)} className="mt-2 h-1.5 [&>div]:bg-primary" />
+            <p className={`text-xl font-bold font-mono ${savingsRate >= 0 ? "text-status-success" : "text-destructive"}`}>{savingsRate.toFixed(1)}%</p>
+            <Progress value={Math.max(0, savingsRate)} className="mt-2 h-1.5 [&>div]:bg-status-success" />
           </CardContent>
         </Card>
       </div>
@@ -386,7 +386,7 @@ export function AdvancedAnalyticsPanel({
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-primary" />
+                <TrendingUp className="h-4 w-4 text-status-success" />
                 Receitas por Categoria
               </CardTitle>
             </CardHeader>
@@ -412,16 +412,16 @@ export function AdvancedAnalyticsPanel({
                           {expandedCategories.has(cat.id) ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
                           {cat.name}
                         </span>
-                        <span className="text-sm font-mono text-right text-primary">{fmt(total)}</span>
+                        <span className="text-sm font-mono text-right text-status-success">{fmt(total)}</span>
                         <span className="text-xs text-right text-muted-foreground">{pct(total, totalIncome)}</span>
-                        <Progress value={(total / totalIncome) * 100} className="h-1.5 [&>div]:bg-primary" />
+                        <Progress value={(total / totalIncome) * 100} className="h-1.5 [&>div]:bg-status-success" />
                       </button>
                       {expandedCategories.has(cat.id) && subs.map((sub) => (
                         <div key={sub.id} className="grid grid-cols-[1fr_100px_60px_80px] gap-2 items-center px-2 py-1 pl-8">
                           <span className="text-xs text-muted-foreground">{sub.name}</span>
                           <span className="text-xs font-mono text-right">{fmt(sub.total)}</span>
                           <span className="text-[10px] text-right text-muted-foreground">{pct(sub.total, totalIncome)}</span>
-                          <Progress value={(sub.total / totalIncome) * 100} className="h-1 [&>div]:bg-primary/60" />
+                          <Progress value={(sub.total / totalIncome) * 100} className="h-1 [&>div]:bg-status-success/60" />
                         </div>
                       ))}
                     </div>
@@ -429,7 +429,7 @@ export function AdvancedAnalyticsPanel({
                   {/* Total */}
                   <div className="grid grid-cols-[1fr_100px_60px_80px] gap-2 px-2 pt-2 border-t border-border">
                     <span className="text-sm font-bold">Total Receitas</span>
-                    <span className="text-sm font-mono font-bold text-right text-primary">{fmt(totalIncome)}</span>
+                    <span className="text-sm font-mono font-bold text-right text-status-success">{fmt(totalIncome)}</span>
                     <span className="text-xs text-right">100%</span>
                     <span></span>
                   </div>
@@ -518,15 +518,15 @@ export function AdvancedAnalyticsPanel({
                 <div key={m.label} className="grid grid-cols-[120px_1fr_1fr_1fr] gap-3 items-center px-2 py-2 rounded hover:bg-secondary/30 transition-colors">
                   <span className="text-sm font-medium">{m.label}</span>
                   <div className="space-y-1">
-                    <span className="text-xs font-mono text-primary block text-right">{fmt(m.income)}</span>
-                    <Progress value={(m.income / maxMonthlyValue) * 100} className="h-1 [&>div]:bg-primary" />
+                    <span className="text-xs font-mono text-status-success block text-right">{fmt(m.income)}</span>
+                    <Progress value={(m.income / maxMonthlyValue) * 100} className="h-1 [&>div]:bg-status-success" />
                   </div>
                   <div className="space-y-1">
                     <span className="text-xs font-mono text-destructive block text-right">{fmt(m.expense)}</span>
                     <Progress value={(m.expense / maxMonthlyValue) * 100} className="h-1 [&>div]:bg-destructive" />
                   </div>
                   <div>
-                    <span className={`text-xs font-mono block text-right ${monthBalance >= 0 ? "text-primary" : "text-destructive"}`}>
+                    <span className={`text-xs font-mono block text-right ${monthBalance >= 0 ? "text-status-success" : "text-destructive"}`}>
                       {fmt(monthBalance)}
                     </span>
                   </div>
@@ -536,9 +536,9 @@ export function AdvancedAnalyticsPanel({
             {/* Totals row */}
             <div className="grid grid-cols-[120px_1fr_1fr_1fr] gap-3 px-2 pt-2 border-t border-border">
               <span className="text-sm font-bold">Total</span>
-              <span className="text-sm font-mono font-bold text-right text-primary">{fmt(totalIncome)}</span>
+              <span className="text-sm font-mono font-bold text-right text-status-success">{fmt(totalIncome)}</span>
               <span className="text-sm font-mono font-bold text-right text-destructive">{fmt(totalExpense)}</span>
-              <span className={`text-sm font-mono font-bold text-right ${balance >= 0 ? "text-primary" : "text-destructive"}`}>{fmt(balance)}</span>
+              <span className={`text-sm font-mono font-bold text-right ${balance >= 0 ? "text-status-success" : "text-destructive"}`}>{fmt(balance)}</span>
             </div>
           </div>
         </CardContent>
@@ -567,7 +567,7 @@ export function AdvancedAnalyticsPanel({
             </div>
             <div className="space-y-1">
               <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Média Mensal de Receita</p>
-              <p className="text-lg font-mono font-bold text-primary">{fmt(extraStats.avgIncome)}</p>
+              <p className="text-lg font-mono font-bold text-status-success">{fmt(extraStats.avgIncome)}</p>
               <p className="text-[10px] text-muted-foreground">Baseado em {extraStats.numMonths} mês(es)</p>
             </div>
             <div className="space-y-1">

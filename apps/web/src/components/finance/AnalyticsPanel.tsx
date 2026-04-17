@@ -25,12 +25,12 @@ interface AnalyticsPanelProps {
 }
 
 const PIE_COLORS = [
-  "hsl(142, 60%, 50%)",
-  "hsl(200, 70%, 55%)",
-  "hsl(35, 90%, 55%)",
-  "hsl(280, 60%, 60%)",
-  "hsl(0, 72%, 55%)",
-  "hsl(170, 60%, 45%)",
+  "hsl(var(--chart-income))",
+  "hsl(var(--chart-cat-2))",
+  "hsl(var(--chart-cat-3))",
+  "hsl(var(--chart-cat-4))",
+  "hsl(var(--chart-expense))",
+  "hsl(var(--chart-cat-5))",
 ];
 
 export function AnalyticsPanel({
@@ -95,13 +95,13 @@ export function AnalyticsPanel({
         <Card className="animate-fade-in">
           <CardHeader className="pb-2">
             <CardTitle className="text-xs text-muted-foreground font-normal flex items-center gap-1.5">
-              <TrendingUp className="h-3.5 w-3.5 text-primary" />
+              <TrendingUp className="h-3.5 w-3.5 text-status-success" />
               Receita Total
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold font-mono-code text-primary">{fmt(totalIncome)}</p>
-            <Progress value={100} className="mt-2 h-1.5 [&>div]:bg-primary" />
+            <p className="text-2xl font-bold font-mono-code text-status-success">{fmt(totalIncome)}</p>
+            <Progress value={100} className="mt-2 h-1.5 [&>div]:bg-status-success" />
           </CardContent>
         </Card>
         <Card className="animate-fade-in" style={{ animationDelay: "0.05s" }}>
@@ -124,12 +124,12 @@ export function AnalyticsPanel({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className={`text-2xl font-bold font-mono-code ${balance >= 0 ? "text-primary" : "text-destructive"}`}>
+            <p className={`text-2xl font-bold font-mono-code ${balance >= 0 ? "text-status-success" : "text-destructive"}`}>
               {fmt(balance)}
             </p>
             <Progress
               value={totalIncome > 0 ? (balance / totalIncome) * 100 : 0}
-              className={`mt-2 h-1.5 ${balance >= 0 ? "[&>div]:bg-primary" : "[&>div]:bg-destructive"}`}
+              className={`mt-2 h-1.5 ${balance >= 0 ? "[&>div]:bg-status-success" : "[&>div]:bg-destructive"}`}
             />
           </CardContent>
         </Card>
@@ -198,8 +198,8 @@ export function AnalyticsPanel({
                   }}
                 />
                 <Bar dataKey="value" radius={[6, 6, 0, 0]}>
-                  <Cell fill="hsl(142, 60%, 50%)" />
-                  <Cell fill="hsl(0, 72%, 55%)" />
+                  <Cell fill="hsl(var(--chart-income))" />
+                  <Cell fill="hsl(var(--chart-expense))" />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>

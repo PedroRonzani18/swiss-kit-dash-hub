@@ -256,7 +256,7 @@ export function TransactionTable({
                 <TableCell className="text-sm">{t.description}</TableCell>
                 <TableCell
                   className={`text-right text-sm font-medium font-mono-code ${
-                    t.type === "income" ? "text-primary" : "text-destructive"
+                    t.type === "income" ? "text-status-success" : "text-destructive"
                   }`}
                 >
                   {t.type === "income" ? "+" : "-"} {formatCurrency(t.amount)}
