@@ -7,6 +7,7 @@ import {
   STATUS_SORT_WEIGHT,
 } from "@/modules/animes/model/constants";
 import { clampEpisodes, createAnimeId, parseStoredAnimes } from "@/modules/animes/model/utils";
+import { readStorageItem, writeStorageItem } from "@/lib/storage";
 import type {
   AnimeItem,
   AnimePriority,
@@ -52,14 +53,14 @@ export function useAnimeCatalog(): UseAnimeCatalogResult {
   const [statusFilter, setStatusFilter] = useState<AnimeStatusFilter>("all");
 
   useEffect(() => {
-    const stored = parseStoredAnimes(localStorage.getItem(ANIME_STORAGE_KEY));
+    const stored = parseStoredAnimes(readStorageItem(ANIME_STORAGE_KEY));
     if (stored && stored.length > 0) {
       setAnimes(stored);
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(ANIME_STORAGE_KEY, JSON.stringify(animes));
+    writeStorageItem(ANIME_STORAGE_KEY, JSON.stringify(animes));
   }, [animes]);
 
   const summary = useMemo(() => {

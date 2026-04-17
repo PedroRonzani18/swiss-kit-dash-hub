@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useCategoryManagerState } from "@/features/finance/hooks";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Category, TransactionType } from "@/types/finance";
@@ -20,7 +20,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { toast } from "@/components/ui/sonner";
 
 interface CategoryManagerProps {
   categories: Category[];
@@ -50,84 +49,40 @@ export function CategoryManager({
   onUpdateSubcategory,
   onDeleteSubcategory,
 }: CategoryManagerProps) {
-  const [catName, setCatName] = useState("");
-  const [subName, setSubName] = useState("");
-  const [type, setType] = useState<TransactionType>("expense");
-
-  // Editing state
-  const [editingCatId, setEditingCatId] = useState<string | null>(null);
-  const [editingCatName, setEditingCatName] = useState("");
-  const [editingSubKey, setEditingSubKey] = useState<string | null>(null); // "catId:subId"
-  const [editingSubName, setEditingSubName] = useState("");
-
-  // Delete confirmation
-  const [deleteTarget, setDeleteTarget] = useState<{ type: "category"; id: string } | { type: "subcategory"; catId: string; subId: string } | null>(null);
-
-  const sortedCategories = useMemo(
-    () => [...categories].sort((a, b) => a.name.localeCompare(b.name)),
-    [categories]
-  );
-
-  const handleAdd = async () => {
-    if (!catName.trim() || !subName.trim()) return;
-    try {
-      const result = await onAddCategory(catName.trim(), subName.trim(), type);
-      if (result === "duplicate") {
-        toast.error("Esta subcategoria já existe nessa categoria");
-      } else {
-        toast.success("Categoria adicionada");
-        setSubName("");
-      }
-    } catch {
-      toast.error("Não foi possível adicionar a categoria");
-    }
-  };
-
-  const handleSaveCategory = async (id: string) => {
-    if (!editingCatName.trim()) return;
-    try {
-      const result = await onUpdateCategory(id, editingCatName.trim());
-      if (result === "duplicate") {
-        toast.error("Esta categoria já existe");
-      } else {
-        toast.success("Categoria renomeada");
-        setEditingCatId(null);
-      }
-    } catch {
-      toast.error("Não foi possível renomear a categoria");
-    }
-  };
-
-  const handleSaveSubcategory = async (catId: string, subId: string) => {
-    if (!editingSubName.trim()) return;
-    try {
-      const result = await onUpdateSubcategory(catId, subId, editingSubName.trim());
-      if (result === "duplicate") {
-        toast.error("Esta subcategoria já existe");
-      } else {
-        toast.success("Subcategoria renomeada");
-        setEditingSubKey(null);
-      }
-    } catch {
-      toast.error("Não foi possível renomear a subcategoria");
-    }
-  };
-
-  const handleConfirmDelete = async () => {
-    if (!deleteTarget) return;
-    try {
-      if (deleteTarget.type === "category") {
-        await onDeleteCategory(deleteTarget.id);
-        toast.success("Categoria removida");
-      } else {
-        await onDeleteSubcategory(deleteTarget.catId, deleteTarget.subId);
-        toast.success("Subcategoria removida");
-      }
-      setDeleteTarget(null);
-    } catch {
-      toast.error("Não foi possível excluir o item selecionado");
-    }
-  };
+  const {
+    catName,
+    setCatName,
+    subName,
+    setSubName,
+    type,
+    setType,
+    sortedCategories,
+    editingCatId,
+    editingCatName,
+    setEditingCatName,
+    editingSubKey,
+    editingSubName,
+    setEditingSubName,
+    deleteTarget,
+    handleAdd,
+    startEditingCategory,
+    cancelEditingCategory,
+    saveCategory,
+    startEditingSubcategory,
+    cancelEditingSubcategory,
+    saveSubcategory,
+    requestDeleteCategory,
+    requestDeleteSubcategory,
+    closeDeleteDialog,
+    confirmDelete,
+  } = useCategoryManagerState({
+    categories,
+    onAddCategory,
+    onUpdateCategory,
+    onDeleteCategory,
+    onUpdateSubcategory,
+    onDeleteSubcategory,
+  });
 
   return (
     <div className="space-y-4">
@@ -177,12 +132,12 @@ export function CategoryManager({
                     onChange={(e) => setEditingCatName(e.target.value)}
                     className="h-7 text-sm"
                     autoFocus
-                    onKeyDown={(e) => e.key === "Enter" && handleSaveCategory(cat.id)}
+                    onKeyDown={(e) => e.key === "Enter" && saveCategory(cat.id)}
                   />
-                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleSaveCategory(cat.id)}>
+                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => saveCategory(cat.id)}>
                     <Check className="h-3 w-3" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setEditingCatId(null)}>
+                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={cancelEditingCategory}>
                     <X className="h-3 w-3" />
                   </Button>
                 </div>
@@ -205,7 +160,7 @@ export function CategoryManager({
                       variant="ghost"
                       size="icon"
                       className="h-6 w-6"
-                      onClick={() => { setEditingCatId(cat.id); setEditingCatName(cat.name); }}
+                      onClick={() => startEditingCategory(cat.id, cat.name)}
                     >
                       <Pencil className="h-3 w-3" />
                     </Button>
@@ -213,7 +168,7 @@ export function CategoryManager({
                       variant="ghost"
                       size="icon"
                       className="h-6 w-6 text-destructive"
-                      onClick={() => setDeleteTarget({ type: "category", id: cat.id })}
+                      onClick={() => requestDeleteCategory(cat.id)}
                     >
                       <Trash2 className="h-3 w-3" />
                     </Button>
@@ -236,12 +191,12 @@ export function CategoryManager({
                           onChange={(e) => setEditingSubName(e.target.value)}
                           className="h-6 text-xs"
                           autoFocus
-                          onKeyDown={(e) => e.key === "Enter" && handleSaveSubcategory(cat.id, sub.id)}
+                          onKeyDown={(e) => e.key === "Enter" && saveSubcategory(cat.id, sub.id)}
                         />
-                        <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => handleSaveSubcategory(cat.id, sub.id)}>
+                        <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => saveSubcategory(cat.id, sub.id)}>
                           <Check className="h-3 w-3" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => setEditingSubKey(null)}>
+                        <Button variant="ghost" size="icon" className="h-5 w-5" onClick={cancelEditingSubcategory}>
                           <X className="h-3 w-3" />
                         </Button>
                       </div>
@@ -254,7 +209,9 @@ export function CategoryManager({
                             variant="ghost"
                             size="icon"
                             className="h-5 w-5"
-                            onClick={() => { setEditingSubKey(subKey); setEditingSubName(sub.name); }}
+                            onClick={() =>
+                              startEditingSubcategory(cat.id, sub.id, sub.name)
+                            }
                           >
                             <Pencil className="h-2.5 w-2.5" />
                           </Button>
@@ -262,7 +219,9 @@ export function CategoryManager({
                             variant="ghost"
                             size="icon"
                             className="h-5 w-5 text-destructive"
-                            onClick={() => setDeleteTarget({ type: "subcategory", catId: cat.id, subId: sub.id })}
+                            onClick={() =>
+                              requestDeleteSubcategory(cat.id, sub.id)
+                            }
                           >
                             <Trash2 className="h-2.5 w-2.5" />
                           </Button>
@@ -278,7 +237,7 @@ export function CategoryManager({
       </div>
 
       {/* Delete confirmation */}
-      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && closeDeleteDialog()}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
@@ -292,7 +251,7 @@ export function CategoryManager({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmDelete}>Excluir</AlertDialogAction>
+            <AlertDialogAction onClick={confirmDelete}>Excluir</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

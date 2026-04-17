@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { AccountOption, Transaction, Category } from "@/types/finance";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -35,6 +35,7 @@ import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { toast } from "@/components/ui/sonner";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useTransactionTableFilters } from "@/features/finance/hooks";
 
 interface TransactionTableProps {
   accounts: AccountOption[];
@@ -55,46 +56,31 @@ export function TransactionTable({
   onEdit,
   onDelete,
 }: TransactionTableProps) {
-  const [search, setSearch] = useState("");
-  const [sortAsc, setSortAsc] = useState(false);
-  const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
-  const [dateFrom, setDateFrom] = useState<Date | undefined>();
-  const [dateTo, setDateTo] = useState<Date | undefined>();
-  const [filterCategoryId, setFilterCategoryId] = useState("");
-  const [filterSubcategoryId, setFilterSubcategoryId] = useState("");
+  const {
+    search,
+    setSearch,
+    sortAsc,
+    setSortAsc,
+    selectedAccounts,
+    dateFrom,
+    setDateFrom,
+    dateTo,
+    setDateTo,
+    filterCategoryId,
+    filterSubcategoryId,
+    filterCategory,
+    filteredTransactions,
+    hasFilters,
+    toggleAccount,
+    handleCategoryChange,
+    handleSubcategoryChange,
+    clearFilters,
+  } = useTransactionTableFilters({
+    transactions,
+    categories,
+  });
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-
-  const toggleAccount = (accountId: string) => {
-    setSelectedAccounts((prev) =>
-      prev.includes(accountId) ? prev.filter((a) => a !== accountId) : [...prev, accountId]
-    );
-  };
-
-  const filterCategory = categories.find((c) => c.id === filterCategoryId);
-
-  const filtered = useMemo(() => {
-    const result = transactions.filter((t) => {
-      if (search && !t.description.toLowerCase().includes(search.toLowerCase())) return false;
-      if (selectedAccounts.length > 0 && !selectedAccounts.includes(t.accountId)) return false;
-      if (dateFrom) {
-        const td = new Date(t.date);
-        if (td < dateFrom) return false;
-      }
-      if (dateTo) {
-        const td = new Date(t.date);
-        if (td > dateTo) return false;
-      }
-      if (filterCategoryId && t.categoryId !== filterCategoryId) return false;
-      if (filterSubcategoryId && t.subcategoryId !== filterSubcategoryId) return false;
-      return true;
-    });
-    result.sort((a, b) => {
-      const diff = new Date(a.date).getTime() - new Date(b.date).getTime();
-      return sortAsc ? diff : -diff;
-    });
-    return result;
-  }, [transactions, search, sortAsc, selectedAccounts, dateFrom, dateTo, filterCategoryId, filterSubcategoryId]);
 
   const formatCurrency = (v: number) =>
     v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -104,16 +90,6 @@ export function TransactionTable({
     return `${day}/${m}/${y}`;
   };
 
-  const hasFilters = search || selectedAccounts.length > 0 || dateFrom || dateTo || filterCategoryId;
-
-  const clearFilters = () => {
-    setSearch("");
-    setSelectedAccounts([]);
-    setDateFrom(undefined);
-    setDateTo(undefined);
-    setFilterCategoryId("");
-    setFilterSubcategoryId("");
-  };
 
   const handleConfirmDelete = async () => {
     if (deleteId) {
@@ -192,7 +168,7 @@ export function TransactionTable({
         </Popover>
 
         {/* Category */}
-        <Select value={filterCategoryId} onValueChange={(v) => { setFilterCategoryId(v === "all" ? "" : v); setFilterSubcategoryId(""); }}>
+        <Select value={filterCategoryId} onValueChange={handleCategoryChange}>
           <SelectTrigger className="w-36 h-9 text-xs">
             <SelectValue placeholder="Categoria" />
           </SelectTrigger>
@@ -206,7 +182,7 @@ export function TransactionTable({
 
         {/* Subcategory */}
         {filterCategory && (
-          <Select value={filterSubcategoryId} onValueChange={(v) => setFilterSubcategoryId(v === "all" ? "" : v)}>
+          <Select value={filterSubcategoryId} onValueChange={handleSubcategoryChange}>
             <SelectTrigger className="w-36 h-9 text-xs">
               <SelectValue placeholder="Subcategoria" />
             </SelectTrigger>
@@ -249,7 +225,7 @@ export function TransactionTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filtered.map((t) => (
+            {filteredTransactions.map((t) => (
               <TableRow key={t.id} className="animate-fade-in group">
                 <TableCell className="text-xs font-mono-code">{t.accountName}</TableCell>
                 <TableCell className="text-xs font-mono-code">{formatDate(t.date)}</TableCell>
@@ -279,7 +255,7 @@ export function TransactionTable({
                 </TableCell>
               </TableRow>
             ))}
-            {filtered.length === 0 && (
+            {filteredTransactions.length === 0 && (
               <TableRow>
                 <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
                   Nenhuma transação encontrada.

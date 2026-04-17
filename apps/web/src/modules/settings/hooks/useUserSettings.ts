@@ -5,6 +5,7 @@ import {
   type UserSettings,
 } from "@/modules/settings/model/settings";
 import { parseStoredSettings } from "@/modules/settings/model/settingsStorage";
+import { readStorageItem, writeStorageItem } from "@/lib/storage";
 
 type SaveSettingsResult = "success" | "missing_display_name" | "missing_email";
 
@@ -17,13 +18,7 @@ export function useUserSettings() {
   );
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    const stored = parseStoredSettings(
-      window.localStorage.getItem(SETTINGS_STORAGE_KEY),
-    );
+    const stored = parseStoredSettings(readStorageItem(SETTINGS_STORAGE_KEY));
     if (!stored) {
       return;
     }
@@ -56,12 +51,7 @@ export function useUserSettings() {
       return "missing_email";
     }
 
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(
-        SETTINGS_STORAGE_KEY,
-        serializeSettings(settings),
-      );
-    }
+    writeStorageItem(SETTINGS_STORAGE_KEY, serializeSettings(settings));
 
     setSavedSnapshot(serializeSettings(settings));
     return "success";
