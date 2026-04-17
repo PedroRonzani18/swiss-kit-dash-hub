@@ -11,11 +11,13 @@ interface AppLayoutProps {
 export function AppLayout({ children, breadcrumbs }: AppLayoutProps) {
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full">
+      <div className="app-shell flex w-full">
         <AppSidebar />
-        <div className="flex-1 flex flex-col min-w-0">
-          <AppHeader breadcrumbs={breadcrumbs} />
-          <main className="flex-1 overflow-auto p-6">{children}</main>
+        <div className="flex min-w-0 flex-1 flex-col px-3 py-3 md:px-4 md:py-4">
+          <div className="app-main-surface min-h-[calc(100svh-1.5rem)]">
+            <AppHeader breadcrumbs={breadcrumbs} />
+            <main className="flex-1 overflow-auto p-4 md:p-6">{children}</main>
+          </div>
         </div>
       </div>
       <CommandPalette />

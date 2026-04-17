@@ -24,9 +24,9 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="p-4">
+      <SidebarHeader className="border-b border-sidebar-border/70 p-4">
         <div className="flex items-center gap-2">
-          <Layers className="h-6 w-6 text-primary shrink-0" />
+          <Layers className="h-6 w-6 shrink-0 text-brand" />
           {!collapsed && (
             <span className="font-display font-bold text-lg text-foreground tracking-tight">
               SwissKit
@@ -44,8 +44,8 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <NavLink
                       to={module.path}
-                      className="hover:bg-sidebar-accent/60"
-                      activeClassName="bg-sidebar-accent text-primary font-medium"
+                      className="hover:bg-brand-soft/70 hover:text-foreground"
+                      activeClassName="bg-brand-soft text-brand-strong font-semibold shadow-business-sm"
                     >
                       <module.icon className="mr-2 h-4 w-4 shrink-0" />
                       {!collapsed && <span>{module.label}</span>}
@@ -57,11 +57,11 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="p-2">
+      <SidebarFooter className="border-t border-sidebar-border/70 p-2">
         {!collapsed && (
           <button
             onClick={toggleSidebar}
-            className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 w-full"
+            className="flex w-full items-center gap-2 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-subtle hover:text-foreground"
           >
             <ChevronLeft className="h-3 w-3" />
             Recolher
