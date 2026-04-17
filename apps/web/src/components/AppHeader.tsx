@@ -2,7 +2,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/auth";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/sonner";
 
 interface AppHeaderProps {
   breadcrumbs?: string[];
