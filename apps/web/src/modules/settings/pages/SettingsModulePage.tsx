@@ -1,4 +1,3 @@
-import { useEffect, useMemo, useState } from "react";
 import { Bell, Link2, Save, ShieldCheck, UserCircle2 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -18,151 +17,37 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/sonner";
-
-type UserSettings = {
-  displayName: string;
-  email: string;
-  timezone: string;
-  currency: "BRL" | "USD" | "EUR";
-  digestByEmail: boolean;
-  instantAlerts: boolean;
-  weeklySummary: boolean;
-  compactTables: boolean;
-  enable2fa: boolean;
-  googleCalendarSync: boolean;
-  notionSync: boolean;
-};
-
-const STORAGE_KEY = "swisskit.module.settings.v1";
-
-const DEFAULT_SETTINGS: UserSettings = {
-  displayName: "Pedro Ronzani",
-  email: "pedro@example.com",
-  timezone: "America/Sao_Paulo",
-  currency: "BRL",
-  digestByEmail: true,
-  instantAlerts: true,
-  weeklySummary: true,
-  compactTables: false,
-  enable2fa: false,
-  googleCalendarSync: false,
-  notionSync: false,
-};
-
-function parseStoredSettings(serialized: string | null): UserSettings | null {
-  if (!serialized) {
-    return null;
-  }
-
-  try {
-    const parsed = JSON.parse(serialized);
-    if (!parsed || typeof parsed !== "object") {
-      return null;
-    }
-
-    return {
-      displayName:
-        typeof parsed.displayName === "string"
-          ? parsed.displayName
-          : DEFAULT_SETTINGS.displayName,
-      email:
-        typeof parsed.email === "string" ? parsed.email : DEFAULT_SETTINGS.email,
-      timezone:
-        typeof parsed.timezone === "string"
-          ? parsed.timezone
-          : DEFAULT_SETTINGS.timezone,
-      currency:
-        parsed.currency === "USD" || parsed.currency === "EUR"
-          ? parsed.currency
-          : "BRL",
-      digestByEmail: Boolean(parsed.digestByEmail),
-      instantAlerts: Boolean(parsed.instantAlerts),
-      weeklySummary: Boolean(parsed.weeklySummary),
-      compactTables: Boolean(parsed.compactTables),
-      enable2fa: Boolean(parsed.enable2fa),
-      googleCalendarSync: Boolean(parsed.googleCalendarSync),
-      notionSync: Boolean(parsed.notionSync),
-    };
-  } catch {
-    return null;
-  }
-}
-
-type ToggleRowProps = {
-  label: string;
-  description: string;
-  checked: boolean;
-  onCheckedChange: (checked: boolean) => void;
-};
-
-function ToggleRow({
-  label,
-  description,
-  checked,
-  onCheckedChange,
-}: ToggleRowProps) {
-  return (
-    <div className="flex items-start justify-between gap-3 rounded-lg border border-border/70 bg-surface-subtle p-3">
-      <div>
-        <p className="text-sm font-medium">{label}</p>
-        <p className="text-sm text-muted-foreground">{description}</p>
-      </div>
-      <Switch checked={checked} onCheckedChange={onCheckedChange} />
-    </div>
-  );
-}
+import { SettingToggleRow } from "@/modules/settings/components";
+import { useUserSettings } from "@/modules/settings/hooks";
+import {
+  USER_CURRENCY_OPTIONS,
+  USER_TIMEZONE_OPTIONS,
+  type UserSettings,
+} from "@/modules/settings/model";
 
 export function SettingsModulePage() {
-  const [settings, setSettings] = useState<UserSettings>(DEFAULT_SETTINGS);
-  const [savedSnapshot, setSavedSnapshot] = useState(
-    JSON.stringify(DEFAULT_SETTINGS),
-  );
+  const { settings, isDirty, updateSettings, saveSettings, restoreDefaults } =
+    useUserSettings();
 
-  useEffect(() => {
-    const stored = parseStoredSettings(localStorage.getItem(STORAGE_KEY));
-    if (!stored) {
-      return;
-    }
+  const handleSaveSettings = () => {
+    const result = saveSettings();
 
-    setSettings(stored);
-    setSavedSnapshot(JSON.stringify(stored));
-  }, []);
-
-  const isDirty = useMemo(
-    () => JSON.stringify(settings) !== savedSnapshot,
-    [savedSnapshot, settings],
-  );
-
-  const updateSettings = <K extends keyof UserSettings>(
-    key: K,
-    value: UserSettings[K],
-  ) => {
-    setSettings(prev => ({
-      ...prev,
-      [key]: value,
-    }));
-  };
-
-  const saveSettings = () => {
-    if (!settings.displayName.trim()) {
+    if (result === "missing_display_name") {
       toast.error("Informe um nome para o perfil");
       return;
     }
 
-    if (!settings.email.trim()) {
+    if (result === "missing_email") {
       toast.error("Informe um e-mail válido");
       return;
     }
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-    setSavedSnapshot(JSON.stringify(settings));
     toast.success("Configurações salvas");
   };
 
-  const restoreDefaults = () => {
-    setSettings(DEFAULT_SETTINGS);
+  const handleRestoreDefaults = () => {
+    restoreDefaults();
     toast.success("Configurações restauradas para o padrão");
   };
 
@@ -177,11 +62,11 @@ export function SettingsModulePage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
-            <Button onClick={saveSettings} disabled={!isDirty}>
+            <Button onClick={handleSaveSettings} disabled={!isDirty}>
               <Save className="h-4 w-4" />
               Salvar alterações
             </Button>
-            <Button variant="outline" onClick={restoreDefaults}>
+            <Button variant="outline" onClick={handleRestoreDefaults}>
               Restaurar padrão
             </Button>
           </CardContent>
@@ -234,9 +119,11 @@ export function SettingsModulePage() {
                       <SelectValue placeholder="Selecione uma moeda" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="BRL">BRL (R$)</SelectItem>
-                      <SelectItem value="USD">USD ($)</SelectItem>
-                      <SelectItem value="EUR">EUR (€)</SelectItem>
+                      {USER_CURRENCY_OPTIONS.map(option => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -250,13 +137,11 @@ export function SettingsModulePage() {
                       <SelectValue placeholder="Selecione um fuso" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="America/Sao_Paulo">
-                        America/Sao_Paulo
-                      </SelectItem>
-                      <SelectItem value="America/New_York">
-                        America/New_York
-                      </SelectItem>
-                      <SelectItem value="Europe/Lisbon">Europe/Lisbon</SelectItem>
+                      {USER_TIMEZONE_OPTIONS.map(timezone => (
+                        <SelectItem key={timezone} value={timezone}>
+                          {timezone}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -275,7 +160,7 @@ export function SettingsModulePage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              <ToggleRow
+              <SettingToggleRow
                 label="Digest diário por e-mail"
                 description="Resumo de movimentações e pendências no início do dia."
                 checked={settings.digestByEmail}
@@ -283,7 +168,7 @@ export function SettingsModulePage() {
                   updateSettings("digestByEmail", checked)
                 }
               />
-              <ToggleRow
+              <SettingToggleRow
                 label="Alertas instantâneos"
                 description="Sinalizar conflitos e eventos importantes em tempo real."
                 checked={settings.instantAlerts}
@@ -291,7 +176,7 @@ export function SettingsModulePage() {
                   updateSettings("instantAlerts", checked)
                 }
               />
-              <ToggleRow
+              <SettingToggleRow
                 label="Resumo semanal"
                 description="Enviar panorama consolidado de progresso toda sexta-feira."
                 checked={settings.weeklySummary}
@@ -299,7 +184,7 @@ export function SettingsModulePage() {
                   updateSettings("weeklySummary", checked)
                 }
               />
-              <ToggleRow
+              <SettingToggleRow
                 label="Modo de tabela compacta"
                 description="Reduz espaçamento para exibir mais linhas por tela."
                 checked={settings.compactTables}
@@ -323,7 +208,7 @@ export function SettingsModulePage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              <ToggleRow
+              <SettingToggleRow
                 label="Google Calendar"
                 description="Sincronizar lembretes de revisão e check-ins de rotina."
                 checked={settings.googleCalendarSync}
@@ -331,7 +216,7 @@ export function SettingsModulePage() {
                   updateSettings("googleCalendarSync", checked)
                 }
               />
-              <ToggleRow
+              <SettingToggleRow
                 label="Notion"
                 description="Publicar relatórios semanais em uma página dedicada."
                 checked={settings.notionSync}
@@ -351,7 +236,7 @@ export function SettingsModulePage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              <ToggleRow
+              <SettingToggleRow
                 label="Autenticação em dois fatores"
                 description="Adicionar camada extra de verificação ao entrar na plataforma."
                 checked={settings.enable2fa}
@@ -366,7 +251,9 @@ export function SettingsModulePage() {
                   variant="outline"
                   size="sm"
                   className="mt-3"
-                  onClick={() => toast.success("Sessão atual marcada como confiável")}
+                  onClick={() =>
+                    toast.success("Sessão atual marcada como confiável")
+                  }
                 >
                   Marcar dispositivo atual como confiável
                 </Button>
