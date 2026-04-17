@@ -1,19 +1,17 @@
-name: PR CI
+name: Main CI
 
 on:
-  pull_request:
+  push:
+    branches:
+      - main
   workflow_dispatch:
-
-concurrency:
-  group: pr-ci-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
-  quality_gate:
-    name: quality-gate
+  quality_gate_main:
+    name: quality-gate-main
     runs-on: ubuntu-latest
     services:
       postgres:
