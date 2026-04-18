@@ -5,9 +5,7 @@ import {
   type ReactNode,
 } from 'react';
 import type { AuthUser } from '@/types/auth';
-import { useGoogleLogin } from '@/features/auth/hooks/useGoogleLogin';
-import { useAuthSession } from '@/features/auth/hooks/useAuthSession';
-import { useLogout } from '@/features/auth/hooks/useLogout';
+import { useAuthSession, useGoogleLogin, useLogout } from '@/features/auth';
 
 type AuthContextValue = {
   user: AuthUser | null;

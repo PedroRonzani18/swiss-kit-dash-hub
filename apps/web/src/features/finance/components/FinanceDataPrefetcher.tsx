@@ -1,26 +1,46 @@
-import { useEffect, useRef } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "@/auth";
+import { useEffect, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   accountsQueries,
   categoriesQueries,
+  financeQueryKeys,
   subcategoriesQueries,
   transactionsQueries,
-} from "@/features/finance/services";
+} from '@/features/finance/api';
+import {
+  shouldResetFinancePrefetch,
+  shouldRunFinancePrefetch,
+} from '@/features/finance/model/prefetch';
 
-export function FinanceDataPrefetcher() {
+type FinanceDataPrefetcherProps = {
+  isAuthenticated: boolean;
+  isAuthLoading: boolean;
+};
+
+export function FinanceDataPrefetcher({
+  isAuthenticated,
+  isAuthLoading,
+}: FinanceDataPrefetcherProps) {
   const queryClient = useQueryClient();
-  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const hasPrefetchedRef = useRef(false);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      hasPrefetchedRef.current = false;
+    if (!shouldResetFinancePrefetch(isAuthenticated)) {
+      return;
     }
-  }, [isAuthenticated]);
+
+    hasPrefetchedRef.current = false;
+    queryClient.removeQueries({ queryKey: financeQueryKeys.root });
+  }, [isAuthenticated, queryClient]);
 
   useEffect(() => {
-    if (isAuthLoading || !isAuthenticated || hasPrefetchedRef.current) {
+    const canRunPrefetch = shouldRunFinancePrefetch({
+      isAuthLoading,
+      isAuthenticated,
+      hasPrefetched: hasPrefetchedRef.current,
+    });
+
+    if (!canRunPrefetch) {
       return;
     }
 

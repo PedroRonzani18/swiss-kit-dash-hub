@@ -6,11 +6,11 @@ import {
   toIsoDate,
 } from '@/features/finance/mappers';
 import {
+  transactionsApi,
   invalidateQueryKeys,
   transactionsKeys,
   transactionsQueries,
-  transactionsService,
-} from '@/features/finance/services';
+} from '@/features/finance/api';
 import type { TransactionDraft } from '@/features/finance/types';
 import type {
   Account,
@@ -41,7 +41,7 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
   const transactionsQuery = useQuery(transactionsQueries.list());
 
   const createTransactionMutation = useMutation({
-    mutationFn: transactionsService.create,
+    mutationFn: transactionsApi.create,
     onSuccess: () => {
       return invalidateQueryKeys(queryClient, [transactionsKeys.all]);
     },
@@ -49,14 +49,14 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
 
   const updateTransactionMutation = useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: UpdateTransactionInput }) =>
-      transactionsService.update(id, payload),
+      transactionsApi.update(id, payload),
     onSuccess: () => {
       return invalidateQueryKeys(queryClient, [transactionsKeys.all]);
     },
   });
 
   const deleteTransactionMutation = useMutation({
-    mutationFn: transactionsService.remove,
+    mutationFn: transactionsApi.remove,
     onSuccess: () => {
       return invalidateQueryKeys(queryClient, [transactionsKeys.all]);
     },

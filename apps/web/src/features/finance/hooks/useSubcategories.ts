@@ -1,12 +1,12 @@
 import { useCallback, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  subcategoriesApi,
   invalidateQueryKeys,
   subcategoriesKeys,
   subcategoriesQueries,
-  subcategoriesService,
   transactionsKeys,
-} from '@/features/finance/services';
+} from '@/features/finance/api';
 import type { MutationResult } from '@/features/finance/types';
 import { isConflictError } from './errors';
 
@@ -16,7 +16,7 @@ export function useSubcategories() {
   const subcategoriesQuery = useQuery(subcategoriesQueries.list());
 
   const createSubcategoryMutation = useMutation({
-    mutationFn: subcategoriesService.create,
+    mutationFn: subcategoriesApi.create,
     onSuccess: () => {
       return invalidateQueryKeys(queryClient, [subcategoriesKeys.all]);
     },
@@ -24,14 +24,14 @@ export function useSubcategories() {
 
   const updateSubcategoryMutation = useMutation({
     mutationFn: ({ subId, name }: { subId: string; name: string }) =>
-      subcategoriesService.update(subId, { name }),
+      subcategoriesApi.update(subId, { name }),
     onSuccess: () => {
       return invalidateQueryKeys(queryClient, [subcategoriesKeys.all]);
     },
   });
 
   const deleteSubcategoryMutation = useMutation({
-    mutationFn: subcategoriesService.remove,
+    mutationFn: subcategoriesApi.remove,
     onSuccess: () => {
       return invalidateQueryKeys(queryClient, [
         subcategoriesKeys.all,
