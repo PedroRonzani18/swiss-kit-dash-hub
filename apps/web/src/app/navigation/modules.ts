@@ -1,7 +1,8 @@
 import { Wallet, type LucideIcon } from "lucide-react";
+import { FINANCE_MODULE_ROUTE } from "@/features/finance";
 
 export const MODULE_ROUTES = {
-  finance: "/financeiro",
+  finance: FINANCE_MODULE_ROUTE,
 } as const;
 
 export type ModuleRouteKey = keyof typeof MODULE_ROUTES;

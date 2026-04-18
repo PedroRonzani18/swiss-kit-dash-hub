@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { AppLayout } from '@/components/AppLayout';
 import {
   useFinanceDashboardData,
   useTransactionDialogState,
@@ -102,7 +101,7 @@ export function FinanceDashboardPage() {
   const hasError = Boolean(error);
 
   return (
-    <AppLayout breadcrumbs={['SwissKit', 'Financeiro']}>
+    <>
       {isInitialLoading && !error && <FinanceLoadingState />}
       {!isInitialLoading && hasError && <FinanceErrorState />}
       {!isInitialLoading && !hasError && (
@@ -125,6 +124,6 @@ export function FinanceDashboardPage() {
           />
         </>
       )}
-    </AppLayout>
+    </>
   );
 }

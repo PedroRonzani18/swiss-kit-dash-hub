@@ -1,4 +1,4 @@
-import { MODULE_ROUTES } from '@/app/navigation/modules';
+import { FINANCE_MODULE_ROUTE } from './routeContract';
 
 export const FINANCE_TAB_SEGMENT_BY_ROUTE = {
   dashboard: 'dashboard',
@@ -51,6 +51,6 @@ export function buildFinancePath(
   tabRoute: FinanceTabRoute = DEFAULT_FINANCE_TAB_ROUTE,
   action?: FinanceActionRoute,
 ): string {
-  const basePath = `${MODULE_ROUTES.finance}/${FINANCE_TAB_SEGMENT_BY_ROUTE[tabRoute]}`;
+  const basePath = `${FINANCE_MODULE_ROUTE}/${FINANCE_TAB_SEGMENT_BY_ROUTE[tabRoute]}`;
   return action ? `${basePath}/${action}` : basePath;
 }
