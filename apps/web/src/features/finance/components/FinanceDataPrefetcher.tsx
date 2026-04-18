@@ -1,13 +1,13 @@
 import { useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/auth";
-import { financeKeys } from "@/api/queryKeys";
 import {
   accountsQueries,
   categoriesQueries,
+  financeQueryKeys,
   subcategoriesQueries,
   transactionsQueries,
-} from "@/features/finance/services";
+} from "@/features/finance/api";
 
 export function FinanceDataPrefetcher() {
   const queryClient = useQueryClient();
@@ -20,7 +20,7 @@ export function FinanceDataPrefetcher() {
     }
 
     hasPrefetchedRef.current = false;
-    queryClient.removeQueries({ queryKey: financeKeys.root });
+    queryClient.removeQueries({ queryKey: financeQueryKeys.root });
   }, [isAuthenticated, queryClient]);
 
   useEffect(() => {

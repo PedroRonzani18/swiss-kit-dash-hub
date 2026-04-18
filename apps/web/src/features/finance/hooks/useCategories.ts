@@ -2,13 +2,13 @@ import { useCallback, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { mapGroupedCategories } from '@/features/finance/mappers';
 import {
+  categoriesApi,
   categoriesKeys,
   categoriesQueries,
-  categoriesService,
   invalidateQueryKeys,
   subcategoriesKeys,
   transactionsKeys,
-} from '@/features/finance/services';
+} from '@/features/finance/api';
 import type { MutationResult } from '@/features/finance/types';
 import type { CategoryBase, TransactionType } from '@/types/finance';
 import { isConflictError } from './errors';
@@ -33,7 +33,7 @@ export function useCategories() {
   const categoriesQuery = useQuery(categoriesQueries.list());
 
   const createCategoryMutation = useMutation({
-    mutationFn: categoriesService.create,
+    mutationFn: categoriesApi.create,
     onSuccess: () => {
       return invalidateQueryKeys(queryClient, [categoriesKeys.all]);
     },
@@ -41,14 +41,14 @@ export function useCategories() {
 
   const updateCategoryMutation = useMutation({
     mutationFn: ({ id, name }: { id: string; name: string }) =>
-      categoriesService.update(id, { name }),
+      categoriesApi.update(id, { name }),
     onSuccess: () => {
       return invalidateQueryKeys(queryClient, [categoriesKeys.all]);
     },
   });
 
   const deleteCategoryMutation = useMutation({
-    mutationFn: categoriesService.remove,
+    mutationFn: categoriesApi.remove,
     onSuccess: () => {
       return invalidateQueryKeys(queryClient, [
         categoriesKeys.all,

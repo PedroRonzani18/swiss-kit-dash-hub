@@ -113,12 +113,9 @@ export function FinanceDashboardPage() {
           <FinanceDashboardContent
             activeTab={activeTab}
             onTabChange={handleTabChange}
-            accounts={finance.accounts}
-            categories={finance.categories}
-            transactions={finance.transactions}
+            finance={finance}
             onOpenNewTransaction={handleOpenNewTransaction}
             onEditTransaction={handleEditTransaction}
-            onDeleteTransaction={finance.transactions.deleteTransaction}
           />
 
           <FinanceTransactionDialog

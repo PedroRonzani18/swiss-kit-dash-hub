@@ -1,17 +1,24 @@
-import { queryOptions } from '@tanstack/react-query';
+import { queryOptions } from "@tanstack/react-query";
 import {
   createCategory as createCategoryRequest,
   deleteCategory as deleteCategoryRequest,
   listCategories as listCategoriesRequest,
   updateCategory as updateCategoryRequest,
-} from '@/api/categories';
-import { financeKeys } from '@/api/queryKeys';
+} from "@/api/categories";
+import { financeQueryKeys } from "./queryKeys";
 
 export const categoriesKeys = {
-  all: () => financeKeys.categories(),
+  all: () => financeQueryKeys.categories(),
 };
 
-export const categoriesService = {
+export type CategoriesApi = {
+  list: typeof listCategoriesRequest;
+  create: typeof createCategoryRequest;
+  update: typeof updateCategoryRequest;
+  remove: typeof deleteCategoryRequest;
+};
+
+export const categoriesApi: CategoriesApi = {
   list: listCategoriesRequest,
   create: createCategoryRequest,
   update: updateCategoryRequest,
@@ -22,6 +29,6 @@ export const categoriesQueries = {
   list: () =>
     queryOptions({
       queryKey: categoriesKeys.all(),
-      queryFn: categoriesService.list,
+      queryFn: categoriesApi.list,
     }),
 };

@@ -1,17 +1,24 @@
-import { queryOptions } from '@tanstack/react-query';
+import { queryOptions } from "@tanstack/react-query";
 import {
   createAccount as createAccountRequest,
   deleteAccount as deleteAccountRequest,
   listAccounts as listAccountsRequest,
   updateAccount as updateAccountRequest,
-} from '@/api/accounts';
-import { financeKeys } from '@/api/queryKeys';
+} from "@/api/accounts";
+import { financeQueryKeys } from "./queryKeys";
 
 export const accountsKeys = {
-  all: () => financeKeys.accounts(),
+  all: () => financeQueryKeys.accounts(),
 };
 
-export const accountsService = {
+export type AccountsApi = {
+  list: typeof listAccountsRequest;
+  create: typeof createAccountRequest;
+  update: typeof updateAccountRequest;
+  remove: typeof deleteAccountRequest;
+};
+
+export const accountsApi: AccountsApi = {
   list: listAccountsRequest,
   create: createAccountRequest,
   update: updateAccountRequest,
@@ -22,6 +29,6 @@ export const accountsQueries = {
   list: () =>
     queryOptions({
       queryKey: accountsKeys.all(),
-      queryFn: accountsService.list,
+      queryFn: accountsApi.list,
     }),
 };

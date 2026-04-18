@@ -1,17 +1,24 @@
-import { queryOptions } from '@tanstack/react-query';
+import { queryOptions } from "@tanstack/react-query";
 import {
   createSubcategory as createSubcategoryRequest,
   deleteSubcategory as deleteSubcategoryRequest,
   listSubcategories as listSubcategoriesRequest,
   updateSubcategory as updateSubcategoryRequest,
-} from '@/api/subcategories';
-import { financeKeys } from '@/api/queryKeys';
+} from "@/api/subcategories";
+import { financeQueryKeys } from "./queryKeys";
 
 export const subcategoriesKeys = {
-  all: () => financeKeys.subcategories(),
+  all: () => financeQueryKeys.subcategories(),
 };
 
-export const subcategoriesService = {
+export type SubcategoriesApi = {
+  list: typeof listSubcategoriesRequest;
+  create: typeof createSubcategoryRequest;
+  update: typeof updateSubcategoryRequest;
+  remove: typeof deleteSubcategoryRequest;
+};
+
+export const subcategoriesApi: SubcategoriesApi = {
   list: listSubcategoriesRequest,
   create: createSubcategoryRequest,
   update: updateSubcategoryRequest,
@@ -22,6 +29,6 @@ export const subcategoriesQueries = {
   list: () =>
     queryOptions({
       queryKey: subcategoriesKeys.all(),
-      queryFn: subcategoriesService.list,
+      queryFn: subcategoriesApi.list,
     }),
 };

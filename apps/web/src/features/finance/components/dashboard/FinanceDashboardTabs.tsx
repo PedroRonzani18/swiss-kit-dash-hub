@@ -5,64 +5,25 @@ import {
   TransactionTable,
 } from '@/features/finance/components/management';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import type { AddAccountInput } from '@/features/finance/hooks/useAccounts';
-import type { MutationResult } from '@/features/finance/types';
+import type { FinanceDashboardData } from '@/features/finance/hooks';
 import {
   isFinanceTabRoute,
   type FinanceTabRoute,
 } from '@/features/finance/navigation';
-import type {
-  Account,
-  AccountOption,
-  Category,
-  Transaction,
-  TransactionType,
-} from '@/types/finance';
+import type { Transaction } from '@/types/finance';
 
 type FinanceDashboardTabsProps = {
   activeTab: FinanceTabRoute;
   onTabChange: (tab: FinanceTabRoute) => void;
-  accountOptions: AccountOption[];
-  accountItems: Account[];
-  categories: Category[];
-  transactions: Transaction[];
-  addAccount: (input: AddAccountInput) => Promise<MutationResult>;
-  addCategory: (
-    categoryName: string,
-    subcategoryName: string,
-    type: TransactionType,
-  ) => Promise<MutationResult>;
-  updateCategory: (id: string, newName: string) => Promise<MutationResult>;
-  deleteCategory: (id: string) => Promise<void>;
-  updateSubcategory: (
-    catId: string,
-    subId: string,
-    newName: string,
-  ) => Promise<MutationResult>;
-  deleteSubcategory: (catId: string, subId: string) => Promise<void>;
-  getCategoryName: (id: string) => string;
-  getSubcategoryName: (catId: string, subId: string) => string;
+  finance: FinanceDashboardData;
   onEditTransaction: (transaction: Transaction) => void;
-  onDeleteTransaction: (id: string) => Promise<void>;
 };
 
 export function FinanceDashboardTabs({
   activeTab,
   onTabChange,
-  accountOptions,
-  accountItems,
-  categories,
-  transactions,
-  addAccount,
-  addCategory,
-  updateCategory,
-  deleteCategory,
-  updateSubcategory,
-  deleteSubcategory,
-  getCategoryName,
-  getSubcategoryName,
+  finance,
   onEditTransaction,
-  onDeleteTransaction,
 }: FinanceDashboardTabsProps) {
   return (
     <Tabs
@@ -83,37 +44,40 @@ export function FinanceDashboardTabs({
 
       <TabsContent value="dashboard">
         <AdvancedAnalyticsPanel
-          transactions={transactions}
-          categories={categories}
-          getCategoryName={getCategoryName}
-          getSubcategoryName={getSubcategoryName}
+          transactions={finance.transactions.transactions}
+          categories={finance.categories.categories}
+          getCategoryName={finance.categories.getCategoryName}
+          getSubcategoryName={finance.categories.getSubcategoryName}
         />
       </TabsContent>
 
       <TabsContent value="transactions">
         <TransactionTable
-          accounts={accountOptions}
-          transactions={transactions}
-          categories={categories}
-          getCategoryName={getCategoryName}
-          getSubcategoryName={getSubcategoryName}
+          accounts={finance.accounts.accountOptions}
+          transactions={finance.transactions.transactions}
+          categories={finance.categories.categories}
+          getCategoryName={finance.categories.getCategoryName}
+          getSubcategoryName={finance.categories.getSubcategoryName}
           onEdit={onEditTransaction}
-          onDelete={onDeleteTransaction}
+          onDelete={finance.transactions.deleteTransaction}
         />
       </TabsContent>
 
       <TabsContent value="accounts">
-        <AccountManager accounts={accountItems} onAddAccount={addAccount} />
+        <AccountManager
+          accounts={finance.accounts.activeAccounts}
+          onAddAccount={finance.accounts.addAccount}
+        />
       </TabsContent>
 
       <TabsContent value="categories">
         <CategoryManager
-          categories={categories}
-          onAddCategory={addCategory}
-          onUpdateCategory={updateCategory}
-          onDeleteCategory={deleteCategory}
-          onUpdateSubcategory={updateSubcategory}
-          onDeleteSubcategory={deleteSubcategory}
+          categories={finance.categories.categories}
+          onAddCategory={finance.categories.addCategory}
+          onUpdateCategory={finance.categories.updateCategory}
+          onDeleteCategory={finance.categories.deleteCategory}
+          onUpdateSubcategory={finance.categories.updateSubcategory}
+          onDeleteSubcategory={finance.categories.deleteSubcategory}
         />
       </TabsContent>
     </Tabs>
