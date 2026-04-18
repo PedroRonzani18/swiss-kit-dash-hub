@@ -15,7 +15,7 @@ type FinanceTransactionDialogProps = {
   accountOptions: AccountOption[];
   categories: Category[];
   onOpenChange: (open: boolean) => void;
-  onSave: (transaction: TransactionDraft) => Promise<void>;
+  onSave: (drafts: TransactionDraft[]) => Promise<void>;
 };
 
 export function FinanceTransactionDialog({
@@ -28,7 +28,7 @@ export function FinanceTransactionDialog({
 }: FinanceTransactionDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className={editingTransaction ? 'max-w-xl' : 'max-w-5xl'}>
         <DialogHeader>
           <DialogTitle>
             {editingTransaction ? 'Editar Transação' : 'Nova Transação'}

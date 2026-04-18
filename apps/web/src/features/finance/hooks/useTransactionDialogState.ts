@@ -33,14 +33,20 @@ export function useTransactionDialogState({
   }, []);
 
   const saveTransaction = useCallback(
-    async (transaction: TransactionDraft): Promise<void> => {
+    async (drafts: TransactionDraft[]): Promise<void> => {
       try {
         if (editingTransaction) {
-          await updateTransaction(editingTransaction.id, transaction);
+          await updateTransaction(editingTransaction.id, drafts[0]!);
           toast.success('Transação atualizada');
         } else {
-          await addTransaction(transaction);
-          toast.success('Transação adicionada');
+          for (const draft of drafts) {
+            await addTransaction(draft);
+          }
+          toast.success(
+            drafts.length === 1
+              ? 'Transação adicionada'
+              : `${drafts.length} transações adicionadas`,
+          );
         }
 
         setIsDialogOpen(false);
