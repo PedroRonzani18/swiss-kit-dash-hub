@@ -1,9 +1,8 @@
-import { useEffect, useMemo } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { getMe } from '@/api/auth';
 import { authKeys } from '@/api/queryKeys';
 import type { AuthUser } from '@/types/auth';
-import { clearFinanceQueries } from '../lib/authSession';
 
 type UseAuthSessionResult = {
   user: AuthUser | null;
@@ -11,19 +10,12 @@ type UseAuthSessionResult = {
 };
 
 export function useAuthSession(): UseAuthSessionResult {
-  const queryClient = useQueryClient();
   const meQuery = useQuery({
     queryKey: authKeys.me(),
     queryFn: getMe,
     retry: false,
     staleTime: 0,
   });
-
-  useEffect(() => {
-    if (meQuery.isError) {
-      clearFinanceQueries(queryClient);
-    }
-  }, [meQuery.isError, queryClient]);
 
   const user = useMemo<AuthUser | null>(() => {
     if (!meQuery.data) {

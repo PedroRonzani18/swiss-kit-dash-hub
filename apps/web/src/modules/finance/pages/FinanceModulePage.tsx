@@ -2,10 +2,11 @@ import { useEffect } from "react";
 import { useAuth } from "@/auth";
 import { AppLayout } from "@/components/AppLayout";
 import {
+  FinanceDataPrefetcher,
   FinanceDashboardPage,
+  FinanceLoadingState,
   UnauthenticatedFinanceState,
-} from "@/features/finance/components";
-import { FinanceLoadingState } from "@/features/finance/components/states";
+} from "@/features/finance";
 import { toast } from "@/components/ui/sonner";
 
 export function FinanceModulePage() {
@@ -38,22 +39,29 @@ export function FinanceModulePage() {
     }
   };
 
+  let content: JSX.Element;
+
   if (isAuthLoading && !isAuthenticated) {
-    return (
+    content = (
       <AppLayout breadcrumbs={["SwissKit", "Financeiro"]}>
         <FinanceLoadingState />
       </AppLayout>
     );
-  }
-
-  if (!isAuthenticated) {
-    return (
+  } else if (!isAuthenticated) {
+    content = (
       <UnauthenticatedFinanceState
         isAuthLoading={isAuthLoading}
         onLogin={handleLogin}
       />
     );
+  } else {
+    content = <FinanceDashboardPage />;
   }
 
-  return <FinanceDashboardPage />;
+  return (
+    <>
+      <FinanceDataPrefetcher />
+      {content}
+    </>
+  );
 }

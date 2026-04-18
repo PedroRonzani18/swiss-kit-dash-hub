@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { logout as logoutRequest } from '@/api/auth';
-import { clearAuthAndFinanceQueries } from '../lib/authSession';
+import { clearAuthQueries } from '../lib/authSession';
 
 type UseLogoutResult = {
   isLoading: boolean;
@@ -17,7 +17,7 @@ export function useLogout(): UseLogoutResult {
     try {
       await logoutRequest();
     } finally {
-      clearAuthAndFinanceQueries(queryClient);
+      clearAuthQueries(queryClient);
       setIsLoading(false);
     }
   }, [queryClient]);
