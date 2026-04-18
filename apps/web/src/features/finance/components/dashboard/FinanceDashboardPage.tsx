@@ -11,6 +11,7 @@ import {
   parseFinanceTabRoute,
   type FinanceTabRoute,
 } from '@/features/finance/navigation';
+import { getFinanceDashboardStatus } from '@/features/finance/model/dashboardStatus';
 import type { Transaction } from '@/types/finance';
 import { FinanceErrorState } from '../states/FinanceErrorState';
 import { FinanceLoadingState } from '../states/FinanceLoadingState';
@@ -93,22 +94,18 @@ export function FinanceDashboardPage() {
     }
   };
 
-  const hasFetchedAll =
-    finance.accounts.hasFetched &&
-    finance.categories.hasFetched &&
-    finance.transactions.hasFetched;
-  const isInitialLoading = !hasFetchedAll;
-
-  const error =
-    finance.accounts.error ||
-    finance.categories.error ||
-    finance.transactions.error;
+  const { isInitialLoading, error } = getFinanceDashboardStatus({
+    accounts: finance.accounts,
+    categories: finance.categories,
+    transactions: finance.transactions,
+  });
+  const hasError = Boolean(error);
 
   return (
     <AppLayout breadcrumbs={['SwissKit', 'Financeiro']}>
       {isInitialLoading && !error && <FinanceLoadingState />}
-      {!isInitialLoading && error && <FinanceErrorState />}
-      {!isInitialLoading && !error && (
+      {!isInitialLoading && hasError && <FinanceErrorState />}
+      {!isInitialLoading && !hasError && (
         <>
           <FinanceDashboardContent
             activeTab={activeTab}

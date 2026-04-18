@@ -8,6 +8,10 @@ import {
   subcategoriesQueries,
   transactionsQueries,
 } from "@/features/finance/api";
+import {
+  shouldResetFinancePrefetch,
+  shouldRunFinancePrefetch,
+} from "@/features/finance/model/prefetch";
 
 export function FinanceDataPrefetcher() {
   const queryClient = useQueryClient();
@@ -15,7 +19,7 @@ export function FinanceDataPrefetcher() {
   const hasPrefetchedRef = useRef(false);
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (!shouldResetFinancePrefetch(isAuthenticated)) {
       return;
     }
 
@@ -24,7 +28,13 @@ export function FinanceDataPrefetcher() {
   }, [isAuthenticated, queryClient]);
 
   useEffect(() => {
-    if (isAuthLoading || !isAuthenticated || hasPrefetchedRef.current) {
+    const canRunPrefetch = shouldRunFinancePrefetch({
+      isAuthLoading,
+      isAuthenticated,
+      hasPrefetched: hasPrefetchedRef.current,
+    });
+
+    if (!canRunPrefetch) {
       return;
     }
 

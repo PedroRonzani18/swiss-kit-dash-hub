@@ -54,8 +54,10 @@ describe('finance mappers', () => {
       ],
     );
 
-    expect(categories[0].subcategories).toHaveLength(1);
-    expect(categories[0].subcategories[0].name).toBe('Uber');
+    const firstCategory = categories[0];
+    expect(firstCategory).toBeDefined();
+    expect(firstCategory!.subcategories).toHaveLength(1);
+    expect(firstCategory!.subcategories[0]!.name).toBe('Uber');
   });
 
   it('maps transaction account display by account id', () => {
@@ -92,8 +94,10 @@ describe('finance mappers', () => {
       ],
     );
 
-    expect(mapped[0].accountId).toBe('acc-1');
-    expect(mapped[0].accountName).toBe('Nubank');
+    const firstMapped = mapped[0];
+    expect(firstMapped).toBeDefined();
+    expect(firstMapped!.accountId).toBe('acc-1');
+    expect(firstMapped!.accountName).toBe('Nubank');
   });
 
   it('converts amount and iso date consistently', () => {
