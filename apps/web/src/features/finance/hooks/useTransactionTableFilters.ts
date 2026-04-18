@@ -6,6 +6,13 @@ type UseTransactionTableFiltersArgs = {
   categories: Category[];
 };
 
+const toLocalDateStr = (d: Date) => {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+};
+
 export function useTransactionTableFilters({
   transactions,
   categories,
@@ -37,17 +44,11 @@ export function useTransactionTableFilters({
       ) {
         return false;
       }
-      if (dateFrom) {
-        const transactionDate = new Date(transaction.date);
-        if (transactionDate < dateFrom) {
-          return false;
-        }
+      if (dateFrom && transaction.date < toLocalDateStr(dateFrom)) {
+        return false;
       }
-      if (dateTo) {
-        const transactionDate = new Date(transaction.date);
-        if (transactionDate > dateTo) {
-          return false;
-        }
+      if (dateTo && transaction.date > toLocalDateStr(dateTo)) {
+        return false;
       }
       if (filterCategoryId && transaction.categoryId !== filterCategoryId) {
         return false;

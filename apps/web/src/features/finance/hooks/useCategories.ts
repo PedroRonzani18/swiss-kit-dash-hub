@@ -205,6 +205,7 @@ export function useCategories() {
     subcategories,
     categories,
     addCategory,
+    addSubcategory: createSubcategory,
     createCategory: createCategoryByName,
     updateCategory,
     deleteCategory,

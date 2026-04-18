@@ -15,6 +15,7 @@ type UseCategoryManagerStateArgs = {
     sub: string,
     type: TransactionType,
   ) => Promise<MutationResult>;
+  onAddSubcategory: (catId: string, subName: string) => Promise<MutationResult>;
   onUpdateCategory: (id: string, newName: string) => Promise<MutationResult>;
   onDeleteCategory: (id: string) => Promise<void>;
   onUpdateSubcategory: (
@@ -28,6 +29,7 @@ type UseCategoryManagerStateArgs = {
 export function useCategoryManagerState({
   categories,
   onAddCategory,
+  onAddSubcategory,
   onUpdateCategory,
   onDeleteCategory,
   onUpdateSubcategory,
@@ -41,6 +43,8 @@ export function useCategoryManagerState({
   const [editingSubKey, setEditingSubKey] = useState<string | null>(null);
   const [editingSubName, setEditingSubName] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget>(null);
+  const [addingSubCatId, setAddingSubCatId] = useState<string | null>(null);
+  const [newSubName, setNewSubName] = useState("");
 
   const sortedCategories = useMemo(
     () => [...categories].sort((a, b) => a.name.localeCompare(b.name)),
@@ -119,6 +123,32 @@ export function useCategoryManagerState({
     }
   };
 
+  const startAddingSub = (catId: string) => {
+    setAddingSubCatId(catId);
+    setNewSubName("");
+  };
+
+  const cancelAddingSub = () => {
+    setAddingSubCatId(null);
+    setNewSubName("");
+  };
+
+  const handleAddSub = async (catId: string) => {
+    if (!newSubName.trim()) return;
+    try {
+      const result = await onAddSubcategory(catId, newSubName.trim());
+      if (result === "duplicate") {
+        toast.error("Esta subcategoria já existe nessa categoria");
+      } else {
+        toast.success("Subcategoria adicionada");
+        setNewSubName("");
+        setAddingSubCatId(null);
+      }
+    } catch {
+      toast.error("Não foi possível adicionar a subcategoria");
+    }
+  };
+
   const requestDeleteCategory = (id: string) => {
     setDeleteTarget({ type: "category", id });
   };
@@ -163,6 +193,9 @@ export function useCategoryManagerState({
     editingSubName,
     setEditingSubName,
     deleteTarget,
+    addingSubCatId,
+    newSubName,
+    setNewSubName,
     handleAdd,
     startEditingCategory,
     cancelEditingCategory,
@@ -170,6 +203,9 @@ export function useCategoryManagerState({
     startEditingSubcategory,
     cancelEditingSubcategory,
     saveSubcategory,
+    startAddingSub,
+    cancelAddingSub,
+    handleAddSub,
     requestDeleteCategory,
     requestDeleteSubcategory,
     closeDeleteDialog,
