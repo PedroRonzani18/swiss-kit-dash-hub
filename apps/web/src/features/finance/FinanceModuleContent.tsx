@@ -1,9 +1,9 @@
-import { FinanceDataPrefetcher } from "./components/FinanceDataPrefetcher";
-import { FinanceDashboardPage } from "./components/dashboard";
+import { FinanceDataPrefetcher } from './components/FinanceDataPrefetcher';
+import { FinanceDashboardPage } from './components/dashboard';
 import {
   FinanceLoadingState,
   UnauthenticatedFinanceState,
-} from "./components/states";
+} from './components/states';
 
 type FinanceModuleContentProps = {
   isAuthenticated: boolean;
@@ -33,7 +33,10 @@ export function FinanceModuleContent({
 
   return (
     <>
-      <FinanceDataPrefetcher />
+      <FinanceDataPrefetcher
+        isAuthenticated={isAuthenticated}
+        isAuthLoading={isAuthLoading}
+      />
       {content}
     </>
   );
