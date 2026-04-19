@@ -4,12 +4,12 @@ import type { Transaction } from '@/types/finance';
 import { toast } from 'sonner';
 
 type UseTransactionDialogStateParams = {
-  addTransaction: (transaction: TransactionDraft) => Promise<void>;
+  bulkAddTransactions: (transactions: TransactionDraft[]) => Promise<void>;
   updateTransaction: (id: string, transaction: TransactionDraft) => Promise<void>;
 };
 
 export function useTransactionDialogState({
-  addTransaction,
+  bulkAddTransactions,
   updateTransaction,
 }: UseTransactionDialogStateParams) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -33,14 +33,18 @@ export function useTransactionDialogState({
   }, []);
 
   const saveTransaction = useCallback(
-    async (transaction: TransactionDraft): Promise<void> => {
+    async (drafts: TransactionDraft[]): Promise<void> => {
       try {
         if (editingTransaction) {
-          await updateTransaction(editingTransaction.id, transaction);
+          await updateTransaction(editingTransaction.id, drafts[0]!);
           toast.success('Transação atualizada');
         } else {
-          await addTransaction(transaction);
-          toast.success('Transação adicionada');
+          await bulkAddTransactions(drafts);
+          toast.success(
+            drafts.length === 1
+              ? 'Transação adicionada'
+              : `${drafts.length} transações adicionadas`,
+          );
         }
 
         setIsDialogOpen(false);
@@ -54,7 +58,7 @@ export function useTransactionDialogState({
         toast.error(message);
       }
     },
-    [addTransaction, editingTransaction, updateTransaction],
+    [bulkAddTransactions, editingTransaction, updateTransaction],
   );
 
   return {

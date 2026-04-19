@@ -47,6 +47,13 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
     },
   });
 
+  const bulkCreateTransactionMutation = useMutation({
+    mutationFn: transactionsApi.bulkCreate,
+    onSuccess: () => {
+      return invalidateQueryKeys(queryClient, [transactionsKeys.all]);
+    },
+  });
+
   const updateTransactionMutation = useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: UpdateTransactionInput }) =>
       transactionsApi.update(id, payload),
@@ -79,6 +86,15 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
     [createTransactionMutation],
   );
 
+  const bulkAddTransactions = useCallback(
+    async (transactions: TransactionDraft[]): Promise<void> => {
+      await bulkCreateTransactionMutation.mutateAsync(
+        transactions.map(toTransactionPayload),
+      );
+    },
+    [bulkCreateTransactionMutation],
+  );
+
   const updateTransaction = useCallback(
     async (id: string, transaction: TransactionDraft): Promise<void> => {
       await updateTransactionMutation.mutateAsync({
@@ -100,6 +116,7 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
     rawTransactions,
     transactions,
     addTransaction,
+    bulkAddTransactions,
     updateTransaction,
     deleteTransaction,
     isLoading: transactionsQuery.isLoading,

@@ -74,6 +74,7 @@ export function FinanceDashboardTabs({
         <CategoryManager
           categories={finance.categories.categories}
           onAddCategory={finance.categories.addCategory}
+          onAddSubcategory={finance.categories.addSubcategory}
           onUpdateCategory={finance.categories.updateCategory}
           onDeleteCategory={finance.categories.deleteCategory}
           onUpdateSubcategory={finance.categories.updateSubcategory}

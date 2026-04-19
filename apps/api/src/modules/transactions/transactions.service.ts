@@ -27,6 +27,24 @@ export class TransactionsService {
     return transaction;
   }
 
+  async createBulk(
+    userId: string,
+    inputs: CreateTransactionDto[],
+  ): Promise<{ count: number }> {
+    const payloads: CreateTransactionContract[] = inputs.map((input) => ({
+      userId,
+      type: input.type as CreateTransactionContract['type'],
+      amountCents: input.amountCents,
+      accountId: input.accountId,
+      categoryId: input.categoryId,
+      subcategoryId: input.subcategoryId,
+      occurredAt: input.occurredAt,
+      note: input.note,
+    }));
+
+    return this.transactionsRepository.createMany(userId, payloads);
+  }
+
   async create(
     userId: string,
     input: CreateTransactionDto,

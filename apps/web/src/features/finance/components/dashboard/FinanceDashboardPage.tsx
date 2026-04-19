@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   useFinanceDashboardData,
@@ -11,7 +11,8 @@ import {
   type FinanceTabRoute,
 } from '@/features/finance/navigation';
 import { getFinanceDashboardStatus } from '@/features/finance/model/dashboardStatus';
-import type { Transaction } from '@/types/finance';
+import type { Transaction, TransactionType } from '@/types/finance';
+import type { MutationResult } from '@/features/finance/types';
 import { FinanceErrorState } from '../states/FinanceErrorState';
 import { FinanceLoadingState } from '../states/FinanceLoadingState';
 import { FinanceDashboardContent } from './FinanceDashboardContent';
@@ -33,7 +34,7 @@ export function FinanceDashboardPage() {
     onDialogOpenChange,
     saveTransaction,
   } = useTransactionDialogState({
-    addTransaction: finance.transactions.addTransaction,
+    bulkAddTransactions: finance.transactions.bulkAddTransactions,
     updateTransaction: finance.transactions.updateTransaction,
   });
   const activeTab = parseFinanceTabRoute(tabParam);
@@ -93,6 +94,17 @@ export function FinanceDashboardPage() {
     }
   };
 
+  const handleAddCategory = useCallback(
+    async (name: string, subName: string, type: TransactionType): Promise<MutationResult> => {
+      if (subName.trim()) {
+        return finance.categories.addCategory(name, subName, type);
+      }
+      const result = await finance.categories.createCategory(name, type);
+      return result.status as MutationResult;
+    },
+    [finance.categories],
+  );
+
   const { isInitialLoading, error } = getFinanceDashboardStatus({
     accounts: finance.accounts,
     categories: finance.categories,
@@ -121,6 +133,7 @@ export function FinanceDashboardPage() {
             categories={finance.categories.categories}
             onOpenChange={handleDialogOpenChange}
             onSave={saveTransaction}
+            onAddCategory={handleAddCategory}
           />
         </>
       )}

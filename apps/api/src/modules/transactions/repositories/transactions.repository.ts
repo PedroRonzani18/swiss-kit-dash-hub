@@ -125,6 +125,74 @@ export class TransactionsRepository {
     }
   }
 
+  async createMany(
+    userId: string,
+    inputs: CreateTransactionContract[],
+  ): Promise<{ count: number }> {
+    const accountIds = [...new Set(inputs.map((i) => i.accountId))];
+    const categoryIds = [...new Set(inputs.map((i) => i.categoryId))];
+    const subcategoryIds = [
+      ...new Set(
+        inputs.map((i) => i.subcategoryId).filter((id): id is string => !!id),
+      ),
+    ];
+
+    const [accounts, categories] = await Promise.all([
+      this.prisma.account.findMany({
+        where: { userId, id: { in: accountIds } },
+        select: { id: true },
+      }),
+      this.prisma.category.findMany({
+        where: { userId, id: { in: categoryIds } },
+        select: { id: true },
+      }),
+    ]);
+
+    if (accounts.length !== accountIds.length) {
+      throw new NotFoundException(
+        'One or more accounts not found for authenticated user',
+      );
+    }
+    if (categories.length !== categoryIds.length) {
+      throw new NotFoundException(
+        'One or more categories not found for authenticated user',
+      );
+    }
+
+    if (subcategoryIds.length > 0) {
+      const subcategories = await this.prisma.subcategory.findMany({
+        where: { userId, id: { in: subcategoryIds } },
+        select: { id: true, categoryId: true },
+      });
+      const subcategoryMap = new Map(
+        subcategories.map((s) => [s.id, s.categoryId]),
+      );
+      for (const input of inputs) {
+        if (input.subcategoryId) {
+          const parentCategoryId = subcategoryMap.get(input.subcategoryId);
+          if (!parentCategoryId || parentCategoryId !== input.categoryId) {
+            throw new NotFoundException(
+              'One or more subcategories not found for authenticated user and category',
+            );
+          }
+        }
+      }
+    }
+
+    return this.prisma.transaction.createMany({
+      data: inputs.map((input) => ({
+        userId,
+        accountId: input.accountId,
+        categoryId: input.categoryId,
+        subcategoryId: input.subcategoryId ?? null,
+        type: input.type,
+        amountCents: input.amountCents,
+        note: input.note ?? null,
+        occurredAt: new Date(input.occurredAt),
+      })),
+    });
+  }
+
   async create(input: CreateTransactionContract): Promise<TransactionContract> {
     const record = await this.prisma.transaction.create({
       select: transactionSelect,

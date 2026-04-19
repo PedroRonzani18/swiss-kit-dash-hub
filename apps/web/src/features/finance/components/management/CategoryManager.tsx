@@ -2,7 +2,7 @@ import { useCategoryManagerState } from "@/features/finance/hooks";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Category, TransactionType } from "@/types/finance";
-import { Plus, ChevronRight, Tag, Pencil, Trash2, Check, X } from "lucide-react";
+import { Plus, ChevronRight, Tag, Pencil, Trash2, Check, X, FolderPlus } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -28,6 +28,7 @@ interface CategoryManagerProps {
     sub: string,
     type: TransactionType,
   ) => Promise<"duplicate" | "success">;
+  onAddSubcategory: (catId: string, subName: string) => Promise<"duplicate" | "success">;
   onUpdateCategory: (
     id: string,
     newName: string,
@@ -44,6 +45,7 @@ interface CategoryManagerProps {
 export function CategoryManager({
   categories,
   onAddCategory,
+  onAddSubcategory,
   onUpdateCategory,
   onDeleteCategory,
   onUpdateSubcategory,
@@ -64,6 +66,9 @@ export function CategoryManager({
     editingSubName,
     setEditingSubName,
     deleteTarget,
+    addingSubCatId,
+    newSubName,
+    setNewSubName,
     handleAdd,
     startEditingCategory,
     cancelEditingCategory,
@@ -71,6 +76,9 @@ export function CategoryManager({
     startEditingSubcategory,
     cancelEditingSubcategory,
     saveSubcategory,
+    startAddingSub,
+    cancelAddingSub,
+    handleAddSub,
     requestDeleteCategory,
     requestDeleteSubcategory,
     closeDeleteDialog,
@@ -78,6 +86,7 @@ export function CategoryManager({
   } = useCategoryManagerState({
     categories,
     onAddCategory,
+    onAddSubcategory,
     onUpdateCategory,
     onDeleteCategory,
     onUpdateSubcategory,
@@ -231,6 +240,37 @@ export function CategoryManager({
                   </div>
                 );
               })}
+
+              {/* Inline add subcategory */}
+              {addingSubCatId === cat.id ? (
+                <div className="flex items-center gap-1 pt-1">
+                  <Input
+                    value={newSubName}
+                    onChange={(e) => setNewSubName(e.target.value)}
+                    className="h-6 text-xs"
+                    placeholder="Nova subcategoria"
+                    autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleAddSub(cat.id);
+                      if (e.key === "Escape") cancelAddingSub();
+                    }}
+                  />
+                  <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => handleAddSub(cat.id)}>
+                    <Check className="h-3 w-3" />
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-5 w-5" onClick={cancelAddingSub}>
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              ) : (
+                <button
+                  className="mt-1 flex items-center gap-1 text-xs text-muted-foreground opacity-0 group-hover/card:opacity-100 transition-opacity hover:text-foreground"
+                  onClick={() => startAddingSub(cat.id)}
+                >
+                  <FolderPlus className="h-3 w-3" />
+                  Adicionar subcategoria
+                </button>
+              )}
             </div>
           </div>
         ))}
