@@ -133,9 +133,7 @@ export class TransactionsRepository {
     const categoryIds = [...new Set(inputs.map((i) => i.categoryId))];
     const subcategoryIds = [
       ...new Set(
-        inputs
-          .map((i) => i.subcategoryId)
-          .filter((id): id is string => !!id),
+        inputs.map((i) => i.subcategoryId).filter((id): id is string => !!id),
       ),
     ];
 
