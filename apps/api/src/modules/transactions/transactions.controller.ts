@@ -12,6 +12,7 @@ import type { AuthenticatedUserContract } from '@/common/contracts';
 import { CurrentUser } from '@/common/auth';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
+import { CreateTransactionBulkDto } from './dto/create-transaction-bulk.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 
 @ApiTags('Transactions')
@@ -31,6 +32,14 @@ export class TransactionsController {
     @CurrentUser() user: AuthenticatedUserContract,
   ) {
     return this.transactionsService.findOne(id, user.id);
+  }
+
+  @Post('bulk')
+  createBulk(
+    @Body() input: CreateTransactionBulkDto,
+    @CurrentUser() user: AuthenticatedUserContract,
+  ) {
+    return this.transactionsService.createBulk(user.id, input.items);
   }
 
   @Post()

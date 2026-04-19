@@ -6,8 +6,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import type { TransactionDraft } from '@/features/finance/types';
-import type { AccountOption, Category, Transaction } from '@/types/finance';
+import type { MutationResult, TransactionDraft } from '@/features/finance/types';
+import type { AccountOption, Category, Transaction, TransactionType } from '@/types/finance';
 
 type FinanceTransactionDialogProps = {
   open: boolean;
@@ -16,6 +16,7 @@ type FinanceTransactionDialogProps = {
   categories: Category[];
   onOpenChange: (open: boolean) => void;
   onSave: (drafts: TransactionDraft[]) => Promise<void>;
+  onAddCategory: (name: string, subName: string, type: TransactionType) => Promise<MutationResult>;
 };
 
 export function FinanceTransactionDialog({
@@ -25,6 +26,7 @@ export function FinanceTransactionDialog({
   categories,
   onOpenChange,
   onSave,
+  onAddCategory,
 }: FinanceTransactionDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -39,6 +41,7 @@ export function FinanceTransactionDialog({
           accounts={accountOptions}
           categories={categories}
           onSave={onSave}
+          onAddCategory={onAddCategory}
           initialData={editingTransaction ?? undefined}
         />
       </DialogContent>

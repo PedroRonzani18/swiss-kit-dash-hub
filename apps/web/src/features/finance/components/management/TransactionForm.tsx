@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { AccountOption, Category, Transaction } from "@/types/finance";
-import type { TransactionDraft } from "@/features/finance/types";
+import { AccountOption, Category, Transaction, TransactionType } from "@/types/finance";
+import type { MutationResult, TransactionDraft } from "@/features/finance/types";
 import { Plus, Save, X } from "lucide-react";
 import {
   Select,
   SelectContent,
   SelectItem,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { AddCategoryDialog } from "./AddCategoryDialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
@@ -42,6 +44,7 @@ interface TransactionFormProps {
   accounts: AccountOption[];
   categories: Category[];
   onSave: (drafts: TransactionDraft[]) => Promise<void>;
+  onAddCategory: (name: string, subName: string, type: TransactionType) => Promise<MutationResult>;
   initialData?: Transaction;
 }
 
@@ -49,10 +52,40 @@ export function TransactionForm({
   accounts,
   categories,
   onSave,
+  onAddCategory,
   initialData,
 }: TransactionFormProps) {
   const [rows, setRows] = useState<RowDraft[]>([emptyRow()]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [addCatDialog, setAddCatDialog] = useState<{
+    open: boolean;
+    rowIndex: number;
+    type: TransactionType;
+  }>({ open: false, rowIndex: 0, type: "expense" });
+  const [pendingCategorySelect, setPendingCategorySelect] = useState<{
+    rowIndex: number;
+    categoryName: string;
+    subName: string;
+    type: TransactionType;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!pendingCategorySelect) return;
+    const { rowIndex, categoryName, subName, type } = pendingCategorySelect;
+    const cat = categories.find(
+      (c) => c.name.toLowerCase() === categoryName.toLowerCase() && c.type === type,
+    );
+    if (!cat) return;
+    const sub = subName
+      ? cat.subcategories.find((s) => s.name.toLowerCase() === subName.toLowerCase())
+      : undefined;
+    setRows((prev) =>
+      prev.map((r, idx) =>
+        idx === rowIndex ? { ...r, categoryId: cat.id, subcategoryId: sub?.id ?? "" } : r,
+      ),
+    );
+    setPendingCategorySelect(null);
+  }, [categories, pendingCategorySelect]);
 
   const isEditing = !!initialData;
 
@@ -74,6 +107,14 @@ export function TransactionForm({
 
   const updateRow = (i: number, patch: Partial<RowDraft>) => {
     setRows((prev) => prev.map((r, idx) => idx === i ? { ...r, ...patch } : r));
+  };
+
+  const handleCategoryChange = (rowIndex: number, value: string, rowType: TransactionType) => {
+    if (value === "__new__") {
+      setAddCatDialog({ open: true, rowIndex, type: rowType });
+      return;
+    }
+    updateRow(rowIndex, { categoryId: value, subcategoryId: "" });
   };
 
   const addRow = () => {
@@ -177,9 +218,16 @@ export function TransactionForm({
                   <Input placeholder="R$ 0,00" type="number" step="0.01" value={row.amount} onChange={(e) => updateRow(i, { amount: e.target.value })} />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                  <Select value={row.categoryId} onValueChange={(v) => updateRow(i, { categoryId: v, subcategoryId: "" })}>
+                  <Select value={row.categoryId} onValueChange={(v) => handleCategoryChange(i, v, row.type)}>
                     <SelectTrigger><SelectValue placeholder="Categoria" /></SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="__new__">
+                        <span className="flex items-center gap-1 text-muted-foreground">
+                          <Plus className="h-3 w-3" />
+                          Nova categoria
+                        </span>
+                      </SelectItem>
+                      <SelectSeparator />
                       {filteredCategories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                     </SelectContent>
                   </Select>
@@ -246,9 +294,16 @@ export function TransactionForm({
               <Input className="h-9 text-sm" placeholder="0,00" type="number" step="0.01" value={row.amount} onChange={(e) => updateRow(i, { amount: e.target.value })} />
 
               {/* Category */}
-              <Select value={row.categoryId} onValueChange={(v) => updateRow(i, { categoryId: v, subcategoryId: "" })}>
+              <Select value={row.categoryId} onValueChange={(v) => handleCategoryChange(i, v, row.type)}>
                 <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Categoria" /></SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="__new__">
+                    <span className="flex items-center gap-1 text-muted-foreground">
+                      <Plus className="h-3 w-3" />
+                      Nova categoria
+                    </span>
+                  </SelectItem>
+                  <SelectSeparator />
                   {filteredCategories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                 </SelectContent>
               </Select>
@@ -299,6 +354,17 @@ export function TransactionForm({
                 : `Adicionar ${rows.length} Transações`}
         </Button>
       </div>
+
+      <AddCategoryDialog
+        open={addCatDialog.open}
+        defaultType={addCatDialog.type}
+        categories={categories}
+        onClose={() => setAddCatDialog((s) => ({ ...s, open: false }))}
+        onAdd={onAddCategory}
+        onCreated={(name, subName, type) => {
+          setPendingCategorySelect({ rowIndex: addCatDialog.rowIndex, categoryName: name, subName, type });
+        }}
+      />
     </div>
   );
 }

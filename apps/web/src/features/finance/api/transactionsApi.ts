@@ -46,9 +46,20 @@ async function deleteTransaction(id: string): Promise<void> {
   return apiClient.delete(`/transactions/${id}`);
 }
 
+async function bulkCreateTransactions(
+  inputs: CreateTransactionInput[],
+): Promise<{ count: number }> {
+  const data = await apiClient.post<unknown, { items: CreateTransactionInput[] }>(
+    '/transactions/bulk',
+    { items: inputs },
+  );
+  return data as { count: number };
+}
+
 export type TransactionsApi = {
   list: typeof listTransactions;
   create: typeof createTransaction;
+  bulkCreate: typeof bulkCreateTransactions;
   update: typeof updateTransaction;
   remove: typeof deleteTransaction;
 };
@@ -56,6 +67,7 @@ export type TransactionsApi = {
 export const transactionsApi: TransactionsApi = {
   list: listTransactions,
   create: createTransaction,
+  bulkCreate: bulkCreateTransactions,
   update: updateTransaction,
   remove: deleteTransaction,
 };

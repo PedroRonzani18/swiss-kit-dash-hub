@@ -104,6 +104,10 @@ export const updateTransactionInputSchema = createTransactionInputSchema
     note: z.string().nullable().optional(),
   });
 
+export const createTransactionBulkInputSchema = z
+  .array(createTransactionInputSchema)
+  .min(1);
+
 export const accountListSchema = z.array(accountSchema);
 export const categoryListSchema = z.array(categorySchema);
 export const subcategoryListSchema = z.array(subcategorySchema);
@@ -122,6 +126,7 @@ export type CreateSubcategoryInputContract = z.infer<typeof createSubcategoryInp
 export type UpdateSubcategoryInputContract = z.infer<typeof updateSubcategoryInputSchema>;
 export type CreateTransactionInputContract = z.infer<typeof createTransactionInputSchema>;
 export type UpdateTransactionInputContract = z.infer<typeof updateTransactionInputSchema>;
+export type CreateTransactionBulkInputContract = z.infer<typeof createTransactionBulkInputSchema>;
 
 // Backwards-compatible aliases
 export const categoryBaseSchema = categorySchema;
