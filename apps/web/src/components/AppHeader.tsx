@@ -3,6 +3,7 @@ import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/auth";
 import { toast } from "@/components/ui/sonner";
+import { useNavigate } from "react-router-dom";
 
 interface AppHeaderProps {
   breadcrumbs?: string[];
@@ -10,28 +11,19 @@ interface AppHeaderProps {
 }
 
 export function AppHeader({ breadcrumbs = ["App", "Financeiro"] }: AppHeaderProps) {
-  const { user, isAuthenticated, isLoading, loginWithGoogle, logout } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const triggerCommand = () => {
     const e = new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true });
     document.dispatchEvent(e);
   };
 
-  const handleLogin = async () => {
-    try {
-      await loginWithGoogle();
-      toast.success("Login realizado com sucesso");
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Não foi possível autenticar com Google";
-      toast.error(message);
-    }
-  };
-
   const handleLogout = async () => {
     try {
       await logout();
       toast.success("Sessão encerrada");
+      navigate("/login", { replace: true });
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Não foi possível sair da sessão";
@@ -66,20 +58,12 @@ export function AppHeader({ breadcrumbs = ["App", "Financeiro"] }: AppHeaderProp
           </kbd>
         </button>
 
-        {isAuthenticated ? (
-          <>
-            <span className="hidden max-w-48 truncate text-xs text-muted-foreground md:inline">
-              {user?.email}
-            </span>
-            <Button variant="outline" size="sm" onClick={handleLogout}>
-              Sair
-            </Button>
-          </>
-        ) : (
-          <Button size="sm" onClick={handleLogin} disabled={isLoading}>
-            {isLoading ? "Entrando..." : "Entrar com Google"}
-          </Button>
-        )}
+        <span className="hidden max-w-48 truncate text-xs text-muted-foreground md:inline">
+          {user?.email}
+        </span>
+        <Button variant="outline" size="sm" onClick={handleLogout}>
+          Sair
+        </Button>
       </div>
     </header>
   );
