@@ -17,6 +17,10 @@ const makeTransaction = (
   type,
   categoryId,
   subcategoryId: "sub-1",
+  isInstallment: false,
+  installmentNumber: null,
+  installmentTotal: null,
+  installmentGroupId: null,
 });
 
 describe("useTransactionTableFilters helpers", () => {

@@ -33,7 +33,7 @@ export function useTransactionDialogState({
   }, []);
 
   const saveTransaction = useCallback(
-    async (drafts: TransactionDraft[]): Promise<void> => {
+    async (drafts: TransactionDraft[]): Promise<boolean> => {
       try {
         if (editingTransaction) {
           await updateTransaction(editingTransaction.id, drafts[0]!);
@@ -49,6 +49,7 @@ export function useTransactionDialogState({
 
         setIsDialogOpen(false);
         setEditingTransaction(null);
+        return true;
       } catch (errorSave) {
         const message =
           errorSave instanceof Error
@@ -56,6 +57,7 @@ export function useTransactionDialogState({
             : 'Não foi possível salvar a transação';
 
         toast.error(message);
+        return false;
       }
     },
     [bulkAddTransactions, editingTransaction, updateTransaction],

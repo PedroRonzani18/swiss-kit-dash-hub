@@ -41,6 +41,10 @@ export type Transaction = {
   type: TransactionType;
   categoryId: string;
   subcategoryId: string;
+  isInstallment: boolean;
+  installmentNumber: number | null;
+  installmentTotal: number | null;
+  installmentGroupId: string | null;
 };
 
 export type TransactionResource = TransactionContract;

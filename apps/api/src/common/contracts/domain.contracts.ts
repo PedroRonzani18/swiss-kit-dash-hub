@@ -87,7 +87,14 @@ export type UpdateSubcategoryContract = UpdateSubcategoryInputContract;
 
 export type TransactionTypeContract = TransactionType;
 
-export type CreateTransactionContract = CreateTransactionInputContract & {
+export type CreateTransactionContract = Omit<
+  CreateTransactionInputContract,
+  'installmentEnabled' | 'installmentCount'
+> & {
   userId: EntityId;
+  isInstallment?: boolean;
+  installmentNumber?: number | null;
+  installmentTotal?: number | null;
+  installmentGroupId?: string | null;
 };
 export type UpdateTransactionContract = UpdateTransactionInputContract;

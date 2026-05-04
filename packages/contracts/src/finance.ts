@@ -46,6 +46,10 @@ export const transactionResourceSchema = z.object({
   type: transactionTypeSchema,
   amountCents: z.number().int(),
   note: z.string().nullable(),
+  isInstallment: z.boolean(),
+  installmentNumber: z.number().int().nullable(),
+  installmentTotal: z.number().int().nullable(),
+  installmentGroupId: z.string().nullable(),
   occurredAt: z.string(),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -88,7 +92,7 @@ export const updateSubcategoryInputSchema = createSubcategoryInputSchema
     isArchived: z.boolean().optional(),
   });
 
-export const createTransactionInputSchema = z.object({
+const createTransactionInputBaseSchema = z.object({
   type: transactionTypeSchema,
   amountCents: z.number().int().positive(),
   accountId: z.string(),
@@ -96,9 +100,21 @@ export const createTransactionInputSchema = z.object({
   subcategoryId: z.string().nullable().optional(),
   occurredAt: z.string(),
   note: z.string().optional(),
+  installmentEnabled: z.boolean().optional(),
+  installmentCount: z.number().int().min(2).optional(),
 });
 
-export const updateTransactionInputSchema = createTransactionInputSchema
+export const createTransactionInputSchema = createTransactionInputBaseSchema.superRefine((input, context) => {
+  if (input.installmentEnabled && !input.installmentCount) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'installmentCount is required when installmentEnabled is true',
+      path: ['installmentCount'],
+    });
+  }
+});
+
+export const updateTransactionInputSchema = createTransactionInputBaseSchema
   .partial()
   .extend({
     note: z.string().nullable().optional(),

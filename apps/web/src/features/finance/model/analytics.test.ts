@@ -22,6 +22,10 @@ const makeTransaction = (
   type,
   categoryId: "cat-1",
   subcategoryId: "sub-1",
+  isInstallment: false,
+  installmentNumber: null,
+  installmentTotal: null,
+  installmentGroupId: null,
 });
 
 describe("analytics date filtering", () => {

@@ -70,6 +70,10 @@ type TransactionPersistence = {
   type: TransactionType;
   amountCents: number;
   note: string | null;
+  isInstallment: boolean;
+  installmentNumber: number | null;
+  installmentTotal: number | null;
+  installmentGroupId: string | null;
   occurredAt: PersistenceDate;
   createdAt: PersistenceDate;
   updatedAt: PersistenceDate;
@@ -162,6 +166,10 @@ export function mapTransactionFromPersistence(
     type: row.type,
     amountCents: row.amountCents,
     note: row.note,
+    isInstallment: row.isInstallment,
+    installmentNumber: row.installmentNumber,
+    installmentTotal: row.installmentTotal,
+    installmentGroupId: row.installmentGroupId,
     occurredAt: row.occurredAt.toISOString(),
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),

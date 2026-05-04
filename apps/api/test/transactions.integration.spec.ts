@@ -199,4 +199,69 @@ describe('Transactions integration', () => {
       'Subcategory not found for authenticated user and category',
     );
   });
+
+  it('creates installments with monthly rollover and last-day clamp', async () => {
+    const account = await createAccount();
+    const category = await createCategory();
+
+    const bulkResponse = await request(app.getHttpServer())
+      .post('/api/transactions/bulk')
+      .set(authUser.authHeader)
+      .send({
+        items: [
+          {
+            type: 'expense',
+            amountCents: 1000,
+            accountId: account.id,
+            categoryId: category.id,
+            occurredAt: '2026-01-31T12:00:00.000Z',
+            note: 'Compra parcelada',
+            installmentEnabled: true,
+            installmentCount: 3,
+          },
+        ],
+      })
+      .expect(201);
+
+    expect(bulkResponse.body).toEqual({ count: 3 });
+
+    const listResponse = await request(app.getHttpServer())
+      .get('/api/transactions')
+      .set(authUser.authHeader)
+      .expect(200);
+
+    expect(listResponse.body).toHaveLength(3);
+
+    const installments = [...listResponse.body].sort(
+      (a, b) => a.installmentNumber - b.installmentNumber,
+    );
+
+    expect(installments[0]).toMatchObject({
+      note: 'Compra parcelada (1/3)',
+      isInstallment: true,
+      installmentNumber: 1,
+      installmentTotal: 3,
+      occurredAt: '2026-01-31T12:00:00.000Z',
+    });
+    expect(installments[1]).toMatchObject({
+      note: 'Compra parcelada (2/3)',
+      isInstallment: true,
+      installmentNumber: 2,
+      installmentTotal: 3,
+      occurredAt: '2026-02-28T12:00:00.000Z',
+    });
+    expect(installments[2]).toMatchObject({
+      note: 'Compra parcelada (3/3)',
+      isInstallment: true,
+      installmentNumber: 3,
+      installmentTotal: 3,
+      occurredAt: '2026-03-31T12:00:00.000Z',
+    });
+
+    const groupIds = new Set(
+      installments.map((transaction) => transaction.installmentGroupId),
+    );
+    expect(groupIds.size).toBe(1);
+    expect(installments.reduce((sum, tx) => sum + tx.amountCents, 0)).toBe(1000);
+  });
 });
