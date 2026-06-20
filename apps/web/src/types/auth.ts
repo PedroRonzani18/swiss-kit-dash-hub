@@ -1,4 +1,4 @@
-import type { AuthProvider } from '@swisskit/contracts';
+import type { AuthProvider } from '@swisskit/contracts/core';
 
 export type AuthUser = {
   id: string;

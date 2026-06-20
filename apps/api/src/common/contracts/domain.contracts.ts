@@ -1,14 +1,11 @@
 import type {
   AccountContract as SharedAccountContract,
   AccountType,
-  AuthProvider,
   CategoryContract as SharedCategoryContract,
   CreateAccountInputContract,
   CreateCategoryInputContract,
   CreateSubcategoryInputContract,
   CreateTransactionInputContract,
-  EntityId,
-  IsoDateString,
   SubcategoryContract as SharedSubcategoryContract,
   TransactionContract as SharedTransactionContract,
   TransactionType,
@@ -17,6 +14,11 @@ import type {
   UpdateSubcategoryInputContract,
   UpdateTransactionInputContract,
 } from '@swisskit/contracts';
+import type {
+  AuthProvider,
+  EntityId,
+  IsoDateString,
+} from '@swisskit/contracts/core';
 
 export type { EntityId, IsoDateString };
 

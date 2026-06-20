@@ -54,7 +54,7 @@ Para autenticação Google funcionar em produção:
 3. Publicar API e aplicar migrações (`prisma:migrate:deploy`).
 4. Validar health checks e Swagger da API.
 5. Publicar frontend.
-6. Testar login Google, sessão (`/auth/me`) e operações de CRUD financeiro.
+6. Testar login Google, sessão (`/auth/me`), entrada protegida em `/app`, redirect legado de `/financeiro/*` e health checks.
 
 ## Pontos sensíveis de produção
 - Divergência entre `GOOGLE_CALLBACK_URL` e callback cadastrado no Google causa falha de login.

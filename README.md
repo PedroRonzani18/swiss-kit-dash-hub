@@ -1,11 +1,11 @@
-# Swiss Kit Dash Hub
+# Swiss Kit Core
 
-Monorepo de dashboard financeiro pessoal com frontend React, backend NestJS e contratos compartilhados.
+Monorepo base modular com frontend React, backend NestJS e contratos compartilhados. O domínio financeiro está em descomissionamento; o estado atual preserva o Core vazio com autenticação, health checks, shell web e tooling do workspace.
 
 ## Visão geral
-- `apps/web`: interface web (Vite + React) e camada de consumo da API.
+- `apps/web`: shell web (Vite + React), rota protegida `/app` e camada de consumo da API.
 - `apps/api`: API REST (NestJS + Prisma) com autenticação Google OAuth e sessão por cookie.
-- `packages/contracts`: contratos compartilhados (tipos + schemas Zod).
+- `packages/contracts`: contratos compartilhados (tipos + schemas Zod), preservado para Core/auth.
 - `docs/`: documentação técnica, operacional e ADRs.
 
 ## Stack

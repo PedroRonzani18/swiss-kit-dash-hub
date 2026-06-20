@@ -11,7 +11,8 @@ This document defines import boundaries for the web app to keep modules decouple
 
 Practical rule:
 
-- if a component is specific to one domain (for example finance), keep it inside that feature/module namespace instead of `src/components`.
+- if a component is specific to one domain, keep it inside that feature/module namespace instead of `src/components`.
+- during the finance decommission, legacy finance files remain quarantined under their current namespace until the delete checkpoint.
 
 Recommended dependency flow:
 
@@ -22,17 +23,20 @@ Recommended dependency flow:
 `apps/web/eslint.config.js` enforces:
 
 - Only `src/components/ui` can import `@radix-ui/*` directly.
-- `src/components/finance/*` imports are blocked (finance domain components must stay in `src/features/finance/components/*`).
+- domain-specific shared component folders such as `src/components/finance/*` are blocked.
 - `src/features/*` cannot import from `src/modules/*`.
-- Module boundaries stay centralized in `src/app` and `src/modules/finance/*`.
+- Module boundaries stay centralized in `src/app` and page-level modules under `src/modules/*`.
 
-## Finance navigation contract
+## Core navigation contract
 
-Finance route/tab mapping lives in:
+Current shell entrypoints:
 
-- `src/features/finance/navigation.ts`
+- `/` redirects by auth state.
+- `/login` is public-only.
+- `/app` is the protected neutral Core shell.
+- `/financeiro/*` is a protected legacy redirect to `/app` while the finance module remains in quarantine.
 
 Reason:
 
-- both feature components and shell-level components (for example command palette) consume the same route contract.
-- keeping this mapping in `features/finance` avoids a reverse dependency from features to module pages.
+- the shell owns default routing and navigation during the transition;
+- command palette and sidebar must not expose finance tasks while the module is being decommissioned.

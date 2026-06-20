@@ -1,12 +1,12 @@
 # Arquitetura
 
 ## Visão geral do sistema
-O `swiss-kit-dash-hub` é um monorepo para um dashboard financeiro pessoal.
+O `swiss-kit-dash-hub` está em transição para um Swiss Kit Core vazio/modular. O Core preserva autenticação, health checks, shell web, contratos compartilhados e tooling do monorepo sem expor um produto financeiro como entrada principal.
 
 Componentes principais:
-- `apps/web`: frontend React que renderiza a interface, consome a API e valida contratos de resposta.
+- `apps/web`: frontend React que renderiza o shell Core, protege `/app`, consome a API e valida contratos de resposta.
 - `apps/api`: backend NestJS que expõe endpoints REST, autentica usuários via Google OAuth e persiste dados no PostgreSQL.
-- `packages/contracts`: pacote compartilhado com tipos e schemas Zod para contratos de domínio/financeiro.
+- `packages/contracts`: pacote compartilhado com tipos e schemas Zod, preservado para contratos Core/auth.
 
 Fluxo macro:
 1. O usuário interage com o frontend (`apps/web`).
@@ -32,9 +32,9 @@ Tecnologias centrais:
 
 Responsabilidades principais:
 - autenticação e sessão no browser via `AuthProvider`;
-- consumo dos recursos (`accounts`, `categories`, `subcategories`, `transactions`);
-- validação de payloads da API com schemas de `@swisskit/contracts`;
-- orquestração de queries/mutations no hook `useFinanceStore`.
+- rota protegida neutra em `/app`;
+- redirect legado protegido de `/financeiro/*` para `/app`;
+- validação de payloads da API com schemas de `@swisskit/contracts`, quando aplicável.
 
 Notas de integração:
 - base da API é `VITE_API_URL` (com fallback para `/api`);
@@ -47,7 +47,8 @@ Tecnologias centrais:
 - Passport (Google OAuth2 + JWT)
 
 Organização principal:
-- módulos: `auth`, `accounts`, `categories`, `subcategories`, `transactions`, `health`;
+- módulos Core preservados: `auth` e `health`;
+- módulos financeiros ainda existem durante o descomissionamento e serão removidos em checkpoint próprio;
 - padrão por módulo: `controller -> service -> repository`;
 - `PrismaService` compartilhado para acesso a dados;
 - `JwtAuthGuard` global, com rotas públicas explícitas via `@Public()`.
@@ -60,10 +61,10 @@ Capacidades operacionais:
 ## Contratos compartilhados (`packages/contracts`)
 O pacote contém:
 - tipos base de domínio (`domain.ts`);
-- schemas Zod e tipos inferidos para recursos financeiros (`finance.ts`).
+- superfície financeira legada (`finance.ts`) ainda presente até a etapa de extração Core/auth.
 
 Uso atual:
-- o frontend usa esses schemas para validação runtime de respostas da API;
+- auth e consumidores web/API preservam o pacote compartilhado;
 - a API mantém também contratos internos em `apps/api/src/common/contracts`.
 
 ## Fluxo de autenticação (alto nível)
@@ -76,8 +77,8 @@ Uso atual:
 7. Rotas protegidas aceitam JWT por cookie (e fallback opcional por Bearer token).
 
 ## Fluxo de dados (alto nível)
-1. Componentes do frontend acionam hooks/queries.
-2. A camada `src/api/*` chama endpoints REST.
+1. Componentes do shell/autenticação acionam hooks/queries.
+2. A camada `src/api/*` chama endpoints REST quando necessário.
 3. O backend autentica o usuário e delega para services/repositories.
 4. Repositories executam operações Prisma no PostgreSQL.
 5. Respostas retornam ao frontend.
@@ -88,4 +89,4 @@ Uso atual:
 - Contratos compartilhados para reduzir drift entre backend e frontend.
 - Sessão baseada em cookie HttpOnly (em vez de token em storage do browser).
 - Guard global de autenticação, com rotas públicas explícitas.
-- Deleções sensíveis (categoria/subcategoria) tratadas com transações Prisma para manter integridade dos dados.
+- Descomissionamento financeiro executado em checkpoints para preservar Core/auth antes de remover domínio, schema e migrations legados.

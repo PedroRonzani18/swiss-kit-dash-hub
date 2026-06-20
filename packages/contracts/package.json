@@ -5,6 +5,23 @@
   "type": "module",
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "core": [
+        "src/core.ts"
+      ]
+    }
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./core": {
+      "types": "./src/core.ts",
+      "default": "./src/core.ts"
+    }
+  },
   "dependencies": {
     "zod": "^3.25.76"
   }
