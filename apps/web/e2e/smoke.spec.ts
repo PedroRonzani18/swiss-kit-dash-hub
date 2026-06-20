@@ -20,7 +20,7 @@ async function mockUnauthenticatedSession(page: Page) {
 }
 
 test.describe("Smoke | Finance", () => {
-  test("redirects to finance and shows unauthenticated state", async ({ page }) => {
+  test("redirects unauthenticated users to login", async ({ page }) => {
     const pageErrors: Error[] = [];
     page.on("pageerror", error => pageErrors.push(error));
 
@@ -28,17 +28,17 @@ test.describe("Smoke | Finance", () => {
 
     await page.goto("/");
 
-    await expect(page).toHaveURL(/\/financeiro$/);
+    await expect(page).toHaveURL(/\/login$/);
     await expect(
-      page.getByRole("heading", { name: "Acesse seu dashboard financeiro" }),
+      page.getByRole("heading", { name: "Entrar no sistema" }),
     ).toBeVisible();
     await expect(
-      page.getByRole("main").getByRole("button", { name: "Entrar com Google" }),
+      page.getByRole("button", { name: "Entrar com Google" }),
     ).toBeVisible();
     expect(pageErrors).toEqual([]);
   });
 
-  test("keeps finance as entrypoint and unknown routes go to 404", async ({ page }) => {
+  test("keeps login as entrypoint and unknown routes go to 404", async ({ page }) => {
     const pageErrors: Error[] = [];
     page.on("pageerror", error => pageErrors.push(error));
 
@@ -48,7 +48,7 @@ test.describe("Smoke | Finance", () => {
     await expect(page.getByRole("heading", { name: "404" })).toBeVisible();
 
     await page.goto("/");
-    await expect(page).toHaveURL(/\/financeiro$/);
+    await expect(page).toHaveURL(/\/login$/);
     expect(pageErrors).toEqual([]);
   });
 });
