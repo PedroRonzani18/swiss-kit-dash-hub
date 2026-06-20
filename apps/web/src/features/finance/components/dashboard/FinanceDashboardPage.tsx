@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   useFinanceDashboardData,
@@ -12,7 +12,7 @@ import {
 } from '@/features/finance/navigation';
 import { getFinanceDashboardStatus } from '@/features/finance/model/dashboardStatus';
 import type { Transaction, TransactionType } from '@/types/finance';
-import type { MutationResult } from '@/features/finance/types';
+import type { MutationResult, TransactionDraft } from '@/features/finance/types';
 import { FinanceErrorState } from '../states/FinanceErrorState';
 import { FinanceLoadingState } from '../states/FinanceLoadingState';
 import { FinanceDashboardContent } from './FinanceDashboardContent';
@@ -42,6 +42,7 @@ export function FinanceDashboardPage() {
     activeTab === 'transactions' &&
     actionParam === FINANCE_ACTION_ROUTES.newTransaction;
   const hasTabSegment = Boolean(tabParam);
+  const hasOpenedNewTransactionFromRoute = useRef(false);
   const canonicalPath = buildFinancePath(
     activeTab,
     isNewTransactionAction ? FINANCE_ACTION_ROUTES.newTransaction : undefined,
@@ -54,10 +55,14 @@ export function FinanceDashboardPage() {
   }, [canonicalPath, hasTabSegment, location.pathname, navigate]);
 
   useEffect(() => {
-    if (isNewTransactionAction && !isDialogOpen) {
+    if (isNewTransactionAction && !hasOpenedNewTransactionFromRoute.current) {
+      hasOpenedNewTransactionFromRoute.current = true;
       openNewTransactionDialog();
     }
-  }, [isDialogOpen, isNewTransactionAction, openNewTransactionDialog]);
+    if (!isNewTransactionAction) {
+      hasOpenedNewTransactionFromRoute.current = false;
+    }
+  }, [isNewTransactionAction, openNewTransactionDialog]);
 
   useEffect(() => {
     if (activeTab !== 'transactions' && isDialogOpen) {
@@ -93,6 +98,17 @@ export function FinanceDashboardPage() {
       navigate(buildFinancePath('transactions'), { replace: true });
     }
   };
+
+  const handleSaveTransaction = useCallback(
+    async (drafts: TransactionDraft[]): Promise<boolean> => {
+      const wasSaved = await saveTransaction(drafts);
+      if (wasSaved && isNewTransactionAction) {
+        navigate(buildFinancePath('transactions'), { replace: true });
+      }
+      return wasSaved;
+    },
+    [isNewTransactionAction, navigate, saveTransaction],
+  );
 
   const handleAddCategory = useCallback(
     async (name: string, subName: string, type: TransactionType): Promise<MutationResult> => {
@@ -132,7 +148,7 @@ export function FinanceDashboardPage() {
             accountOptions={finance.accounts.accountOptions}
             categories={finance.categories.categories}
             onOpenChange={handleDialogOpenChange}
-            onSave={saveTransaction}
+            onSave={handleSaveTransaction}
             onAddCategory={handleAddCategory}
           />
         </>

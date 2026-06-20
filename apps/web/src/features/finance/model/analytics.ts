@@ -41,12 +41,31 @@ export const MONTH_NAMES = [
   "Dez",
 ];
 
+type DateParts = {
+  year: number;
+  monthIndex: number;
+};
+
+function parseDateParts(date: string): DateParts {
+  const [yearRaw, monthRaw] = date.split("-");
+  const year = Number(yearRaw);
+  const month = Number(monthRaw);
+
+  if (!Number.isInteger(year) || !Number.isInteger(month)) {
+    throw new Error(`Invalid transaction date: ${date}`);
+  }
+
+  return {
+    year,
+    monthIndex: month - 1,
+  };
+}
+
 export function getAvailableYears(transactions: Transaction[]): number[] {
   return Array.from(
     new Set(
       transactions.map((transaction) => {
-        const date = new Date(transaction.date);
-        return date.getFullYear();
+        return parseDateParts(transaction.date).year;
       }),
     ),
   ).sort((a, b) => a - b);
@@ -68,12 +87,11 @@ export function getAvailableMonths(
     new Set(
       transactions
         .filter((transaction) => {
-          const date = new Date(transaction.date);
-          return yearScopeSet.has(date.getFullYear());
+          const { year } = parseDateParts(transaction.date);
+          return yearScopeSet.has(year);
         })
         .map((transaction) => {
-          const date = new Date(transaction.date);
-          return date.getMonth();
+          return parseDateParts(transaction.date).monthIndex;
         }),
     ),
   ).sort((a, b) => a - b);
@@ -86,10 +104,10 @@ export function getFilteredTransactions(
   selectedCategoryIds: string[],
 ): Transaction[] {
   return transactions.filter((transaction) => {
-    const date = new Date(transaction.date);
+    const date = parseDateParts(transaction.date);
     return (
-      selectedYears.includes(date.getFullYear()) &&
-      selectedMonths.includes(date.getMonth()) &&
+      selectedYears.includes(date.year) &&
+      selectedMonths.includes(date.monthIndex) &&
       selectedCategoryIds.includes(transaction.categoryId)
     );
   });
@@ -168,10 +186,10 @@ export function getMonthlyBreakdown(
 ): MonthlyBreakdownEntry[] {
   const map = new Map<string, MonthlyBreakdownEntry>();
   filteredTransactions.forEach((transaction) => {
-    const date = new Date(transaction.date);
-    const key = `${date.getFullYear()}-${date.getMonth()}`;
-    const label = `${MONTH_NAMES[date.getMonth()]} ${date.getFullYear()}`;
-    const sortKey = date.getFullYear() * 100 + date.getMonth();
+    const { year, monthIndex } = parseDateParts(transaction.date);
+    const key = `${year}-${monthIndex}`;
+    const label = `${MONTH_NAMES[monthIndex]} ${year}`;
+    const sortKey = year * 100 + monthIndex;
 
     if (!map.has(key)) {
       map.set(key, { label, income: 0, expense: 0, sortKey });

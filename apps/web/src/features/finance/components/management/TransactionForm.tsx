@@ -19,6 +19,8 @@ import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { CircleAlert } from "lucide-react";
 
 interface RowDraft {
   type: "income" | "expense";
@@ -28,6 +30,8 @@ interface RowDraft {
   amount: string;
   categoryId: string;
   subcategoryId: string;
+  installmentEnabled: boolean;
+  installmentCount: string;
 }
 
 const emptyRow = (): RowDraft => ({
@@ -38,14 +42,80 @@ const emptyRow = (): RowDraft => ({
   amount: "",
   categoryId: "",
   subcategoryId: "",
+  installmentEnabled: false,
+  installmentCount: "2",
 });
 
 interface TransactionFormProps {
   accounts: AccountOption[];
   categories: Category[];
-  onSave: (drafts: TransactionDraft[]) => Promise<void>;
+  onSave: (drafts: TransactionDraft[]) => Promise<boolean>;
   onAddCategory: (name: string, subName: string, type: TransactionType) => Promise<MutationResult>;
   initialData?: Transaction;
+  onDirtyChange?: (dirty: boolean) => void;
+}
+
+type MissingFieldsByRow = {
+  rowIndex: number;
+  missingFields: string[];
+};
+
+function showMissingFieldsToast(missingByRow: MissingFieldsByRow[]) {
+  const visibleRows = missingByRow.slice(0, 4);
+  const hiddenRowsCount = missingByRow.length - visibleRows.length;
+  const toastId = "finance-transaction-missing-fields";
+
+  toast.custom((id) => (
+    <button
+      type="button"
+      onClick={() => toast.dismiss(id)}
+      className="group w-full cursor-pointer rounded-md border border-rose-500/70 bg-linear-to-br from-rose-950/90 via-slate-950 to-slate-900 p-3 text-left text-rose-50 shadow-lg transition-colors transition-shadow duration-150 hover:bg-rose-900/90 hover:shadow-rose-900/30 hover:ring-1 hover:ring-rose-300/45"
+    >
+      <div className="space-y-2">
+        <div className="flex items-start gap-2">
+          <CircleAlert className="mt-0.5 h-4 w-4 shrink-0 text-rose-100/90" />
+          <div>
+            <p className="text-lg font-semibold leading-none">Campos obrigatórios pendentes</p>
+            <p className="mt-1 text-xs text-rose-100/90">
+              Revise os itens abaixo antes de adicionar a transação.
+            </p>
+          </div>
+        </div>
+        <ul className="space-y-1.5">
+          {visibleRows.map((entry) => (
+            <li key={entry.rowIndex} className="rounded-md border border-rose-400/40 bg-rose-500/10 p-2">
+              <p className="mb-1 text-xs font-semibold text-rose-100">
+                Linha {entry.rowIndex + 1}
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {entry.missingFields.map((field) => (
+                  <span
+                    key={`${entry.rowIndex}-${field}`}
+                    className="rounded-full border border-amber-300/70 bg-amber-400/20 px-2 py-0.5 text-[11px] font-medium text-amber-100"
+                  >
+                    {field}
+                  </span>
+                ))}
+              </div>
+            </li>
+          ))}
+        </ul>
+        {hiddenRowsCount > 0 && (
+          <p className="text-[11px] font-medium text-rose-200/90">
+            +{hiddenRowsCount} linha(s) com campos pendentes.
+          </p>
+        )}
+        <p className="text-[11px] text-rose-200/80 transition-colors group-hover:text-rose-100">
+          Clique em qualquer lugar deste aviso para fechar.
+        </p>
+      </div>
+    </button>
+  ), {
+    id: toastId,
+    duration: 8000,
+    closeButton: false,
+    className: "!p-0 !border-none !bg-transparent !shadow-none",
+  });
 }
 
 export function TransactionForm({
@@ -54,8 +124,11 @@ export function TransactionForm({
   onSave,
   onAddCategory,
   initialData,
+  onDirtyChange,
 }: TransactionFormProps) {
   const [rows, setRows] = useState<RowDraft[]>([emptyRow()]);
+  const [initialRows, setInitialRows] = useState<RowDraft[]>([emptyRow()]);
+  const [activeRowIndex, setActiveRowIndex] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [addCatDialog, setAddCatDialog] = useState<{
     open: boolean;
@@ -91,7 +164,7 @@ export function TransactionForm({
 
   useEffect(() => {
     if (initialData) {
-      setRows([{
+      const nextRows = [{
         type: initialData.type,
         accountId: initialData.accountId,
         date: new Date(initialData.date + "T12:00:00"),
@@ -99,19 +172,57 @@ export function TransactionForm({
         amount: String(initialData.amount),
         categoryId: initialData.categoryId,
         subcategoryId: initialData.subcategoryId,
-      }]);
+        installmentEnabled: initialData.isInstallment,
+        installmentCount: initialData.installmentTotal
+          ? String(initialData.installmentTotal)
+          : "2",
+      }];
+      setRows(nextRows);
+      setInitialRows(nextRows);
       return;
     }
-    setRows([emptyRow()]);
+    const nextRows = [emptyRow()];
+    setRows(nextRows);
+    setInitialRows(nextRows);
   }, [initialData]);
+
+  useEffect(() => {
+    const normalizeRows = (rowsToNormalize: RowDraft[]) =>
+      rowsToNormalize.map((row) => ({
+        type: row.type,
+        accountId: row.accountId.trim(),
+        date: row.date ? format(row.date, "yyyy-MM-dd") : "",
+        description: row.description.trim(),
+        amount: row.amount.trim(),
+        categoryId: row.categoryId.trim(),
+        subcategoryId: row.subcategoryId.trim(),
+        installmentEnabled: row.installmentEnabled,
+        installmentCount: row.installmentEnabled
+          ? row.installmentCount.trim()
+          : "",
+      }));
+
+    const hasChanges =
+      JSON.stringify(normalizeRows(rows)) !==
+      JSON.stringify(normalizeRows(initialRows));
+
+    onDirtyChange?.(hasChanges);
+  }, [initialRows, onDirtyChange, rows]);
+
+  useEffect(() => {
+    setActiveRowIndex((currentIndex) => {
+      if (rows.length === 0) return 0;
+      return Math.min(currentIndex, rows.length - 1);
+    });
+  }, [rows.length]);
 
   const updateRow = (i: number, patch: Partial<RowDraft>) => {
     setRows((prev) => prev.map((r, idx) => idx === i ? { ...r, ...patch } : r));
   };
 
-  const handleCategoryChange = (rowIndex: number, value: string, rowType: TransactionType) => {
+  const handleCategoryChange = (rowIndex: number, value: string) => {
     if (value === "__new__") {
-      setAddCatDialog({ open: true, rowIndex, type: rowType });
+      handleOpenAddCategory(rowIndex);
       return;
     }
     updateRow(rowIndex, { categoryId: value, subcategoryId: "" });
@@ -129,11 +240,54 @@ export function TransactionForm({
     setRows((prev) => prev.filter((_, idx) => idx !== i));
   };
 
+  const handleOpenAddCategory = (rowIndex: number) => {
+    const row = rows[rowIndex];
+    setAddCatDialog({
+      open: true,
+      rowIndex,
+      type: row?.type ?? "expense",
+    });
+  };
+
+  const handleInstallmentToggle = (rowIndex: number, enabled: boolean) => {
+    updateRow(rowIndex, {
+      installmentEnabled: enabled,
+      installmentCount: enabled ? "2" : "2",
+    });
+  };
+
   const handleSubmit = async () => {
-    const valid = rows.every(
-      (r) => r.accountId && r.description && r.amount && r.categoryId && r.subcategoryId,
-    );
-    if (!valid) return;
+    const missingByRow = rows
+      .map((row, index) => {
+        const missingFields: string[] = [];
+
+        if (!row.accountId.trim()) missingFields.push("Conta");
+        if (!row.description.trim()) missingFields.push("Descrição");
+        if (!row.amount.trim()) missingFields.push("Valor");
+        if (!row.categoryId.trim()) missingFields.push("Categoria");
+        if (!row.subcategoryId.trim()) missingFields.push("Subcategoria");
+        if (row.installmentEnabled) {
+          const installmentCount = Number.parseInt(row.installmentCount, 10);
+          if (
+            !row.installmentCount.trim() ||
+            Number.isNaN(installmentCount) ||
+            installmentCount < 2
+          ) {
+            missingFields.push("Parcelas");
+          }
+        }
+
+        return {
+          rowIndex: index,
+          missingFields,
+        };
+      })
+      .filter((entry) => entry.missingFields.length > 0);
+
+    if (missingByRow.length > 0) {
+      showMissingFieldsToast(missingByRow);
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -145,8 +299,18 @@ export function TransactionForm({
         type: r.type,
         categoryId: r.categoryId,
         subcategoryId: r.subcategoryId,
+        installmentEnabled: r.installmentEnabled,
+        installmentCount: r.installmentEnabled
+          ? Number.parseInt(r.installmentCount, 10)
+          : undefined,
       }));
-      await onSave(drafts);
+      const wasSaved = await onSave(drafts);
+      if (wasSaved && !isEditing) {
+        const nextRows = [emptyRow()];
+        setRows(nextRows);
+        setInitialRows(nextRows);
+        setActiveRowIndex(0);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -156,7 +320,7 @@ export function TransactionForm({
     <div className="space-y-3">
       {/* Column headers */}
       {!isEditing && (
-        <div className="grid grid-cols-[64px_1fr_110px_1fr_96px_1fr_1fr_32px] gap-2 px-1">
+        <div className="grid grid-cols-[64px_1fr_110px_1fr_96px_1fr_1fr_168px_32px] gap-2 px-1">
           <span className="text-sm text-muted-foreground">Tipo</span>
           <span className="text-sm text-muted-foreground">Conta</span>
           <span className="text-sm text-muted-foreground">Data</span>
@@ -164,9 +328,26 @@ export function TransactionForm({
           <span className="text-sm text-muted-foreground">Valor</span>
           <span className="text-sm text-muted-foreground">Categoria</span>
           <span className="text-sm text-muted-foreground">Subcategoria</span>
+          <span className="text-sm text-muted-foreground">Parcelamento</span>
           <span />
         </div>
       )}
+
+      <div className="flex items-center justify-between rounded-md border border-border/60 bg-card/40 px-3 py-2">
+        <p className="text-xs text-muted-foreground">
+          Categoria e subcategoria da linha {activeRowIndex + 1}
+        </p>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="h-8 gap-1.5 text-xs"
+          onClick={() => handleOpenAddCategory(activeRowIndex)}
+        >
+          <Plus className="h-3.5 w-3.5" />
+          Nova categoria/subcategoria
+        </Button>
+      </div>
 
       <div className="space-y-2">
         {rows.map((row, i) => {
@@ -175,7 +356,12 @@ export function TransactionForm({
 
           if (isEditing) {
             return (
-              <div key={i} className="space-y-4">
+              <div
+                key={i}
+                className="space-y-4"
+                onFocusCapture={() => setActiveRowIndex(i)}
+                onPointerDownCapture={() => setActiveRowIndex(i)}
+              >
                 <div className="flex gap-1 bg-secondary rounded-md p-1 w-fit">
                   <button
                     onClick={() => updateRow(i, { type: "income", categoryId: "", subcategoryId: "" })}
@@ -218,7 +404,7 @@ export function TransactionForm({
                   <Input placeholder="R$ 0,00" type="number" step="0.01" value={row.amount} onChange={(e) => updateRow(i, { amount: e.target.value })} />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                  <Select value={row.categoryId} onValueChange={(v) => handleCategoryChange(i, v, row.type)}>
+                  <Select value={row.categoryId} onValueChange={(v) => handleCategoryChange(i, v)}>
                     <SelectTrigger><SelectValue placeholder="Categoria" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="__new__">
@@ -243,7 +429,12 @@ export function TransactionForm({
           }
 
           return (
-            <div key={i} className="grid grid-cols-[64px_1fr_110px_1fr_96px_1fr_1fr_32px] gap-2 items-center">
+            <div
+              key={i}
+              className="grid grid-cols-[64px_1fr_110px_1fr_96px_1fr_1fr_168px_32px] gap-2 items-center"
+              onFocusCapture={() => setActiveRowIndex(i)}
+              onPointerDownCapture={() => setActiveRowIndex(i)}
+            >
               {/* Type toggle */}
               <div className="flex gap-0.5 bg-secondary rounded p-0.5">
                 <button
@@ -294,7 +485,7 @@ export function TransactionForm({
               <Input className="h-9 text-sm" placeholder="0,00" type="number" step="0.01" value={row.amount} onChange={(e) => updateRow(i, { amount: e.target.value })} />
 
               {/* Category */}
-              <Select value={row.categoryId} onValueChange={(v) => handleCategoryChange(i, v, row.type)}>
+              <Select value={row.categoryId} onValueChange={(v) => handleCategoryChange(i, v)}>
                 <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Categoria" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="__new__">
@@ -315,6 +506,31 @@ export function TransactionForm({
                   {selectedCategory?.subcategories.map((s) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
                 </SelectContent>
               </Select>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  className={cn(
+                    "h-9 rounded-md border px-2 text-xs font-medium transition-colors",
+                    row.installmentEnabled
+                      ? "border-primary/60 bg-primary/15 text-primary"
+                      : "border-border text-muted-foreground hover:text-foreground",
+                  )}
+                  onClick={() => handleInstallmentToggle(i, !row.installmentEnabled)}
+                >
+                  Parcelar
+                </button>
+                <Input
+                  className="h-9 w-16 text-center text-sm"
+                  type="number"
+                  min={2}
+                  value={row.installmentCount}
+                  disabled={!row.installmentEnabled}
+                  onChange={(event) =>
+                    updateRow(i, { installmentCount: event.target.value })
+                  }
+                />
+              </div>
 
               {/* Remove */}
               <Button

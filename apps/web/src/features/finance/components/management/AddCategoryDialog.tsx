@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -14,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { cn } from '@/lib/utils';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { MutationResult } from '@/features/finance/types';
 import type { Category, TransactionType } from '@/types/finance';
 import { toast } from 'sonner';
@@ -93,34 +94,18 @@ export function AddCategoryDialog({
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle>Nova Categoria</DialogTitle>
+          <DialogTitle>Nova categoria ou subcategoria</DialogTitle>
+          <DialogDescription>
+            Crie uma categoria com subcategoria ou adicione uma subcategoria em uma categoria existente.
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-3 pt-2">
-          {/* Mode toggle */}
-          <div className="flex gap-1 bg-secondary rounded-md p-1 w-fit">
-            <button
-              onClick={() => setMode('new')}
-              className={cn(
-                'px-3 py-1 text-xs rounded transition-colors font-medium',
-                mode === 'new'
-                  ? 'bg-background text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground',
-              )}
-            >
-              Nova
-            </button>
-            <button
-              onClick={() => setMode('existing')}
-              className={cn(
-                'px-3 py-1 text-xs rounded transition-colors font-medium',
-                mode === 'existing'
-                  ? 'bg-background text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground',
-              )}
-            >
-              Existente
-            </button>
-          </div>
+          <Tabs value={mode} onValueChange={(value) => setMode(value as Mode)}>
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="new">Criar categoria</TabsTrigger>
+              <TabsTrigger value="existing">Adicionar em existente</TabsTrigger>
+            </TabsList>
+          </Tabs>
 
           {/* Type */}
           <Select value={type} onValueChange={(v) => { setType(v as TransactionType); setExistingCatId(''); }}>

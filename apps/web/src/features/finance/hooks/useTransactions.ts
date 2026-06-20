@@ -31,6 +31,24 @@ function toTransactionPayload(transaction: TransactionDraft): CreateTransactionI
     subcategoryId: transaction.subcategoryId || null,
     occurredAt: toIsoDate(transaction.date),
     note: transaction.description,
+    installmentEnabled: transaction.installmentEnabled,
+    installmentCount: transaction.installmentEnabled
+      ? transaction.installmentCount ?? undefined
+      : undefined,
+  };
+}
+
+function toUpdateTransactionPayload(
+  transaction: TransactionDraft,
+): UpdateTransactionInput {
+  return {
+    type: transaction.type,
+    amountCents: toAmountCents(transaction.amount),
+    accountId: transaction.accountId,
+    categoryId: transaction.categoryId,
+    subcategoryId: transaction.subcategoryId || null,
+    occurredAt: toIsoDate(transaction.date),
+    note: transaction.description,
   };
 }
 
@@ -99,7 +117,7 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
     async (id: string, transaction: TransactionDraft): Promise<void> => {
       await updateTransactionMutation.mutateAsync({
         id,
-        payload: toTransactionPayload(transaction),
+        payload: toUpdateTransactionPayload(transaction),
       });
     },
     [updateTransactionMutation],

@@ -71,5 +71,9 @@ export function mapTransactions(
     type: transaction.type,
     categoryId: transaction.categoryId,
     subcategoryId: transaction.subcategoryId || '',
+    isInstallment: transaction.isInstallment,
+    installmentNumber: transaction.installmentNumber,
+    installmentTotal: transaction.installmentTotal,
+    installmentGroupId: transaction.installmentGroupId,
   }));
 }

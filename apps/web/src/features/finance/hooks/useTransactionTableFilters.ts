@@ -1,9 +1,22 @@
 import { useMemo, useState } from "react";
-import type { Category, Transaction } from "@/types/finance";
+import type { Category, Transaction, TransactionType } from "@/types/finance";
 
 type UseTransactionTableFiltersArgs = {
   transactions: Transaction[];
   categories: Category[];
+};
+
+type TableFilterType = "" | TransactionType;
+
+type TransactionTableFilterInput = {
+  search: string;
+  sortAsc: boolean;
+  selectedAccounts: string[];
+  dateFrom?: Date;
+  dateTo?: Date;
+  filterCategoryId: string;
+  filterSubcategoryId: string;
+  filterType: TableFilterType;
 };
 
 const toLocalDateStr = (d: Date) => {
@@ -12,6 +25,69 @@ const toLocalDateStr = (d: Date) => {
   const day = String(d.getDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
 };
+
+export function applyTransactionTableFilters(
+  transactions: Transaction[],
+  filters: TransactionTableFilterInput,
+): Transaction[] {
+  const {
+    search,
+    sortAsc,
+    selectedAccounts,
+    dateFrom,
+    dateTo,
+    filterCategoryId,
+    filterSubcategoryId,
+    filterType,
+  } = filters;
+
+  const normalizedSearch = search.toLowerCase();
+
+  const result = transactions.filter((transaction) => {
+    if (
+      search &&
+      !transaction.description.toLowerCase().includes(normalizedSearch)
+    ) {
+      return false;
+    }
+    if (
+      selectedAccounts.length > 0 &&
+      !selectedAccounts.includes(transaction.accountId)
+    ) {
+      return false;
+    }
+    if (dateFrom && transaction.date < toLocalDateStr(dateFrom)) {
+      return false;
+    }
+    if (dateTo && transaction.date > toLocalDateStr(dateTo)) {
+      return false;
+    }
+    if (filterCategoryId && transaction.categoryId !== filterCategoryId) {
+      return false;
+    }
+    if (
+      filterSubcategoryId &&
+      transaction.subcategoryId !== filterSubcategoryId
+    ) {
+      return false;
+    }
+    if (filterType && transaction.type !== filterType) {
+      return false;
+    }
+
+    return true;
+  });
+
+  result.sort((a, b) => {
+    if (sortAsc) {
+      return a.date.localeCompare(b.date);
+    }
+
+    return b.date.localeCompare(a.date);
+  });
+
+  return result;
+}
 
 export function useTransactionTableFilters({
   transactions,
@@ -24,6 +100,7 @@ export function useTransactionTableFilters({
   const [dateTo, setDateTo] = useState<Date | undefined>();
   const [filterCategoryId, setFilterCategoryId] = useState("");
   const [filterSubcategoryId, setFilterSubcategoryId] = useState("");
+  const [filterType, setFilterType] = useState<TableFilterType>("");
 
   const filterCategory = useMemo(
     () => categories.find(category => category.id === filterCategoryId),
@@ -31,44 +108,16 @@ export function useTransactionTableFilters({
   );
 
   const filteredTransactions = useMemo(() => {
-    const result = transactions.filter(transaction => {
-      if (
-        search &&
-        !transaction.description.toLowerCase().includes(search.toLowerCase())
-      ) {
-        return false;
-      }
-      if (
-        selectedAccounts.length > 0 &&
-        !selectedAccounts.includes(transaction.accountId)
-      ) {
-        return false;
-      }
-      if (dateFrom && transaction.date < toLocalDateStr(dateFrom)) {
-        return false;
-      }
-      if (dateTo && transaction.date > toLocalDateStr(dateTo)) {
-        return false;
-      }
-      if (filterCategoryId && transaction.categoryId !== filterCategoryId) {
-        return false;
-      }
-      if (
-        filterSubcategoryId &&
-        transaction.subcategoryId !== filterSubcategoryId
-      ) {
-        return false;
-      }
-
-      return true;
+    return applyTransactionTableFilters(transactions, {
+      search,
+      sortAsc,
+      selectedAccounts,
+      dateFrom,
+      dateTo,
+      filterCategoryId,
+      filterSubcategoryId,
+      filterType,
     });
-
-    result.sort((a, b) => {
-      const diff = new Date(a.date).getTime() - new Date(b.date).getTime();
-      return sortAsc ? diff : -diff;
-    });
-
-    return result;
   }, [
     transactions,
     search,
@@ -78,10 +127,17 @@ export function useTransactionTableFilters({
     dateTo,
     filterCategoryId,
     filterSubcategoryId,
+    filterType,
   ]);
 
   const hasFilters = Boolean(
-    search || selectedAccounts.length > 0 || dateFrom || dateTo || filterCategoryId,
+    search ||
+      selectedAccounts.length > 0 ||
+      dateFrom ||
+      dateTo ||
+      filterCategoryId ||
+      filterSubcategoryId ||
+      filterType,
   );
 
   const toggleAccount = (accountId: string) => {
@@ -108,6 +164,7 @@ export function useTransactionTableFilters({
     setDateTo(undefined);
     setFilterCategoryId("");
     setFilterSubcategoryId("");
+    setFilterType("");
   };
 
   return {
@@ -122,6 +179,11 @@ export function useTransactionTableFilters({
     setDateTo,
     filterCategoryId,
     filterSubcategoryId,
+    filterType,
+    setFilterType,
+    setSelectedAccounts,
+    setFilterCategoryId,
+    setFilterSubcategoryId,
     filterCategory,
     filteredTransactions,
     hasFilters,

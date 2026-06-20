@@ -7,6 +7,10 @@ model Transaction {
   type          TransactionType
   amountCents   Int
   note          String?
+  isInstallment Boolean         @default(false)
+  installmentNumber Int?
+  installmentTotal Int?
+  installmentGroupId String?
   occurredAt    DateTime
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
@@ -18,6 +22,7 @@ model Transaction {
 
   @@index([userId, occurredAt])
   @@index([userId, type])
+  @@index([userId, installmentGroupId])
   @@index([accountId])
   @@index([categoryId])
   @@index([subcategoryId])

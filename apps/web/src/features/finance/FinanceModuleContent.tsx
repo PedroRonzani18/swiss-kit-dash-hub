@@ -1,35 +1,9 @@
 import { FinanceDataPrefetcher } from './components/FinanceDataPrefetcher';
 import { FinanceDashboardPage } from './components/dashboard';
-import {
-  FinanceLoadingState,
-  UnauthenticatedFinanceState,
-} from './components/states';
+import { useAuth } from '@/auth';
 
-type FinanceModuleContentProps = {
-  isAuthenticated: boolean;
-  isAuthLoading: boolean;
-  onLogin: () => Promise<void>;
-};
-
-export function FinanceModuleContent({
-  isAuthenticated,
-  isAuthLoading,
-  onLogin,
-}: FinanceModuleContentProps) {
-  let content: JSX.Element;
-
-  if (isAuthLoading && !isAuthenticated) {
-    content = <FinanceLoadingState />;
-  } else if (!isAuthenticated) {
-    content = (
-      <UnauthenticatedFinanceState
-        isAuthLoading={isAuthLoading}
-        onLogin={onLogin}
-      />
-    );
-  } else {
-    content = <FinanceDashboardPage />;
-  }
+export function FinanceModuleContent() {
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
 
   return (
     <>
@@ -37,7 +11,7 @@ export function FinanceModuleContent({
         isAuthenticated={isAuthenticated}
         isAuthLoading={isAuthLoading}
       />
-      {content}
+      <FinanceDashboardPage />
     </>
   );
 }

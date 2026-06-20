@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  IsBoolean,
   IsDateString,
   IsEnum,
   IsInt,
@@ -8,6 +9,7 @@ import {
   IsUUID,
   MaxLength,
   Min,
+  ValidateIf,
 } from 'class-validator';
 
 export enum TransactionTypeDto {
@@ -50,4 +52,22 @@ export class CreateTransactionDto {
   @IsString()
   @MaxLength(300)
   note?: string;
+
+  @ApiPropertyOptional({
+    example: true,
+    description: 'When true, create installments from this transaction',
+  })
+  @IsOptional()
+  @IsBoolean()
+  installmentEnabled?: boolean;
+
+  @ApiPropertyOptional({
+    example: 12,
+    minimum: 2,
+    description: 'Required when installmentEnabled is true',
+  })
+  @ValidateIf((dto: CreateTransactionDto) => dto.installmentEnabled === true)
+  @IsInt()
+  @Min(2)
+  installmentCount?: number;
 }
