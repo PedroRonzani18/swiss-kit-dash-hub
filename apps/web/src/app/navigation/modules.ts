@@ -1,8 +1,7 @@
-import { Wallet, type LucideIcon } from "lucide-react";
-import { FINANCE_MODULE_ROUTE } from "@/features/finance";
+import { Home, type LucideIcon } from "lucide-react";
 
 export const MODULE_ROUTES = {
-  finance: FINANCE_MODULE_ROUTE,
+  core: "/app",
 } as const;
 
 export type ModuleRouteKey = keyof typeof MODULE_ROUTES;
@@ -18,12 +17,12 @@ export type ModuleNavigationItem = {
 
 export const APP_MODULES: ModuleNavigationItem[] = [
   {
-    id: "finance",
-    label: "Financeiro",
-    path: MODULE_ROUTES.finance,
-    icon: Wallet,
-    description: "Controle contas, categorias e transacoes.",
+    id: "core",
+    label: "Core",
+    path: MODULE_ROUTES.core,
+    icon: Home,
+    description: "Ambiente base sem modulo de produto ativo.",
   },
 ];
 
-export const DEFAULT_MODULE_ROUTE = MODULE_ROUTES.finance;
+export const DEFAULT_MODULE_ROUTE = MODULE_ROUTES.core;

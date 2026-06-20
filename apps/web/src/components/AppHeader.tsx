@@ -10,7 +10,7 @@ interface AppHeaderProps {
   onOpenCommand?: () => void;
 }
 
-export function AppHeader({ breadcrumbs = ["App", "Financeiro"] }: AppHeaderProps) {
+export function AppHeader({ breadcrumbs = ["SwissKit", "Core"] }: AppHeaderProps) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 

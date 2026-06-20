@@ -1,1 +1,1 @@
-export { FinanceModulePage as default } from "@/modules/finance/pages/FinanceModulePage";
+export { CoreAppPage as default } from "@/modules/core/pages/CoreAppPage";

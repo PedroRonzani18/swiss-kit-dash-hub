@@ -5,10 +5,11 @@ import {
 } from "@/app/navigation/modules";
 import { useAuth } from "@/auth";
 import { LoginPage } from "@/modules/auth/pages/LoginPage";
-import { FinanceModulePage } from "@/modules/finance/pages/FinanceModulePage";
+import { CoreAppPage } from "@/modules/core/pages/CoreAppPage";
 import NotFound from "@/pages/NotFound";
 
 const LOGIN_ROUTE = "/login";
+const LEGACY_FINANCE_ROUTE = "/financeiro";
 
 function AuthBootstrapLoading() {
   return (
@@ -86,9 +87,11 @@ export function AppRoutes() {
       </Route>
 
       <Route element={<ProtectedAppRoutes />}>
-        <Route path={MODULE_ROUTES.finance} element={<FinanceModulePage />} />
-        <Route path={`${MODULE_ROUTES.finance}/:tab`} element={<FinanceModulePage />} />
-        <Route path={`${MODULE_ROUTES.finance}/:tab/:action`} element={<FinanceModulePage />} />
+        <Route path={MODULE_ROUTES.core} element={<CoreAppPage />} />
+        <Route
+          path={`${LEGACY_FINANCE_ROUTE}/*`}
+          element={<Navigate to={DEFAULT_MODULE_ROUTE} replace />}
+        />
       </Route>
 
       <Route path="*" element={<NotFound />} />
