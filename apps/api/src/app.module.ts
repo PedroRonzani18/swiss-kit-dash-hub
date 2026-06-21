@@ -10,6 +10,7 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { SubcategoriesModule } from './modules/subcategories/subcategories.module';
 import { TransactionsModule } from './modules/transactions/transactions.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { CoreModule } from './modules/core/core.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AuthModule } from './modules/auth/auth.module';
     }),
     PrismaModule,
     AuthModule,
+    CoreModule,
     HealthModule,
     AccountsModule,
     CategoriesModule,

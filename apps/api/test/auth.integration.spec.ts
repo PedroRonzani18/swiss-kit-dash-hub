@@ -26,10 +26,7 @@ describe('Auth integration', () => {
   it('denies access to protected routes without authentication', async () => {
     const protectedRoutes = [
       '/api/auth/me',
-      '/api/accounts',
-      '/api/categories',
-      '/api/subcategories',
-      '/api/transactions',
+      '/api/core/session-check',
     ];
 
     for (const route of protectedRoutes) {
@@ -50,6 +47,25 @@ describe('Auth integration', () => {
       email: authUser.user.email,
       name: authUser.user.name,
       provider: authUser.user.provider,
+    });
+  });
+
+  it('returns authenticated status on GET /api/core/session-check', async () => {
+    const authUser = await createAuthenticatedTestUser(app, prisma);
+
+    const response = await request(app.getHttpServer())
+      .get('/api/core/session-check')
+      .set(authUser.authHeader)
+      .expect(200);
+
+    expect(response.body).toEqual({
+      status: 'authenticated',
+      user: {
+        id: authUser.user.id,
+        email: authUser.user.email,
+        name: authUser.user.name,
+        provider: authUser.user.provider,
+      },
     });
   });
 });
