@@ -49,7 +49,7 @@ export function LoginPage() {
           <div className="space-y-1">
             <CardTitle className="text-2xl">Entrar no sistema</CardTitle>
             <CardDescription>
-              Faça login com Google para acessar seu dashboard financeiro.
+              Faça login com Google para acessar o Swiss Kit Core.
             </CardDescription>
           </div>
         </CardHeader>

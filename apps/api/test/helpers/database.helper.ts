@@ -31,19 +31,15 @@ async function ensureDatabasePrepared(): Promise<void> {
 
 export async function resetDatabase(prisma: PrismaService): Promise<void> {
   try {
-    await prisma.transaction.deleteMany();
+    await prisma.user.deleteMany();
   } catch (error) {
     if (!isMissingTableError(error)) {
       throw error;
     }
 
     await ensureDatabasePrepared();
-    await prisma.transaction.deleteMany();
+    await prisma.user.deleteMany();
   }
 
-  await prisma.subcategory.deleteMany();
-  await prisma.category.deleteMany();
-  await prisma.account.deleteMany();
-  await prisma.user.deleteMany();
   await prisma.allowedEmail.deleteMany();
 }

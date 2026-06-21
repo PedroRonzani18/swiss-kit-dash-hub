@@ -5,11 +5,8 @@ import { validateEnv } from './config/env.validation';
 import { PrismaModule } from './prisma/prisma.module';
 import { JwtAuthGuard } from './common/auth';
 import { HealthModule } from './modules/health/health.module';
-import { AccountsModule } from './modules/accounts/accounts.module';
-import { CategoriesModule } from './modules/categories/categories.module';
-import { SubcategoriesModule } from './modules/subcategories/subcategories.module';
-import { TransactionsModule } from './modules/transactions/transactions.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { CoreModule } from './modules/core/core.module';
 
 @Module({
   imports: [
@@ -20,11 +17,8 @@ import { AuthModule } from './modules/auth/auth.module';
     }),
     PrismaModule,
     AuthModule,
+    CoreModule,
     HealthModule,
-    AccountsModule,
-    CategoriesModule,
-    SubcategoriesModule,
-    TransactionsModule,
   ],
   providers: [
     {

@@ -38,6 +38,7 @@ Arquivo base: `apps/api/.env.example`
 - `AUTH_COOKIE_SAME_SITE=none` exige `AUTH_COOKIE_SECURE=true`.
 - `CORS_ALLOWED_ORIGINS` deve incluir exatamente as origens que consomem a API.
 - `GOOGLE_CALLBACK_URL` precisa casar com a URL registrada no Google Cloud.
+- A baseline Prisma atual é Core (`User`, `AllowedEmail`, `AuthProvider`). Bancos antigos com tabelas financeiras devem ser resetados ou reprovisionados antes de usar as migrations atuais.
 
 ## Guia rápido: dev vs produção
 

@@ -1,13 +1,13 @@
 # SwissKit API
 
-Backend NestJS para finanças pessoais no monorepo (`apps/api`).
+Backend NestJS core do monorepo (`apps/api`), preservando autenticação, health checks e integração Prisma durante a transição para Swiss Kit Core.
 
 ## Arquitetura
 
 - Camadas por módulo: `controller -> service -> repositories -> PrismaService`
-- Tipagem de domínio central em `src/common/contracts/domain.contracts.ts`
-- Enums compartilhados em `src/common/enums`
-- Mapeadores de persistência para domínio em `src/common/mappers`
+- Tipagem core/auth em `src/common/contracts`
+- Enums compartilhados de auth em `src/common/enums`
+- Mapeadores core/auth em `src/common/mappers`
 - Swagger habilitado em `/api/docs`
 - Prisma 7 com `@prisma/adapter-pg`
 - Auth Google + JWT em cookie HttpOnly (`src/modules/auth`)
@@ -16,10 +16,7 @@ Backend NestJS para finanças pessoais no monorepo (`apps/api`).
 
 - `health`
 - `auth`
-- `accounts`
-- `categories`
-- `subcategories`
-- `transactions`
+- `core`
 
 ## Prisma (multi-file schema)
 
@@ -30,20 +27,22 @@ prisma/
     enums.prisma
     allowed-email.prisma
     user.prisma
-    account.prisma
-    category.prisma
-    subcategory.prisma
-    transaction.prisma
   migrations/
+    20260621000000_core_baseline/
   seed.ts
 ```
+
+A baseline Prisma agora é Core: apenas `User`, `AllowedEmail` e `AuthProvider`.
+Ambientes existentes devem ser resetados ou reprovisionados para essa baseline limpa; não trate esta etapa como migration incremental sobre dados financeiros.
 
 ## Rodar localmente
 
 ```bash
-npm install
-npm run prisma:generate
-npm run start:dev
+pnpm install
+pnpm --filter api prisma:generate
+pnpm --filter api prisma:migrate:dev
+pnpm --filter api prisma:seed
+pnpm dev:api
 ```
 
 ## Configuração de ambiente

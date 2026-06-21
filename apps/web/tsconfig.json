@@ -10,6 +10,9 @@
       ],
       "@swisskit/contracts": [
         "../../packages/contracts/src/index.ts"
+      ],
+      "@swisskit/contracts/core": [
+        "../../packages/contracts/src/core.ts"
       ]
     },
     "strictNullChecks": true

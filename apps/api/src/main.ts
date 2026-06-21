@@ -144,8 +144,10 @@ async function bootstrap() {
   });
 
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('SwissKit Finance API')
-    .setDescription('Backend foundation for personal finance app')
+    .setTitle('Swiss Kit Core API')
+    .setDescription(
+      'Core API for authentication, health checks, and modular services during finance decommissioning.',
+    )
     .setVersion('1.0.0')
     .addCookieAuth(authCookieName, {
       type: 'apiKey',

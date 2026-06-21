@@ -11,16 +11,11 @@ const featureToModuleBoundaryPattern = {
     "Features não devem depender de modules/pages. Extraia contratos para camadas compartilhadas (src/lib, src/components, src/auth).",
 };
 
-const radixAndLegacyComponentPatterns = [
+const sharedComponentBoundaryPatterns = [
   {
     group: ["@radix-ui/*"],
     message:
       "Importe Radix apenas em src/components/ui. Fora disso, use wrappers de @/components/ui.",
-  },
-  {
-    group: ["@/components/finance/*"],
-    message:
-      "Componentes de domínio financeiro devem viver em src/features/finance/components.",
   },
 ];
 
@@ -50,7 +45,7 @@ export default tseslint.config(
       "no-restricted-imports": [
         "error",
         {
-          patterns: radixAndLegacyComponentPatterns,
+          patterns: sharedComponentBoundaryPatterns,
         },
       ],
     },
@@ -73,74 +68,7 @@ export default tseslint.config(
       "no-restricted-imports": [
         "error",
         {
-          patterns: [
-            ...radixAndLegacyComponentPatterns,
-            {
-              group: ["@/features/finance/*", "@/features/finance/*/**"],
-              message:
-                "Camadas fora da feature devem importar apenas pela API pública: @/features/finance.",
-            },
-          ],
-        },
-      ],
-    },
-  },
-  {
-    files: [
-      "src/features/finance/components/**/*.{ts,tsx}",
-      "src/features/finance/hooks/**/*.{ts,tsx}",
-      "src/features/finance/model/**/*.{ts,tsx}",
-      "src/features/finance/FinanceModuleContent.tsx",
-    ],
-    rules: {
-      "no-restricted-imports": [
-        "error",
-        {
-          patterns: [
-            featureToModuleBoundaryPattern,
-            {
-              group: [
-                "@/api/accounts",
-                "@/api/categories",
-                "@/api/subcategories",
-                "@/api/transactions",
-                "@/api/queryKeys",
-              ],
-              message:
-                "Use a camada de acesso de dados da própria feature: @/features/finance/api.",
-            },
-            {
-              group: ["@/features/finance/services", "@/features/finance/services/*"],
-              message:
-                "A camada services foi descontinuada. Use @/features/finance/api.",
-            },
-          ],
-        },
-      ],
-    },
-  },
-  {
-    files: ["src/features/finance/api/**/*.{ts,tsx}"],
-    rules: {
-      "no-restricted-imports": [
-        "error",
-        {
-          patterns: [
-            featureToModuleBoundaryPattern,
-            {
-              group: [
-                "@/features/finance/components/**",
-                "@/features/finance/hooks/**",
-              ],
-              message:
-                "A camada de API deve ser independente de UI e hooks da feature.",
-            },
-            {
-              group: ["@/features/finance/services", "@/features/finance/services/*"],
-              message:
-                "A camada services foi descontinuada. Use @/features/finance/api.",
-            },
-          ],
+          patterns: sharedComponentBoundaryPatterns,
         },
       ],
     },
