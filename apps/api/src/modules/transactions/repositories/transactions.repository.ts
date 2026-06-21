@@ -5,8 +5,8 @@ import {
   CreateTransactionContract,
   TransactionContract,
   UpdateTransactionContract,
-} from '@/common/contracts';
-import { mapTransactionFromPersistence } from '@/common/mappers';
+} from '@/modules/finance/contracts';
+import { mapTransactionFromPersistence } from '@/modules/finance/mappers';
 
 const transactionSelect = {
   id: true,

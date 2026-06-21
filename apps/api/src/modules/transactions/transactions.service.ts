@@ -8,7 +8,7 @@ import {
   CreateTransactionContract,
   TransactionContract,
   UpdateTransactionContract,
-} from '@/common/contracts';
+} from '@/modules/finance/contracts';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { TransactionsRepository } from './repositories/transactions.repository';

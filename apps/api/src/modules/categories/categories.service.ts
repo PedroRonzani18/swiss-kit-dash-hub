@@ -3,7 +3,7 @@ import {
   CategoryContract,
   CreateCategoryContract,
   UpdateCategoryContract,
-} from '@/common/contracts';
+} from '@/modules/finance/contracts';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CategoriesRepository } from './repositories/categories.repository';

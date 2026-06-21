@@ -5,8 +5,8 @@ import {
   AccountContract,
   CreateAccountContract,
   UpdateAccountContract,
-} from '@/common/contracts';
-import { mapAccountFromPersistence } from '@/common/mappers';
+} from '@/modules/finance/contracts';
+import { mapAccountFromPersistence } from '@/modules/finance/mappers';
 
 const accountSelect = {
   id: true,

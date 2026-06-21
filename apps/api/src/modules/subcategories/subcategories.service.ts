@@ -3,7 +3,7 @@ import {
   CreateSubcategoryContract,
   SubcategoryContract,
   UpdateSubcategoryContract,
-} from '@/common/contracts';
+} from '@/modules/finance/contracts';
 import { CreateSubcategoryDto } from './dto/create-subcategory.dto';
 import { UpdateSubcategoryDto } from './dto/update-subcategory.dto';
 import { SubcategoriesRepository } from './repositories/subcategories.repository';

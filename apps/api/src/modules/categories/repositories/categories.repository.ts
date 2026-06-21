@@ -5,8 +5,8 @@ import {
   CategoryContract,
   CreateCategoryContract,
   UpdateCategoryContract,
-} from '@/common/contracts';
-import { mapCategoryFromPersistence } from '@/common/mappers';
+} from '@/modules/finance/contracts';
+import { mapCategoryFromPersistence } from '@/modules/finance/mappers';
 
 const categorySelect = {
   id: true,

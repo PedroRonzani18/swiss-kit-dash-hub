@@ -5,8 +5,8 @@ import {
   CreateSubcategoryContract,
   SubcategoryContract,
   UpdateSubcategoryContract,
-} from '@/common/contracts';
-import { mapSubcategoryFromPersistence } from '@/common/mappers';
+} from '@/modules/finance/contracts';
+import { mapSubcategoryFromPersistence } from '@/modules/finance/mappers';
 
 const subcategorySelect = {
   id: true,
