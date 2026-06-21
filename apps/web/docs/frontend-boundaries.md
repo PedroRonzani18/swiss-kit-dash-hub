@@ -12,7 +12,7 @@ This document defines import boundaries for the web app to keep modules decouple
 Practical rule:
 
 - if a component is specific to one domain, keep it inside that feature/module namespace instead of `src/components`.
-- during the finance decommission, legacy finance files remain quarantined under their current namespace until the delete checkpoint.
+- deleted legacy modules must not be reintroduced as shared components.
 
 Recommended dependency flow:
 
@@ -23,7 +23,7 @@ Recommended dependency flow:
 `apps/web/eslint.config.js` enforces:
 
 - Only `src/components/ui` can import `@radix-ui/*` directly.
-- domain-specific shared component folders such as `src/components/finance/*` are blocked.
+- domain-specific shared component folders under `src/components/*` are blocked.
 - `src/features/*` cannot import from `src/modules/*`.
 - Module boundaries stay centralized in `src/app` and page-level modules under `src/modules/*`.
 
@@ -34,9 +34,9 @@ Current shell entrypoints:
 - `/` redirects by auth state.
 - `/login` is public-only.
 - `/app` is the protected neutral Core shell.
-- `/financeiro/*` is a protected legacy redirect to `/app` while the finance module remains in quarantine.
+- `/financeiro/*` is a protected legacy redirect to `/app`.
 
 Reason:
 
 - the shell owns default routing and navigation during the transition;
-- command palette and sidebar must not expose finance tasks while the module is being decommissioned.
+- command palette and sidebar must expose only active Core navigation.
