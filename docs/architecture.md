@@ -69,7 +69,7 @@ Uso atual:
 - auth e consumidores web/API preservam o pacote compartilhado;
 - a API mantém também contratos internos em `apps/api/src/common/contracts`.
 
-Observação de transição: arquivos legados de contratos financeiros, se presentes no pacote, não representam produto ativo e não devem ser usados por web/API Core.
+Observação de transição: o pacote compartilhado deve expor apenas contratos Core/auth; contratos financeiros removidos não devem ser reintroduzidos como dependência de web/API Core.
 
 ## Fluxo de autenticação (alto nível)
 1. O frontend inicia login em `GET /api/auth/google`.
