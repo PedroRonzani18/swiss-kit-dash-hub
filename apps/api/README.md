@@ -35,7 +35,8 @@ prisma/
   seed.ts
 ```
 
-Os arquivos Prisma financeiros permanecem temporariamente até o checkpoint específico de reset do schema/migrations.
+A baseline Prisma agora é Core: apenas `User`, `AllowedEmail` e `AuthProvider`.
+Ambientes existentes devem ser resetados ou reprovisionados para essa baseline limpa; não trate esta etapa como migration incremental sobre dados financeiros.
 
 ## Rodar localmente
 

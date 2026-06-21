@@ -30,7 +30,7 @@ async function main() {
     },
   });
 
-  const user = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: "demo@swisskit.app" },
     update: {},
     create: {
@@ -38,40 +38,6 @@ async function main() {
       name: "Demo User",
       provider: "google",
       providerUserId: "demo-google-user-id",
-    },
-  });
-
-  await prisma.account.upsert({
-    where: {
-      userId_name: {
-        userId: user.id,
-        name: "Main account",
-      },
-    },
-    update: {},
-    create: {
-      userId: user.id,
-      name: "Main account",
-      type: "checking",
-      currency: "BRL",
-      openingBalanceCents: 0,
-      institution: "Demo Bank",
-    },
-  });
-
-  await prisma.category.upsert({
-    where: {
-      userId_name_type: {
-        userId: user.id,
-        name: "General",
-        type: "expense",
-      },
-    },
-    update: {},
-    create: {
-      userId: user.id,
-      name: "General",
-      type: "expense",
     },
   });
 }
