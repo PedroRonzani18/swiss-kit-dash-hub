@@ -3,6 +3,8 @@
 ## Visão geral do sistema
 O `swiss-kit-dash-hub` está em transição para um Swiss Kit Core vazio/modular. O Core preserva autenticação, health checks, shell web, contratos compartilhados e tooling do monorepo sem expor um produto financeiro como entrada principal.
 
+O domínio financeiro foi removido das superfícies ativas de frontend, backend e Prisma. As menções restantes devem ser históricas, de descomissionamento ou de compatibilidade temporária.
+
 Componentes principais:
 - `apps/web`: frontend React que renderiza o shell Core, protege `/app`, consome a API e valida contratos de resposta.
 - `apps/api`: backend NestJS que expõe endpoints REST, autentica usuários via Google OAuth e persiste dados no PostgreSQL.
@@ -48,7 +50,7 @@ Tecnologias centrais:
 
 Organização principal:
 - módulos Core preservados: `auth` e `health`;
-- módulos financeiros ainda existem durante o descomissionamento e serão removidos em checkpoint próprio;
+- módulo `core` para endpoints protegidos neutros, como `GET /api/core/session-check`;
 - padrão por módulo: `controller -> service -> repository`;
 - `PrismaService` compartilhado para acesso a dados;
 - `JwtAuthGuard` global, com rotas públicas explícitas via `@Public()`.
@@ -60,12 +62,14 @@ Capacidades operacionais:
 
 ## Contratos compartilhados (`packages/contracts`)
 O pacote contém:
-- tipos base de domínio (`domain.ts`);
-- superfície financeira legada (`finance.ts`) ainda presente até a etapa de extração Core/auth.
+- superfície Core/auth em `core.ts`;
+- exports compartilhados necessários para autenticação e ids.
 
 Uso atual:
 - auth e consumidores web/API preservam o pacote compartilhado;
 - a API mantém também contratos internos em `apps/api/src/common/contracts`.
+
+Observação de transição: arquivos legados de contratos financeiros, se presentes no pacote, não representam produto ativo e não devem ser usados por web/API Core.
 
 ## Fluxo de autenticação (alto nível)
 1. O frontend inicia login em `GET /api/auth/google`.
@@ -89,4 +93,5 @@ Uso atual:
 - Contratos compartilhados para reduzir drift entre backend e frontend.
 - Sessão baseada em cookie HttpOnly (em vez de token em storage do browser).
 - Guard global de autenticação, com rotas públicas explícitas.
-- Descomissionamento financeiro executado em checkpoints para preservar Core/auth antes de remover domínio, schema e migrations legados.
+- Reset Prisma limpo para baseline Core; bancos antigos com dados financeiros exigem reset/reprovision, não migration incremental.
+- `/financeiro/*` mantido temporariamente apenas como redirect legado protegido para `/app`.

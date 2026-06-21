@@ -27,11 +27,8 @@ prisma/
     enums.prisma
     allowed-email.prisma
     user.prisma
-    account.prisma
-    category.prisma
-    subcategory.prisma
-    transaction.prisma
   migrations/
+    20260621000000_core_baseline/
   seed.ts
 ```
 
@@ -41,9 +38,11 @@ Ambientes existentes devem ser resetados ou reprovisionados para essa baseline l
 ## Rodar localmente
 
 ```bash
-npm install
-npm run prisma:generate
-npm run start:dev
+pnpm install
+pnpm --filter api prisma:generate
+pnpm --filter api prisma:migrate:dev
+pnpm --filter api prisma:seed
+pnpm dev:api
 ```
 
 ## Configuração de ambiente

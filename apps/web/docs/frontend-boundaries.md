@@ -40,3 +40,4 @@ Reason:
 
 - the shell owns default routing and navigation during the transition;
 - command palette and sidebar must expose only active Core navigation.
+- the removed finance frontend must not be reintroduced through shared components or aliases.
