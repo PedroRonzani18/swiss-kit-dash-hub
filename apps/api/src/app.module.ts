@@ -7,6 +7,7 @@ import { JwtAuthGuard } from './common/auth';
 import { HealthModule } from './modules/health/health.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CoreModule } from './modules/core/core.module';
+import { SettingsModule } from './modules/settings/settings.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CoreModule } from './modules/core/core.module';
     PrismaModule,
     AuthModule,
     CoreModule,
+    SettingsModule,
     HealthModule,
   ],
   providers: [

@@ -17,6 +17,7 @@ Backend NestJS core do monorepo (`apps/api`), com autenticação, health checks 
 - `health`
 - `auth`
 - `core`
+- `settings`
 
 ## Prisma (multi-file schema)
 
@@ -110,6 +111,11 @@ Restrição de acesso atual:
 
 - Apenas e-mails ativos na tabela `AllowedEmail`
 - Valor inicial incluído no seed: `pedroaugustogabironzani@gmail.com`
+
+## Endpoints de template
+
+- `GET /api/core/session-check`: verifica sessão autenticada do Core
+- `GET /api/settings`: retorna a visão geral estática do módulo Settings
 
 ## Banco local com Docker
 
