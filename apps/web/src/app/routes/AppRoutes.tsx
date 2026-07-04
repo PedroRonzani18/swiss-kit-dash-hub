@@ -6,6 +6,7 @@ import {
 import { useAuth } from "@/auth";
 import { LoginPage } from "@/modules/auth/pages/LoginPage";
 import { CoreAppPage } from "@/modules/core/pages/CoreAppPage";
+import { SettingsPage } from "@/modules/settings/pages/SettingsPage";
 import NotFound from "@/pages/NotFound";
 
 const LOGIN_ROUTE = "/login";
@@ -87,6 +88,7 @@ export function AppRoutes() {
 
       <Route element={<ProtectedAppRoutes />}>
         <Route path={MODULE_ROUTES.core} element={<CoreAppPage />} />
+        <Route path={MODULE_ROUTES.settings} element={<SettingsPage />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />
