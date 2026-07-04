@@ -2,6 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import type {
   AllowedEmailContract,
   AllowedEmailsOverviewContract,
+  CreateAllowedEmailInputContract,
+  UpdateAllowedEmailStatusInputContract,
 } from '@swisskit/contracts/allowed-emails';
 
 export class AccessListEntryDto implements AllowedEmailContract {
@@ -33,4 +35,19 @@ export class AccessListOverviewDto implements AllowedEmailsOverviewContract {
 
   @ApiProperty({ type: () => [AccessListEntryDto] })
   allowedEmails!: AccessListEntryDto[];
+}
+
+export class CreateAccessListEntryDto implements CreateAllowedEmailInputContract {
+  @ApiProperty({ example: 'user@example.com' })
+  email!: string;
+
+  @ApiProperty({ example: 'Temporary collaborator', nullable: true, required: false })
+  note?: string | null;
+}
+
+export class UpdateAccessListEntryStatusDto
+  implements UpdateAllowedEmailStatusInputContract
+{
+  @ApiProperty({ example: true })
+  isActive!: boolean;
 }
