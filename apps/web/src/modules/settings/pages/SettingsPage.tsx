@@ -1,21 +1,9 @@
 import { AppLayout } from "@/components/AppLayout";
-
-const SETTINGS_SECTIONS = [
-  {
-    title: "Account",
-    description: "Espaco reservado para preferencias de conta e perfil.",
-  },
-  {
-    title: "Preferences",
-    description: "Espaco reservado para preferencias gerais da interface.",
-  },
-  {
-    title: "System",
-    description: "Espaco reservado para configuracoes operacionais do template.",
-  },
-];
+import { useSettingsOverview } from "@/features/settings";
 
 export function SettingsPage() {
+  const settingsOverviewQuery = useSettingsOverview();
+
   return (
     <AppLayout breadcrumbs={["SwissKit", "Settings"]}>
       <section className="mx-auto flex w-full max-w-5xl flex-col gap-8">
@@ -34,21 +22,35 @@ export function SettingsPage() {
           </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-3">
-          {SETTINGS_SECTIONS.map((section) => (
-            <article
-              key={section.title}
-              className="rounded-2xl border border-border/70 bg-card/70 p-5 shadow-sm"
-            >
-              <h2 className="text-base font-semibold text-foreground">
-                {section.title}
-              </h2>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                {section.description}
-              </p>
-            </article>
-          ))}
-        </div>
+        {settingsOverviewQuery.isLoading ? (
+          <div className="rounded-2xl border border-border/70 bg-card/70 p-5 text-sm text-muted-foreground shadow-sm">
+            Carregando configuracoes...
+          </div>
+        ) : null}
+
+        {settingsOverviewQuery.isError ? (
+          <div className="rounded-2xl border border-destructive/40 bg-destructive/10 p-5 text-sm text-destructive shadow-sm">
+            Nao foi possivel carregar as configuracoes do template.
+          </div>
+        ) : null}
+
+        {settingsOverviewQuery.data ? (
+          <div className="grid gap-4 md:grid-cols-3">
+            {settingsOverviewQuery.data.sections.map((section) => (
+              <article
+                key={section.id}
+                className="rounded-2xl border border-border/70 bg-card/70 p-5 shadow-sm"
+              >
+                <h2 className="text-base font-semibold text-foreground">
+                  {section.label}
+                </h2>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  {section.description}
+                </p>
+              </article>
+            ))}
+          </div>
+        ) : null}
       </section>
     </AppLayout>
   );
