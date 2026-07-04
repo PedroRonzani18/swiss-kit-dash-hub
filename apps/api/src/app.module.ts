@@ -9,6 +9,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CoreModule } from './modules/core/core.module';
 import { SettingsModule } from './modules/settings/settings.module';
 import { UsersModule } from './modules/users/users.module';
+import { AccessRegistryModule } from './modules/access-list/access-list.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { UsersModule } from './modules/users/users.module';
     CoreModule,
     SettingsModule,
     UsersModule,
+    AccessRegistryModule,
     HealthModule,
   ],
   providers: [
