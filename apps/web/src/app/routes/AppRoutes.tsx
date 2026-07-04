@@ -5,6 +5,7 @@ import {
 } from "@/app/navigation/modules";
 import { useAuth } from "@/auth";
 import { LoginPage } from "@/modules/auth/pages/LoginPage";
+import { AccessListPage } from "@/modules/access-list/pages/AccessListPage";
 import { CoreAppPage } from "@/modules/core/pages/CoreAppPage";
 import { SettingsPage } from "@/modules/settings/pages/SettingsPage";
 import { UsersPage } from "@/modules/users/pages/UsersPage";
@@ -91,6 +92,7 @@ export function AppRoutes() {
         <Route path={MODULE_ROUTES.core} element={<CoreAppPage />} />
         <Route path={MODULE_ROUTES.settings} element={<SettingsPage />} />
         <Route path={MODULE_ROUTES.users} element={<UsersPage />} />
+        <Route path={MODULE_ROUTES.accessList} element={<AccessListPage />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />
