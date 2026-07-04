@@ -7,17 +7,8 @@
   "types": "src/index.ts",
   "typesVersions": {
     "*": {
-      "core": [
-        "src/core.ts"
-      ],
-      "settings": [
-        "src/settings.ts"
-      ],
-      "users": [
-        "src/users.ts"
-      ],
-      "allowed-emails": [
-        "src/allowed-emails.ts"
+      "*": [
+        "src/*.ts"
       ]
     }
   },
@@ -26,21 +17,9 @@
       "types": "./src/index.ts",
       "default": "./src/index.ts"
     },
-    "./core": {
-      "types": "./src/core.ts",
-      "default": "./src/core.ts"
-    },
-    "./settings": {
-      "types": "./src/settings.ts",
-      "default": "./src/settings.ts"
-    },
-    "./users": {
-      "types": "./src/users.ts",
-      "default": "./src/users.ts"
-    },
-    "./allowed-emails": {
-      "types": "./src/allowed-emails.ts",
-      "default": "./src/allowed-emails.ts"
+    "./*": {
+      "types": "./src/*.ts",
+      "default": "./src/*.ts"
     }
   },
   "dependencies": {
