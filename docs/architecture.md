@@ -1,9 +1,7 @@
 # Arquitetura
 
 ## Visão geral do sistema
-O `swiss-kit-dash-hub` está em transição para um Swiss Kit Core vazio/modular. O Core preserva autenticação, health checks, shell web, contratos compartilhados e tooling do monorepo sem expor um produto financeiro como entrada principal.
-
-O domínio financeiro foi removido das superfícies ativas de frontend, backend e Prisma. As menções restantes devem ser históricas, de descomissionamento ou de compatibilidade temporária.
+O `swiss-kit-dash-hub` é um Swiss Kit Core vazio/modular. O Core preserva autenticação, health checks, shell web, contratos compartilhados e tooling do monorepo como baseline para módulos futuros.
 
 Componentes principais:
 - `apps/web`: frontend React que renderiza o shell Core, protege `/app`, consome a API e valida contratos de resposta.
@@ -35,7 +33,6 @@ Tecnologias centrais:
 Responsabilidades principais:
 - autenticação e sessão no browser via `AuthProvider`;
 - rota protegida neutra em `/app`;
-- redirect legado protegido de `/financeiro/*` para `/app`;
 - validação de payloads da API com schemas de `@swisskit/contracts`, quando aplicável.
 
 Notas de integração:
@@ -69,8 +66,6 @@ Uso atual:
 - auth e consumidores web/API preservam o pacote compartilhado;
 - a API mantém também contratos internos em `apps/api/src/common/contracts`.
 
-Observação de transição: o pacote compartilhado deve expor apenas contratos Core/auth; contratos financeiros removidos não devem ser reintroduzidos como dependência de web/API Core.
-
 ## Fluxo de autenticação (alto nível)
 1. O frontend inicia login em `GET /api/auth/google`.
 2. A API redireciona para Google OAuth.
@@ -93,5 +88,4 @@ Observação de transição: o pacote compartilhado deve expor apenas contratos 
 - Contratos compartilhados para reduzir drift entre backend e frontend.
 - Sessão baseada em cookie HttpOnly (em vez de token em storage do browser).
 - Guard global de autenticação, com rotas públicas explícitas.
-- Reset Prisma limpo para baseline Core; bancos antigos com dados financeiros exigem reset/reprovision, não migration incremental.
-- `/financeiro/*` mantido temporariamente apenas como redirect legado protegido para `/app`.
+- Baseline Prisma enxuta com apenas entidades Core de autenticação e acesso.

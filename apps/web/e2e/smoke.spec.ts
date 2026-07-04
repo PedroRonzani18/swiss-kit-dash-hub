@@ -84,21 +84,6 @@ test.describe("Smoke | Core shell", () => {
     expect(pageErrors).toEqual([]);
   });
 
-  test("redirects legacy finance routes to the neutral app shell", async ({ page }) => {
-    const pageErrors: Error[] = [];
-    page.on("pageerror", error => pageErrors.push(error));
-
-    await mockAuthenticatedSession(page);
-
-    await page.goto("/financeiro/transacoes/nova");
-
-    await expect(page).toHaveURL(/\/app$/);
-    await expect(
-      page.getByRole("heading", { name: "Nenhum modulo de produto ativo" }),
-    ).toBeVisible();
-    expect(pageErrors).toEqual([]);
-  });
-
   test("logs out authenticated users back to login", async ({ page }) => {
     const pageErrors: Error[] = [];
     page.on("pageerror", error => pageErrors.push(error));

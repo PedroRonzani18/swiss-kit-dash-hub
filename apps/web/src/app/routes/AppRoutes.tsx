@@ -9,7 +9,6 @@ import { CoreAppPage } from "@/modules/core/pages/CoreAppPage";
 import NotFound from "@/pages/NotFound";
 
 const LOGIN_ROUTE = "/login";
-const LEGACY_FINANCE_ROUTE = "/financeiro";
 
 function AuthBootstrapLoading() {
   return (
@@ -88,10 +87,6 @@ export function AppRoutes() {
 
       <Route element={<ProtectedAppRoutes />}>
         <Route path={MODULE_ROUTES.core} element={<CoreAppPage />} />
-        <Route
-          path={`${LEGACY_FINANCE_ROUTE}/*`}
-          element={<Navigate to={DEFAULT_MODULE_ROUTE} replace />}
-        />
       </Route>
 
       <Route path="*" element={<NotFound />} />

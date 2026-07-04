@@ -1,6 +1,6 @@
 # SwissKit API
 
-Backend NestJS core do monorepo (`apps/api`), preservando autenticação, health checks e integração Prisma durante a transição para Swiss Kit Core.
+Backend NestJS core do monorepo (`apps/api`), com autenticação, health checks e integração Prisma para a baseline modular do Swiss Kit Core.
 
 ## Arquitetura
 
@@ -32,8 +32,7 @@ prisma/
   seed.ts
 ```
 
-A baseline Prisma agora é Core: apenas `User`, `AllowedEmail` e `AuthProvider`.
-Ambientes existentes devem ser resetados ou reprovisionados para essa baseline limpa; não trate esta etapa como migration incremental sobre dados financeiros.
+A baseline Prisma atual é Core: apenas `User`, `AllowedEmail` e `AuthProvider`.
 
 ## Rodar localmente
 

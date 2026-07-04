@@ -49,13 +49,13 @@
     --sidebar-border: 210 24% 90%;
     --sidebar-ring: 164 71% 31%;
 
-    --chart-income: 152 65% 35%;
-    --chart-expense: 0 75% 52%;
-    --chart-cat-1: 164 71% 31%;
-    --chart-cat-2: 206 85% 46%;
-    --chart-cat-3: 34 95% 46%;
-    --chart-cat-4: 262 60% 58%;
-    --chart-cat-5: 0 75% 52%;
+    --chart-positive: 152 65% 35%;
+    --chart-negative: 0 75% 52%;
+    --chart-series-1: 164 71% 31%;
+    --chart-series-2: 206 85% 46%;
+    --chart-series-3: 34 95% 46%;
+    --chart-series-4: 262 60% 58%;
+    --chart-series-5: 0 75% 52%;
   }
 
   .dark {
@@ -106,12 +106,12 @@
     --sidebar-border: 225 12% 14%;
     --sidebar-ring: 142 60% 50%;
 
-    --chart-income: 142 60% 50%;
-    --chart-expense: 0 72% 55%;
-    --chart-cat-1: 142 60% 50%;
-    --chart-cat-2: 200 70% 55%;
-    --chart-cat-3: 35 90% 55%;
-    --chart-cat-4: 280 60% 60%;
-    --chart-cat-5: 0 72% 55%;
+    --chart-positive: 142 60% 50%;
+    --chart-negative: 0 72% 55%;
+    --chart-series-1: 142 60% 50%;
+    --chart-series-2: 200 70% 55%;
+    --chart-series-3: 35 90% 55%;
+    --chart-series-4: 280 60% 60%;
+    --chart-series-5: 0 72% 55%;
   }
 }

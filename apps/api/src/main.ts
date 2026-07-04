@@ -146,7 +146,7 @@ async function bootstrap() {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Swiss Kit Core API')
     .setDescription(
-      'Core API for authentication, health checks, and modular services during finance decommissioning.',
+      'Core API for authentication, health checks, and modular services.',
     )
     .setVersion('1.0.0')
     .addCookieAuth(authCookieName, {
