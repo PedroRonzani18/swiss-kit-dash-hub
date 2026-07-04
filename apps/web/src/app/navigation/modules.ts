@@ -1,9 +1,10 @@
-import { Home, Settings, Users, type LucideIcon } from "lucide-react";
+import { Home, Settings, ShieldCheck, Users, type LucideIcon } from "lucide-react";
 
 export const MODULE_ROUTES = {
   core: "/app",
   settings: "/settings",
   users: "/users",
+  accessList: "/allowed-emails",
 } as const;
 
 export type ModuleRouteKey = keyof typeof MODULE_ROUTES;
@@ -38,6 +39,13 @@ export const APP_MODULES: ModuleNavigationItem[] = [
     path: MODULE_ROUTES.users,
     icon: Users,
     description: "Usuarios autenticados do template.",
+  },
+  {
+    id: "accessList",
+    label: "Allowed Emails",
+    path: MODULE_ROUTES.accessList,
+    icon: ShieldCheck,
+    description: "Emails liberados para acesso ao template.",
   },
 ];
 
