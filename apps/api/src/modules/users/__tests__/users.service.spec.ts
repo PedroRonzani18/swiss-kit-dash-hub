@@ -1,4 +1,5 @@
 import type { UserProfileContract } from '@swisskit/contracts/users';
+import type { UsersRepository } from '../repositories/users.repository';
 import { UsersService } from '../services/users.service';
 
 describe('UsersService', () => {
@@ -14,9 +15,11 @@ describe('UsersService', () => {
       updatedAt: '2026-07-04T21:00:00.000Z',
     };
 
-    const service = new UsersService({
+    const usersRepository = {
       listProfiles: async () => [user],
-    });
+    } as unknown as UsersRepository;
+
+    const service = new UsersService(usersRepository);
 
     await expect(service.getOverview()).resolves.toEqual({
       module: 'users',
