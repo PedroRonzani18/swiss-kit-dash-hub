@@ -15,7 +15,9 @@ const userProfileSelect = {
   updatedAt: true,
 } satisfies Prisma.UserSelect;
 
-type UserProfileRow = Prisma.UserGetPayload<{ select: typeof userProfileSelect }>;
+type UserProfileRow = Prisma.UserGetPayload<{
+  select: typeof userProfileSelect;
+}>;
 
 @Injectable()
 export class UsersRepository {
