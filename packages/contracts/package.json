@@ -9,6 +9,9 @@
     "*": {
       "core": [
         "src/core.ts"
+      ],
+      "settings": [
+        "src/settings.ts"
       ]
     }
   },
@@ -20,6 +23,10 @@
     "./core": {
       "types": "./src/core.ts",
       "default": "./src/core.ts"
+    },
+    "./settings": {
+      "types": "./src/settings.ts",
+      "default": "./src/settings.ts"
     }
   },
   "dependencies": {
