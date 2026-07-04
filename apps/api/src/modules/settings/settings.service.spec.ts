@@ -1,4 +1,4 @@
-import { SettingsService } from './settings.service';
+import { SettingsService } from './services/settings.service';
 
 describe('SettingsService', () => {
   it('returns the settings overview sections', () => {
@@ -11,17 +11,17 @@ describe('SettingsService', () => {
         {
           id: 'account',
           label: 'Account',
-          description: 'Reserved area for account preferences.',
+          description: 'Account preferences placeholder.',
         },
         {
           id: 'preferences',
           label: 'Preferences',
-          description: 'Reserved area for interface options.',
+          description: 'Interface options placeholder.',
         },
         {
           id: 'system',
           label: 'System',
-          description: 'Reserved area for template options.',
+          description: 'Template options placeholder.',
         },
       ],
     });
