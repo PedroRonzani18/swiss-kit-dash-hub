@@ -12,6 +12,9 @@
       ],
       "settings": [
         "src/settings.ts"
+      ],
+      "users": [
+        "src/users.ts"
       ]
     }
   },
@@ -27,6 +30,10 @@
     "./settings": {
       "types": "./src/settings.ts",
       "default": "./src/settings.ts"
+    },
+    "./users": {
+      "types": "./src/users.ts",
+      "default": "./src/users.ts"
     }
   },
   "dependencies": {

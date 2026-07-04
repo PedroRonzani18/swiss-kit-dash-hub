@@ -1,8 +1,9 @@
-import { Home, Settings, type LucideIcon } from "lucide-react";
+import { Home, Settings, Users, type LucideIcon } from "lucide-react";
 
 export const MODULE_ROUTES = {
   core: "/app",
   settings: "/settings",
+  users: "/users",
 } as const;
 
 export type ModuleRouteKey = keyof typeof MODULE_ROUTES;
@@ -30,6 +31,13 @@ export const APP_MODULES: ModuleNavigationItem[] = [
     path: MODULE_ROUTES.settings,
     icon: Settings,
     description: "Preferencias e opcoes do template.",
+  },
+  {
+    id: "users",
+    label: "Users",
+    path: MODULE_ROUTES.users,
+    icon: Users,
+    description: "Usuarios autenticados do template.",
   },
 ];
 

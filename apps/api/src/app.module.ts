@@ -8,6 +8,7 @@ import { HealthModule } from './modules/health/health.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CoreModule } from './modules/core/core.module';
 import { SettingsModule } from './modules/settings/settings.module';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { SettingsModule } from './modules/settings/settings.module';
     AuthModule,
     CoreModule,
     SettingsModule,
+    UsersModule,
     HealthModule,
   ],
   providers: [
