@@ -1,6 +1,6 @@
 # Swiss Kit Core
 
-Monorepo base modular com frontend React, backend NestJS e contratos compartilhados. O domínio financeiro foi removido das superfícies ativas de frontend, backend e Prisma; o estado atual preserva o Core vazio com autenticação, health checks, shell web e tooling do workspace.
+Monorepo base modular com frontend React, backend NestJS e contratos compartilhados. O repositório funciona como um template Core com autenticação, health checks, shell web e tooling do workspace prontos para receber módulos futuros.
 
 ## Visão geral
 - `apps/web`: shell web (Vite + React), rota protegida `/app` e camada de consumo da API.
@@ -8,10 +8,9 @@ Monorepo base modular com frontend React, backend NestJS e contratos compartilha
 - `packages/contracts`: contratos compartilhados (tipos + schemas Zod), preservado para Core/auth.
 - `docs/`: documentação técnica, operacional e ADRs.
 
-Estado de transição:
+Estado atual:
 - `/app` é a entrada protegida neutra do Core.
-- `/financeiro/*` existe apenas como redirect legado temporário para `/app`.
-- Bancos antigos com schema financeiro devem ser resetados ou reprovisionados para a baseline Core limpa.
+- A baseline Prisma atual contém apenas as entidades Core necessárias para autenticação e acesso.
 
 ## Stack
 - Node.js 22+
@@ -72,7 +71,7 @@ pnpm --filter api prisma:migrate:dev
 pnpm --filter api prisma:seed
 ```
 
-Use `prisma:migrate:dev` apenas em banco local/descartável. Ambientes existentes com histórico financeiro precisam de reset/reprovision antes de receber a baseline Core.
+Use `prisma:migrate:dev` apenas em banco local/descartável.
 
 5. Rodar web + API:
 

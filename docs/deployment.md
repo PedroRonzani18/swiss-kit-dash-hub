@@ -5,7 +5,7 @@ No estado atual do repositório:
 - o deploy é operacional (configurado no provider), não versionado como IaC neste repo;
 - não existe `railway.toml` no código-fonte;
 - o projeto é publicado com frontend e API em serviços separados no Railway;
-- a baseline Prisma é Core e não inclui o domínio financeiro.
+- a baseline Prisma é Core e contém apenas entidades de autenticação e acesso.
 
 ## Topologia de publicação
 - Serviço `web` (frontend Vite buildado e servido pelo serviço web).
@@ -26,8 +26,6 @@ Etapas importantes:
 4. Validar health checks após deploy:
 - `GET /api/health/live`
 - `GET /api/health/ready`
-
-Ambientes com histórico financeiro não devem receber esta baseline como migration incremental. Faça reset/reprovision do banco antes do deploy da baseline Core.
 
 ### Frontend
 Comandos de referência:
@@ -54,11 +52,10 @@ Para autenticação Google funcionar em produção:
 ## Passos gerais de deploy/redeploy
 1. Subir mudanças e garantir CI verde (`lint`, `typecheck`, `test`, `build`).
 2. Aplicar/configurar variáveis de ambiente no Railway.
-3. Reprovisionar/resetar bancos antigos com schema financeiro, quando aplicável.
-4. Publicar API e aplicar migrações (`prisma:migrate:deploy`) em banco Core novo/limpo.
-5. Validar health checks e Swagger da API.
-6. Publicar frontend.
-7. Testar login Google, sessão (`/auth/me`), entrada protegida em `/app`, redirect legado de `/financeiro/*` e health checks.
+3. Publicar API e aplicar migrações (`prisma:migrate:deploy`) no banco configurado.
+4. Validar health checks e Swagger da API.
+5. Publicar frontend.
+6. Testar login Google, sessão (`/auth/me`), entrada protegida em `/app` e health checks.
 
 ## Pontos sensíveis de produção
 - Divergência entre `GOOGLE_CALLBACK_URL` e callback cadastrado no Google causa falha de login.

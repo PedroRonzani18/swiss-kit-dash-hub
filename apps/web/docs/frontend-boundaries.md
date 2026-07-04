@@ -34,10 +34,9 @@ Current shell entrypoints:
 - `/` redirects by auth state.
 - `/login` is public-only.
 - `/app` is the protected neutral Core shell.
-- `/financeiro/*` is a protected legacy redirect to `/app`.
 
 Reason:
 
-- the shell owns default routing and navigation during the transition;
+- the shell owns default routing and navigation for the template baseline;
 - command palette and sidebar must expose only active Core navigation.
-- the removed finance frontend must not be reintroduced through shared components or aliases.
+- domain-specific legacy modules must not be reintroduced through shared components or aliases.
