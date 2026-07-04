@@ -1,13 +1,5 @@
-export type SettingsSectionId = 'account' | 'preferences' | 'system';
-
-export type SettingsSection = {
-  id: SettingsSectionId;
-  label: string;
-  description: string;
-};
-
-export type SettingsOverview = {
-  module: 'settings';
-  status: 'available';
-  sections: SettingsSection[];
-};
+export type {
+  SettingsOverviewDto as SettingsOverview,
+  SettingsSectionDto as SettingsSection,
+  SettingsSectionId,
+} from './dto/settings-overview.dto';
