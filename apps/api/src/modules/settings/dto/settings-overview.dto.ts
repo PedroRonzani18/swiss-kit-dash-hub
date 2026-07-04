@@ -1,10 +1,12 @@
+import { SETTINGS_SECTION_IDS } from '@swisskit/contracts/settings';
+import type {
+  SettingsOverviewContract,
+  SettingsSectionContract,
+  SettingsSectionId,
+} from '@swisskit/contracts/settings';
 import { ApiProperty } from '@nestjs/swagger';
 
-export const SETTINGS_SECTION_IDS = ['account', 'preferences', 'system'] as const;
-
-export type SettingsSectionId = (typeof SETTINGS_SECTION_IDS)[number];
-
-export class SettingsSectionDto {
+export class SettingsSectionDto implements SettingsSectionContract {
   @ApiProperty({
     enum: SETTINGS_SECTION_IDS,
     example: 'account',
@@ -25,7 +27,7 @@ export class SettingsSectionDto {
   description!: string;
 }
 
-export class SettingsOverviewDto {
+export class SettingsOverviewDto implements SettingsOverviewContract {
   @ApiProperty({
     example: 'settings',
     description: 'Template module identifier.',
