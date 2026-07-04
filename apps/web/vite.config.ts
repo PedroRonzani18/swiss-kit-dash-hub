@@ -76,11 +76,16 @@ export default defineConfig(({ mode }) => ({
     },
   },
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-      "@swisskit/contracts/core": path.resolve(__dirname, "../../packages/contracts/src/core.ts"),
-      "@swisskit/contracts": path.resolve(__dirname, "../../packages/contracts/src/index.ts"),
-    },
+    alias: [
+      {
+        find: "@",
+        replacement: path.resolve(__dirname, "./src"),
+      },
+      {
+        find: /^@swisskit\/contracts$/,
+        replacement: path.resolve(__dirname, "../../packages/contracts/src/index.ts"),
+      },
+    ],
     dedupe: [
       "react",
       "react-dom",
