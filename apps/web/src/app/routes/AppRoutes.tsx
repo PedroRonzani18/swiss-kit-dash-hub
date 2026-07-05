@@ -1,7 +1,8 @@
 import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import {
-  DEFAULT_MODULE_ROUTE,
   PROTECTED_MODULE_ROUTES,
+  getDefaultModuleRouteForUser,
+  getProtectedModuleRoutesForUser,
 } from "@/app/navigation/modules";
 import { useAuth } from "@/auth";
 import { LoginPage } from "@/modules/auth/pages/LoginPage";
@@ -18,7 +19,7 @@ function AuthBootstrapLoading() {
 }
 
 function RootModuleRedirect() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, permissions } = useAuth();
   const location = useLocation();
 
   if (isLoading) {
@@ -28,7 +29,9 @@ function RootModuleRedirect() {
   return (
     <Navigate
       to={{
-        pathname: isAuthenticated ? DEFAULT_MODULE_ROUTE : LOGIN_ROUTE,
+        pathname: isAuthenticated
+          ? getDefaultModuleRouteForUser(permissions)
+          : LOGIN_ROUTE,
         search: location.search,
         hash: location.hash,
       }}
@@ -62,20 +65,25 @@ function ProtectedAppRoutes() {
 }
 
 function PublicOnlyRoutes() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, permissions } = useAuth();
 
   if (isLoading) {
     return <AuthBootstrapLoading />;
   }
 
   if (isAuthenticated) {
-    return <Navigate to={DEFAULT_MODULE_ROUTE} replace />;
+    return <Navigate to={getDefaultModuleRouteForUser(permissions)} replace />;
   }
 
   return <Outlet />;
 }
 
 export function AppRoutes() {
+  const { permissions, isLoading } = useAuth();
+  const protectedModuleRoutes = isLoading
+    ? PROTECTED_MODULE_ROUTES
+    : getProtectedModuleRoutesForUser(permissions);
+
   return (
     <Routes>
       <Route path="/" element={<RootModuleRedirect />} />
@@ -85,7 +93,7 @@ export function AppRoutes() {
       </Route>
 
       <Route element={<ProtectedAppRoutes />}>
-        {PROTECTED_MODULE_ROUTES.map((module) => {
+        {protectedModuleRoutes.map((module) => {
           const ModuleComponent = module.component;
 
           return (

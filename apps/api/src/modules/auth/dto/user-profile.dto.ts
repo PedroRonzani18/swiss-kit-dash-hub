@@ -27,4 +27,13 @@ export class UserProfileDto {
 
   @ApiProperty({ example: '2026-04-03T12:30:00.000Z' })
   updatedAt: string;
+
+  @ApiProperty({ type: [String], example: ['admin'] })
+  roles: string[];
+
+  @ApiProperty({
+    type: [String],
+    example: ['core:access', 'settings:access'],
+  })
+  permissions: string[];
 }

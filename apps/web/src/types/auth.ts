@@ -1,10 +1,13 @@
 import type { AuthProvider } from '@swisskit/contracts/core';
+import type { PermissionKeyContract } from '@swisskit/contracts/permissions';
 
 export type AuthUser = {
   id: string;
   email: string;
   name: string | null;
   provider: AuthProvider;
+  roles: string[];
+  permissions: PermissionKeyContract[];
 };
 
 export type UserProfile = AuthUser & {
@@ -16,7 +19,7 @@ export type UserProfile = AuthUser & {
 
 export type AuthCallbackResponse = {
   success: true;
-  user: AuthUser;
+  user: Omit<AuthUser, 'roles' | 'permissions'>;
 };
 
 export type AuthPopupSuccessMessage = {

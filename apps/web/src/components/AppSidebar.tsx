@@ -1,5 +1,6 @@
 import { ChevronLeft, Layers } from "lucide-react";
-import { NAVIGATION_MODULES } from "@/app/navigation/modules";
+import { getNavigationModulesForUser } from "@/app/navigation/modules";
+import { useAuth } from "@/auth";
 import { NavLink } from "@/components/NavLink";
 import {
   Sidebar,
@@ -17,7 +18,9 @@ import {
 
 export function AppSidebar() {
   const { state, toggleSidebar } = useSidebar();
+  const { permissions } = useAuth();
   const collapsed = state === "collapsed";
+  const navigationModules = getNavigationModulesForUser(permissions);
 
   return (
     <Sidebar collapsible="icon">
@@ -36,7 +39,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Modulos</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {NAVIGATION_MODULES.map((module) => (
+              {navigationModules.map((module) => (
                 <SidebarMenuItem key={module.id}>
                   <SidebarMenuButton asChild>
                     <NavLink

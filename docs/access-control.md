@@ -15,7 +15,9 @@ The current implementation is intentionally small:
 - the web app shows the permission catalog in `/access-control`;
 - Prisma models define roles and user/role permission assignments;
 - Prisma seed synchronizes baseline permissions and system roles;
-- no route or endpoint enforcement is wired to these permissions yet.
+- `/auth/me` returns effective `roles` and `permissions`;
+- frontend shell routes, sidebar and command palette filter modules by permissions;
+- backend endpoint enforcement is the next step.
 
 ## Permission keys
 
@@ -59,7 +61,7 @@ RolePermission
 UserPermission
 ```
 
-Effective permissions should be resolved as:
+Effective permissions are resolved as:
 
 ```text
 user direct permissions + permissions inherited from assigned roles
@@ -88,7 +90,22 @@ member
   settings:access
 ```
 
-User-role assignment is intentionally not automatic yet. A future PR should assign roles after the authenticated user lifecycle is clear.
+On Google login, users are assigned a default role if the role exists:
+
+```text
+primary owner email -> admin
+other allowed users -> member
+```
+
+## Frontend filtering
+
+The frontend uses effective permissions from `/auth/me` for UX-level filtering only:
+
+```text
+module registry -> auth permissions -> visible routes/navigation
+```
+
+Frontend filtering is not a security boundary. Backend guards must still enforce permission checks on protected endpoints.
 
 ## Migration notes
 
@@ -116,9 +133,8 @@ pnpm --filter api prisma:seed
 
 Recommended follow-up PRs:
 
-1. Return effective permissions from `/auth/me`.
-2. Wire frontend navigation filtering.
-3. Add backend permission guards.
-4. Add role/user assignment management UI.
+1. Add backend permission decorators and guards.
+2. Protect Core endpoints with `@RequirePermissions()`.
+3. Add role/user assignment management UI.
 
 Do not add multi-tenant authorization, Redis-backed sessions or external policy engines to the Core baseline.

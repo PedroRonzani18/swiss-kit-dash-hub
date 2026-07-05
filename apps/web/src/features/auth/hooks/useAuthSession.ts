@@ -27,6 +27,8 @@ export function useAuthSession(): UseAuthSessionResult {
       email: meQuery.data.email,
       name: meQuery.data.name,
       provider: meQuery.data.provider,
+      roles: meQuery.data.roles,
+      permissions: meQuery.data.permissions,
     };
   }, [meQuery.data]);
 

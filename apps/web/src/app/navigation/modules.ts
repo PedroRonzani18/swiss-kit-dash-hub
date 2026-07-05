@@ -47,7 +47,7 @@ export const APP_MODULES: ShellModuleDefinition[] = [
     component: CoreAppPage,
     nav: true,
     status: "available",
-    requiredPermissions: [],
+    requiredPermissions: ["core:access"],
     description: "Ambiente base sem modulo de produto ativo.",
   },
   {
@@ -59,7 +59,7 @@ export const APP_MODULES: ShellModuleDefinition[] = [
     component: SettingsPage,
     nav: true,
     status: "available",
-    requiredPermissions: [],
+    requiredPermissions: ["settings:access"],
     description: "Preferencias e opcoes do template.",
   },
   {
@@ -71,7 +71,7 @@ export const APP_MODULES: ShellModuleDefinition[] = [
     component: UsersPage,
     nav: true,
     status: "available",
-    requiredPermissions: [],
+    requiredPermissions: ["users:access"],
     description: "Usuarios autenticados do template.",
   },
   {
@@ -83,7 +83,7 @@ export const APP_MODULES: ShellModuleDefinition[] = [
     component: AccessListPage,
     nav: true,
     status: "available",
-    requiredPermissions: [],
+    requiredPermissions: ["allowed-emails:access"],
     description: "Emails liberados para acesso ao template.",
   },
   {
@@ -95,18 +95,18 @@ export const APP_MODULES: ShellModuleDefinition[] = [
     component: AccessControlPage,
     nav: true,
     status: "available",
-    requiredPermissions: [],
+    requiredPermissions: ["access-control:access"],
     description: "Catalogo local de permissoes do template.",
   },
 ];
 
-export const NAVIGATION_MODULES = APP_MODULES.filter(
-  (module) => module.nav && module.status === "available",
-);
-
-export const PROTECTED_MODULE_ROUTES = APP_MODULES.filter(
+export const ACTIVE_MODULES = APP_MODULES.filter(
   (module) => module.status === "available",
 );
+
+export const NAVIGATION_MODULES = ACTIVE_MODULES.filter((module) => module.nav);
+
+export const PROTECTED_MODULE_ROUTES = ACTIVE_MODULES;
 
 export const DEFAULT_MODULE_ROUTE = MODULE_ROUTES.core;
 
@@ -124,4 +124,20 @@ export function canAccessModule(
   permissions: readonly string[] = [],
 ) {
   return hasRequiredPermissions(module, permissions);
+}
+
+export function getNavigationModulesForUser(permissions: readonly string[]) {
+  return NAVIGATION_MODULES.filter((module) =>
+    canAccessModule(module, permissions),
+  );
+}
+
+export function getProtectedModuleRoutesForUser(permissions: readonly string[]) {
+  return PROTECTED_MODULE_ROUTES.filter((module) =>
+    canAccessModule(module, permissions),
+  );
+}
+
+export function getDefaultModuleRouteForUser(permissions: readonly string[]) {
+  return getNavigationModulesForUser(permissions)[0]?.path ?? DEFAULT_MODULE_ROUTE;
 }

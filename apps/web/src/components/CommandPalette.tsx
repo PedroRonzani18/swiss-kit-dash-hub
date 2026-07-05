@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { getNavigationModulesForUser } from "@/app/navigation/modules";
+import { useAuth } from "@/auth";
 import {
   CommandDialog,
   CommandEmpty,
@@ -8,12 +10,13 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { NAVIGATION_MODULES } from "@/app/navigation/modules";
 
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { permissions } = useAuth();
+  const navigationModules = getNavigationModulesForUser(permissions);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -40,7 +43,7 @@ export function CommandPalette() {
       <CommandList>
         <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
         <CommandGroup heading="Navegação">
-          {NAVIGATION_MODULES.map((module) => (
+          {navigationModules.map((module) => (
             <CommandItem
               key={module.id}
               onSelect={() => handleNavigate(module.path)}
