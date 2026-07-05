@@ -36,7 +36,7 @@ interface PermissionCatalogPanelProps {
   permissionsCountLabel: (count: number) => string;
   emptyGroupsLabel: string;
   emptyPermissionsLabel: string;
-  noPermissionResultsLabel: string;
+  filteredPermissionsLabel: string;
   groupCountLabel: (count: number) => string;
   permissionsSearchLabel: string;
   permissionsSearchPlaceholder: string;
@@ -44,6 +44,10 @@ interface PermissionCatalogPanelProps {
   allActionsLabel: string;
   clearFiltersLabel: string;
   actionOptionLabel: (action: PermissionActionContract) => string;
+  searchFilterLabel: (value: string) => string;
+  actionFilterLabel: (value: string) => string;
+  emptyFilteredPermissionsTitle: string;
+  emptyFilteredPermissionsDescription: string;
 }
 
 export function PermissionCatalogPanel({
@@ -55,7 +59,7 @@ export function PermissionCatalogPanel({
   permissionsCountLabel,
   emptyGroupsLabel,
   emptyPermissionsLabel,
-  noPermissionResultsLabel,
+  filteredPermissionsLabel,
   groupCountLabel,
   permissionsSearchLabel,
   permissionsSearchPlaceholder,
@@ -63,6 +67,10 @@ export function PermissionCatalogPanel({
   allActionsLabel,
   clearFiltersLabel,
   actionOptionLabel,
+  searchFilterLabel,
+  actionFilterLabel,
+  emptyFilteredPermissionsTitle,
+  emptyFilteredPermissionsDescription,
 }: PermissionCatalogPanelProps) {
   const [search, setSearch] = useState("");
   const [action, setAction] = useState<PermissionActionFilterValue>("all");
@@ -95,13 +103,20 @@ export function PermissionCatalogPanel({
     (count, group) => count + group.permissions.length,
     0,
   );
+  const activeFilters = [
+    search.trim().length > 0 ? searchFilterLabel(search.trim()) : null,
+    action !== "all" ? actionFilterLabel(actionOptionLabel(action)) : null,
+  ].filter(Boolean);
 
   return (
     <SectionCard
       title={permissionsTitle}
       description={permissionsDescription}
+      className="border-0 bg-transparent shadow-none"
+      headerClassName="gap-4 border-b border-border/50 px-0 pb-5"
+      contentClassName="px-0 pt-5"
       action={
-        <span className="text-xs text-muted-foreground">
+        <span className="rounded-full border border-border/50 bg-surface-subtle/45 px-3 py-1 text-xs text-muted-foreground">
           {permissionsCountLabel(visiblePermissionsCount)}
         </span>
       }
@@ -168,6 +183,31 @@ export function PermissionCatalogPanel({
           ) : null}
         </div>
 
+        {hasActiveFilters ? (
+          <div className="rounded-xl border border-border/60 bg-surface-subtle/35 px-4 py-3">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div className="space-y-1">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  {filteredPermissionsLabel}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {activeFilters.map((filter) => (
+                    <span
+                      key={filter}
+                      className="rounded-full border border-border/50 bg-card px-2.5 py-1 text-xs text-foreground"
+                    >
+                      {filter}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground">
+                {permissionsCountLabel(visiblePermissionsCount)}
+              </span>
+            </div>
+          </div>
+        ) : null}
+
         {filteredGroups.length ? (
           <div className="space-y-4">
             {filteredGroups.map((group) => (
@@ -181,10 +221,19 @@ export function PermissionCatalogPanel({
               />
             ))}
           </div>
+        ) : hasActiveFilters ? (
+          <div className="rounded-xl border border-border/60 bg-surface-subtle/25 px-5 py-6">
+            <div className="space-y-2">
+              <p className="text-sm font-semibold text-foreground">
+                {emptyFilteredPermissionsTitle}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {emptyFilteredPermissionsDescription}
+              </p>
+            </div>
+          </div>
         ) : (
-          <p className="text-sm text-muted-foreground">
-            {hasActiveFilters ? noPermissionResultsLabel : emptyGroupsLabel}
-          </p>
+          <p className="text-sm text-muted-foreground">{emptyGroupsLabel}</p>
         )}
       </div>
     </SectionCard>

@@ -17,14 +17,14 @@ export function PermissionRow({
   getPermissionText,
 }: PermissionRowProps) {
   return (
-    <div className="flex flex-col gap-3 border-t border-border/70 px-4 py-4 first:border-t-0 md:px-5">
+    <div className="flex flex-col gap-3 rounded-lg border border-border/50 bg-surface-subtle/20 px-4 py-4">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-foreground">
+        <div className="space-y-1.5">
+          <p className="text-sm font-semibold tracking-tight text-foreground">
             {getPermissionText(permission.key, "label", permission.label)}
           </p>
           {permission.description ? (
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs leading-5 text-muted-foreground">
               {getPermissionText(
                 permission.key,
                 "description",
@@ -33,7 +33,7 @@ export function PermissionRow({
             </p>
           ) : null}
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 lg:justify-end">
           <PermissionActionBadge action={permission.action} />
           <PermissionKeyBadge permissionKey={permission.key} />
         </div>

@@ -31,31 +31,32 @@ export function RoleCard({
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <article className="rounded-lg border border-border/70 bg-surface-subtle/35">
+    <article className="rounded-xl border border-border/60 bg-card shadow-business-xs">
       <div className="flex flex-col gap-4 px-4 py-4 md:px-5">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-sm font-semibold text-foreground">
+          <div className="space-y-2.5">
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold tracking-tight text-foreground">
                 {getRoleText(role.key, "label", role.label)}
               </h3>
               <RoleKeyBadge roleKey={role.key} />
             </div>
             {role.description ? (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs leading-5 text-muted-foreground">
                 {getRoleText(role.key, "description", role.description)}
               </p>
             ) : null}
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-2 lg:justify-end">
+            <span className="rounded-full border border-border/50 bg-surface-subtle/35 px-3 py-1 text-xs text-muted-foreground">
               {permissionCountLabel}
             </span>
             <Button
               type="button"
               size="sm"
               variant="ghost"
+              className="rounded-full"
               onClick={() => setIsExpanded((value) => !value)}
               aria-expanded={isExpanded}
             >
@@ -71,16 +72,18 @@ export function RoleCard({
 
         {isExpanded ? (
           role.permissions.length ? (
-            <div className="flex flex-wrap gap-2 border-t border-border/70 pt-4">
-              {role.permissions.map((permission) => (
-                <PermissionKeyBadge
-                  key={permission.id}
-                  permissionKey={permission.key}
-                />
-              ))}
+            <div className="rounded-lg border border-border/50 bg-surface-subtle/30 p-3">
+              <div className="flex flex-wrap gap-2">
+                {role.permissions.map((permission) => (
+                  <PermissionKeyBadge
+                    key={permission.id}
+                    permissionKey={permission.key}
+                  />
+                ))}
+              </div>
             </div>
           ) : (
-            <p className="border-t border-border/70 pt-4 text-sm text-muted-foreground">
+            <p className="rounded-lg border border-border/50 bg-surface-subtle/30 px-4 py-3 text-sm text-muted-foreground">
               {noPermissionsLabel}
             </p>
           )

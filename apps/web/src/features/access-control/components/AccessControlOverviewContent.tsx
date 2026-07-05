@@ -78,75 +78,106 @@ export function AccessControlOverviewContent({
             }}
           />
 
-          <Tabs defaultValue="permissions" className="space-y-4">
-            <TabsList>
-              <TabsTrigger value="permissions">
-                {t("accessControl.tabs.permissions")}
-              </TabsTrigger>
-              <TabsTrigger value="roles">
-                {t("accessControl.tabs.roles")}
-              </TabsTrigger>
-            </TabsList>
+          <Tabs defaultValue="permissions" className="space-y-0">
+            <div className="rounded-2xl border border-border/60 bg-card shadow-business-sm">
+              <div className="border-b border-border/60 px-3 py-3 md:px-4">
+                <TabsList className="h-auto w-full justify-start rounded-xl border border-border/50 bg-surface-subtle/45 p-1">
+                  <TabsTrigger
+                    value="permissions"
+                    className="flex-1 justify-center rounded-lg px-4 py-2 text-sm md:flex-none"
+                  >
+                    {t("accessControl.tabs.permissions")}
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="roles"
+                    className="flex-1 justify-center rounded-lg px-4 py-2 text-sm md:flex-none"
+                  >
+                    {t("accessControl.tabs.roles")}
+                  </TabsTrigger>
+                </TabsList>
+              </div>
 
-            <TabsContent value="permissions">
-              <PermissionCatalogPanel
-                data={query.data}
-                getGroupText={getGroupText}
-                getPermissionText={getPermissionText}
-                permissionsTitle={t("accessControl.permissions")}
-                permissionsDescription={t("accessControl.permissionsDescription")}
-                permissionsCountLabel={(count) =>
-                  t("accessControl.permissionsCount", { count })
-                }
-                emptyGroupsLabel={t("accessControl.empty.permissionGroups")}
-                emptyPermissionsLabel={t("accessControl.noPermissions")}
-                noPermissionResultsLabel={t(
-                  "accessControl.filters.noPermissionResults",
-                )}
-                groupCountLabel={(count) =>
-                  t("accessControl.groupCount", { count })
-                }
-                permissionsSearchLabel={t(
-                  "accessControl.filters.permissionsSearchLabel",
-                )}
-                permissionsSearchPlaceholder={t(
-                  "accessControl.filters.permissionsSearchPlaceholder",
-                )}
-                actionLabel={t("accessControl.filters.actionLabel")}
-                allActionsLabel={t("accessControl.filters.allActions")}
-                clearFiltersLabel={t("accessControl.filters.clear")}
-                actionOptionLabel={(action) =>
-                  t(`accessControl.filters.actions.${action}`)
-                }
-              />
-            </TabsContent>
+              <TabsContent value="permissions" className="mt-0 p-3 md:p-4">
+                <PermissionCatalogPanel
+                  data={query.data}
+                  getGroupText={getGroupText}
+                  getPermissionText={getPermissionText}
+                  permissionsTitle={t("accessControl.permissions")}
+                  permissionsDescription={t("accessControl.permissionsDescription")}
+                  permissionsCountLabel={(count) =>
+                    t("accessControl.permissionsCount", { count })
+                  }
+                  emptyGroupsLabel={t("accessControl.empty.permissionGroups")}
+                  emptyPermissionsLabel={t("accessControl.noPermissions")}
+                  filteredPermissionsLabel={t(
+                    "accessControl.filters.filteredPermissions",
+                  )}
+                  groupCountLabel={(count) =>
+                    t("accessControl.groupCount", { count })
+                  }
+                  permissionsSearchLabel={t(
+                    "accessControl.filters.permissionsSearchLabel",
+                  )}
+                  permissionsSearchPlaceholder={t(
+                    "accessControl.filters.permissionsSearchPlaceholder",
+                  )}
+                  actionLabel={t("accessControl.filters.actionLabel")}
+                  allActionsLabel={t("accessControl.filters.allActions")}
+                  clearFiltersLabel={t("accessControl.filters.clear")}
+                  actionOptionLabel={(action) =>
+                    t(`accessControl.filters.actions.${action}`)
+                  }
+                  searchFilterLabel={(value) =>
+                    t("accessControl.filters.searchFilter", { value })
+                  }
+                  actionFilterLabel={(value) =>
+                    t("accessControl.filters.actionFilter", { value })
+                  }
+                  emptyFilteredPermissionsTitle={t(
+                    "accessControl.filters.emptyFilteredPermissionsTitle",
+                  )}
+                  emptyFilteredPermissionsDescription={t(
+                    "accessControl.filters.emptyFilteredPermissionsDescription",
+                  )}
+                />
+              </TabsContent>
 
-            <TabsContent value="roles">
-              <RoleCatalogPanel
-                data={query.data}
-                getRoleText={getRoleText}
-                rolesTitle={t("accessControl.roles")}
-                rolesDescription={t("accessControl.rolesDescription")}
-                rolesCountLabel={(count) =>
-                  t("accessControl.rolesCount", { count })
-                }
-                noRolesLabel={t("accessControl.noRoles")}
-                noRoleResultsLabel={t("accessControl.filters.noRoleResults")}
-                noPermissionsLabel={t("accessControl.noPermissions")}
-                permissionCountLabel={(count) =>
-                  t("accessControl.groupCount", { count })
-                }
-                expandLabel={t("accessControl.actions.expandRolePermissions")}
-                collapseLabel={t(
-                  "accessControl.actions.collapseRolePermissions",
-                )}
-                rolesSearchLabel={t("accessControl.filters.rolesSearchLabel")}
-                rolesSearchPlaceholder={t(
-                  "accessControl.filters.rolesSearchPlaceholder",
-                )}
-                clearFiltersLabel={t("accessControl.filters.clear")}
-              />
-            </TabsContent>
+              <TabsContent value="roles" className="mt-0 p-3 md:p-4">
+                <RoleCatalogPanel
+                  data={query.data}
+                  getRoleText={getRoleText}
+                  rolesTitle={t("accessControl.roles")}
+                  rolesDescription={t("accessControl.rolesDescription")}
+                  rolesCountLabel={(count) =>
+                    t("accessControl.rolesCount", { count })
+                  }
+                  noRolesLabel={t("accessControl.noRoles")}
+                  filteredRolesLabel={t("accessControl.filters.filteredRoles")}
+                  noPermissionsLabel={t("accessControl.noPermissions")}
+                  permissionCountLabel={(count) =>
+                    t("accessControl.groupCount", { count })
+                  }
+                  expandLabel={t("accessControl.actions.expandRolePermissions")}
+                  collapseLabel={t(
+                    "accessControl.actions.collapseRolePermissions",
+                  )}
+                  rolesSearchLabel={t("accessControl.filters.rolesSearchLabel")}
+                  rolesSearchPlaceholder={t(
+                    "accessControl.filters.rolesSearchPlaceholder",
+                  )}
+                  clearFiltersLabel={t("accessControl.filters.clear")}
+                  searchFilterLabel={(value) =>
+                    t("accessControl.filters.searchFilter", { value })
+                  }
+                  emptyFilteredRolesTitle={t(
+                    "accessControl.filters.emptyFilteredRolesTitle",
+                  )}
+                  emptyFilteredRolesDescription={t(
+                    "accessControl.filters.emptyFilteredRolesDescription",
+                  )}
+                />
+              </TabsContent>
+            </div>
           </Tabs>
         </>
       ) : null}

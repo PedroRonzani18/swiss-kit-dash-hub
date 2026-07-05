@@ -15,7 +15,10 @@ export function PermissionKeyBadge({
   return (
     <Badge
       variant="secondary"
-      className={cn("font-mono-code text-[11px]", className)}
+      className={cn(
+        "border border-border/45 bg-surface-subtle/35 px-2 py-0.5 font-mono-code text-[10px] font-medium text-muted-foreground",
+        className,
+      )}
     >
       {permissionKey}
     </Badge>

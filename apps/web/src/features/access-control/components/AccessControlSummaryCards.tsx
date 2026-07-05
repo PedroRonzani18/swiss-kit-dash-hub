@@ -45,16 +45,24 @@ export function AccessControlSummaryCards({
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {items.map((item) => (
-        <Card key={item.label}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+        <Card
+          key={item.label}
+          className="border-border/60 bg-card shadow-business-sm"
+        >
+          <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
+            <CardTitle className="max-w-[12rem] text-sm font-medium leading-5 text-muted-foreground">
               {item.label}
             </CardTitle>
-            <item.icon className="h-4 w-4 text-brand-strong" />
+            <div className="rounded-full border border-border/60 bg-surface-subtle/65 p-2">
+              <item.icon className="h-4 w-4 text-muted-foreground" />
+            </div>
           </CardHeader>
           <CardContent>
-            <p className="font-display text-3xl font-semibold text-foreground">
+            <p className="font-display text-4xl font-semibold tracking-tight text-foreground">
               {item.value}
+            </p>
+            <p className="mt-2 text-xs uppercase tracking-[0.14em] text-muted-foreground">
+              {item.label}
             </p>
           </CardContent>
         </Card>
