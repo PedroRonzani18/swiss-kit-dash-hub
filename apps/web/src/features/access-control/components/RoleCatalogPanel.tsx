@@ -4,6 +4,14 @@ import { useState } from "react";
 import { SectionCard } from "@/components/SectionCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { filterRolesForDisplay } from "../lib/access-control-view-model";
 import { RoleCard } from "./RoleCard";
 
@@ -29,6 +37,9 @@ interface RoleCatalogPanelProps {
   searchFilterLabel: (value: string) => string;
   emptyFilteredRolesTitle: string;
   emptyFilteredRolesDescription: string;
+  openFiltersLabel: string;
+  mobileFiltersTitle: string;
+  mobileFiltersDescription: string;
 }
 
 export function RoleCatalogPanel({
@@ -49,8 +60,12 @@ export function RoleCatalogPanel({
   searchFilterLabel,
   emptyFilteredRolesTitle,
   emptyFilteredRolesDescription,
+  openFiltersLabel,
+  mobileFiltersTitle,
+  mobileFiltersDescription,
 }: RoleCatalogPanelProps) {
   const [search, setSearch] = useState("");
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   const roles = filterRolesForDisplay(data.roles, {
     search,
     resolveRoleText: (role) => ({
@@ -60,6 +75,20 @@ export function RoleCatalogPanel({
   });
   const hasActiveFilters = search.trim().length > 0;
   const activeSearch = search.trim();
+  const resetFilters = () => setSearch("");
+  const filterControls = (
+    <div className="flex-1 space-y-2">
+      <p className="text-xs font-medium text-muted-foreground">
+        {rolesSearchLabel}
+      </p>
+      <Input
+        type="search"
+        value={search}
+        onChange={(event) => setSearch(event.target.value)}
+        placeholder={rolesSearchPlaceholder}
+      />
+    </div>
+  );
 
   return (
     <SectionCard
@@ -75,24 +104,49 @@ export function RoleCatalogPanel({
       }
     >
       <div className="space-y-4">
-        <div className="flex flex-col gap-3 md:flex-row md:items-end">
-          <div className="flex-1 space-y-2">
-            <p className="text-xs font-medium text-muted-foreground">
-              {rolesSearchLabel}
-            </p>
-            <Input
-              type="search"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder={rolesSearchPlaceholder}
-            />
+        <div className="flex items-center justify-between gap-3 md:hidden">
+          <Sheet
+            open={isMobileFiltersOpen}
+            onOpenChange={setIsMobileFiltersOpen}
+          >
+            <SheetTrigger asChild>
+              <Button type="button" variant="outline" size="sm">
+                {openFiltersLabel}
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="rounded-t-2xl px-4 pb-6">
+              <SheetHeader>
+                <SheetTitle>{mobileFiltersTitle}</SheetTitle>
+                <SheetDescription>{mobileFiltersDescription}</SheetDescription>
+              </SheetHeader>
+              <div className="mt-4">{filterControls}</div>
+            </SheetContent>
+          </Sheet>
+          <div className="flex items-center gap-2">
+            <span className="rounded-full border border-border/50 bg-surface-subtle/45 px-3 py-1 text-xs text-muted-foreground">
+              {rolesCountLabel(roles.length)}
+            </span>
+            {hasActiveFilters ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={resetFilters}
+              >
+                {clearFiltersLabel}
+              </Button>
+            ) : null}
           </div>
+        </div>
+
+        <div className="hidden flex-col gap-3 md:flex md:flex-row md:items-end">
+          {filterControls}
           {hasActiveFilters ? (
             <Button
               type="button"
               variant="ghost"
               size="sm"
-              onClick={() => setSearch("")}
+              onClick={resetFilters}
             >
               {clearFiltersLabel}
             </Button>

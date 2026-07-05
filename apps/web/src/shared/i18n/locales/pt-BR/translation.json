@@ -141,13 +141,20 @@
     },
     "actions": {
       "expandRolePermissions": "Mostrar permissões",
-      "collapseRolePermissions": "Ocultar permissões"
+      "collapseRolePermissions": "Ocultar permissões",
+      "expandPermissionGroup": "Mostrar permissões de {{group}}",
+      "collapsePermissionGroup": "Ocultar permissões de {{group}}"
     },
     "filters": {
       "permissionsSearchLabel": "Buscar permissões",
       "permissionsSearchPlaceholder": "Busque por rótulo, descrição, chave, grupo ou ação",
       "rolesSearchLabel": "Buscar papéis",
       "rolesSearchPlaceholder": "Busque por rótulo, descrição, chave ou chave de permissão",
+      "openFilters": "Filtros",
+      "permissionsSheetTitle": "Filtrar permissões",
+      "permissionsSheetDescription": "Refine o catálogo de permissões sem sair da aba atual.",
+      "rolesSheetTitle": "Filtrar papéis",
+      "rolesSheetDescription": "Refine a lista de papéis sem sair da aba atual.",
       "actionLabel": "Ação",
       "allActions": "Todas as ações",
       "clear": "Limpar",

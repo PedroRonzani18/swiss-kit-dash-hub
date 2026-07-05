@@ -7,6 +7,14 @@ import { SectionCard } from "@/components/SectionCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -48,6 +56,11 @@ interface PermissionCatalogPanelProps {
   actionFilterLabel: (value: string) => string;
   emptyFilteredPermissionsTitle: string;
   emptyFilteredPermissionsDescription: string;
+  openFiltersLabel: string;
+  mobileFiltersTitle: string;
+  mobileFiltersDescription: string;
+  expandGroupLabel: (groupLabel: string) => string;
+  collapseGroupLabel: (groupLabel: string) => string;
 }
 
 export function PermissionCatalogPanel({
@@ -71,9 +84,15 @@ export function PermissionCatalogPanel({
   actionFilterLabel,
   emptyFilteredPermissionsTitle,
   emptyFilteredPermissionsDescription,
+  openFiltersLabel,
+  mobileFiltersTitle,
+  mobileFiltersDescription,
+  expandGroupLabel,
+  collapseGroupLabel,
 }: PermissionCatalogPanelProps) {
   const [search, setSearch] = useState("");
   const [action, setAction] = useState<PermissionActionFilterValue>("all");
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
   const filteredGroups = filterPermissionGroupsForDisplay(
     data.permissionGroups,
@@ -107,6 +126,49 @@ export function PermissionCatalogPanel({
     search.trim().length > 0 ? searchFilterLabel(search.trim()) : null,
     action !== "all" ? actionFilterLabel(actionOptionLabel(action)) : null,
   ].filter(Boolean);
+  const resetFilters = () => {
+    setSearch("");
+    setAction("all");
+  };
+  const filterControls = (
+    <>
+      <div className="flex-1 space-y-2">
+        <p className="text-xs font-medium text-muted-foreground">
+          {permissionsSearchLabel}
+        </p>
+        <Input
+          type="search"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder={permissionsSearchPlaceholder}
+        />
+      </div>
+      <div className="w-full space-y-2 md:w-52">
+        <p className="text-xs font-medium text-muted-foreground">
+          {actionLabel}
+        </p>
+        <Select
+          value={action}
+          onValueChange={(value) =>
+            setAction(value as PermissionActionFilterValue)
+          }
+        >
+          <SelectTrigger>
+            <SelectValue placeholder={allActionsLabel} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{allActionsLabel}</SelectItem>
+            <SelectItem value="access">{actionOptionLabel("access")}</SelectItem>
+            <SelectItem value="read">{actionOptionLabel("read")}</SelectItem>
+            <SelectItem value="create">{actionOptionLabel("create")}</SelectItem>
+            <SelectItem value="update">{actionOptionLabel("update")}</SelectItem>
+            <SelectItem value="delete">{actionOptionLabel("delete")}</SelectItem>
+            <SelectItem value="manage">{actionOptionLabel("manage")}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+    </>
+  );
 
   return (
     <SectionCard
@@ -122,61 +184,49 @@ export function PermissionCatalogPanel({
       }
     >
       <div className="space-y-4">
-        <div className="flex flex-col gap-3 md:flex-row md:items-end">
-          <div className="flex-1 space-y-2">
-            <p className="text-xs font-medium text-muted-foreground">
-              {permissionsSearchLabel}
-            </p>
-            <Input
-              type="search"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder={permissionsSearchPlaceholder}
-            />
+        <div className="flex items-center justify-between gap-3 md:hidden">
+          <Sheet
+            open={isMobileFiltersOpen}
+            onOpenChange={setIsMobileFiltersOpen}
+          >
+            <SheetTrigger asChild>
+              <Button type="button" variant="outline" size="sm">
+                {openFiltersLabel}
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="rounded-t-2xl px-4 pb-6">
+              <SheetHeader>
+                <SheetTitle>{mobileFiltersTitle}</SheetTitle>
+                <SheetDescription>{mobileFiltersDescription}</SheetDescription>
+              </SheetHeader>
+              <div className="mt-4 space-y-4">{filterControls}</div>
+            </SheetContent>
+          </Sheet>
+          <div className="flex items-center gap-2">
+            <span className="rounded-full border border-border/50 bg-surface-subtle/45 px-3 py-1 text-xs text-muted-foreground">
+              {permissionsCountLabel(visiblePermissionsCount)}
+            </span>
+            {hasActiveFilters ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={resetFilters}
+              >
+                {clearFiltersLabel}
+              </Button>
+            ) : null}
           </div>
-          <div className="w-full space-y-2 md:w-52">
-            <p className="text-xs font-medium text-muted-foreground">
-              {actionLabel}
-            </p>
-            <Select
-              value={action}
-              onValueChange={(value) =>
-                setAction(value as PermissionActionFilterValue)
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={allActionsLabel} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{allActionsLabel}</SelectItem>
-                <SelectItem value="access">
-                  {actionOptionLabel("access")}
-                </SelectItem>
-                <SelectItem value="read">{actionOptionLabel("read")}</SelectItem>
-                <SelectItem value="create">
-                  {actionOptionLabel("create")}
-                </SelectItem>
-                <SelectItem value="update">
-                  {actionOptionLabel("update")}
-                </SelectItem>
-                <SelectItem value="delete">
-                  {actionOptionLabel("delete")}
-                </SelectItem>
-                <SelectItem value="manage">
-                  {actionOptionLabel("manage")}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        </div>
+
+        <div className="hidden flex-col gap-3 md:flex md:flex-row md:items-end">
+          {filterControls}
           {hasActiveFilters ? (
             <Button
               type="button"
               variant="ghost"
               size="sm"
-              onClick={() => {
-                setSearch("");
-                setAction("all");
-              }}
+              onClick={resetFilters}
             >
               {clearFiltersLabel}
             </Button>
@@ -218,6 +268,9 @@ export function PermissionCatalogPanel({
                 getPermissionText={getPermissionText}
                 emptyPermissionsLabel={emptyPermissionsLabel}
                 groupCountLabel={groupCountLabel}
+                expandLabel={expandGroupLabel}
+                collapseLabel={collapseGroupLabel}
+                forceExpandedOnMobile={hasActiveFilters}
               />
             ))}
           </div>

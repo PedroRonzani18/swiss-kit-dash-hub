@@ -35,7 +35,10 @@ export function PermissionRow({
         </div>
         <div className="flex flex-wrap items-center gap-2 lg:justify-end">
           <PermissionActionBadge action={permission.action} />
-          <PermissionKeyBadge permissionKey={permission.key} />
+          <PermissionKeyBadge
+            permissionKey={permission.key}
+            className="max-w-full break-all whitespace-normal"
+          />
         </div>
       </div>
     </div>

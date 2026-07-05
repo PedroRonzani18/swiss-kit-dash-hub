@@ -141,13 +141,20 @@
     },
     "actions": {
       "expandRolePermissions": "Show permissions",
-      "collapseRolePermissions": "Hide permissions"
+      "collapseRolePermissions": "Hide permissions",
+      "expandPermissionGroup": "Show {{group}} permissions",
+      "collapsePermissionGroup": "Hide {{group}} permissions"
     },
     "filters": {
       "permissionsSearchLabel": "Search permissions",
       "permissionsSearchPlaceholder": "Search by label, description, key, group or action",
       "rolesSearchLabel": "Search roles",
       "rolesSearchPlaceholder": "Search by label, description, key or permission key",
+      "openFilters": "Filters",
+      "permissionsSheetTitle": "Filter permissions",
+      "permissionsSheetDescription": "Refine the permission catalog without leaving the current tab.",
+      "rolesSheetTitle": "Filter roles",
+      "rolesSheetDescription": "Refine the roles list without leaving the current tab.",
       "actionLabel": "Action",
       "allActions": "All actions",
       "clear": "Clear",

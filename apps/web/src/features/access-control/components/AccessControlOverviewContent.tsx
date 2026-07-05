@@ -49,14 +49,19 @@ export function AccessControlOverviewContent({
   return (
     <div className="flex flex-col gap-6">
       {query.isLoading ? (
-        <div className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="space-y-4 xl:grid xl:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] xl:items-start xl:gap-6 xl:space-y-0">
+          <div className="flex gap-4 overflow-hidden sm:grid sm:grid-cols-2 xl:grid-cols-1">
             {Array.from({ length: 4 }).map((_, index) => (
-              <Skeleton key={index} className="h-32 rounded-xl" />
+              <Skeleton
+                key={index}
+                className="h-28 min-w-[11rem] rounded-xl sm:min-w-0 sm:h-32"
+              />
             ))}
           </div>
-          <Skeleton className="h-12 w-64 rounded-lg" />
-          <Skeleton className="h-96 rounded-xl" />
+          <div className="space-y-4">
+            <Skeleton className="h-12 w-64 rounded-lg" />
+            <Skeleton className="h-96 rounded-xl" />
+          </div>
         </div>
       ) : null}
 
@@ -67,7 +72,7 @@ export function AccessControlOverviewContent({
       ) : null}
 
       {query.data ? (
-        <>
+        <div className="space-y-6 xl:grid xl:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] xl:items-start xl:gap-6 xl:space-y-0">
           <AccessControlSummaryCards
             data={query.data}
             labels={{
@@ -78,7 +83,7 @@ export function AccessControlOverviewContent({
             }}
           />
 
-          <Tabs defaultValue="permissions" className="space-y-0">
+          <Tabs defaultValue="permissions" className="min-w-0 space-y-0">
             <div className="rounded-2xl border border-border/60 bg-card shadow-business-sm">
               <div className="border-b border-border/60 px-3 py-3 md:px-4">
                 <TabsList className="h-auto w-full justify-start rounded-xl border border-border/50 bg-surface-subtle/45 p-1">
@@ -133,6 +138,23 @@ export function AccessControlOverviewContent({
                   actionFilterLabel={(value) =>
                     t("accessControl.filters.actionFilter", { value })
                   }
+                  openFiltersLabel={t("accessControl.filters.openFilters")}
+                  mobileFiltersTitle={t(
+                    "accessControl.filters.permissionsSheetTitle",
+                  )}
+                  mobileFiltersDescription={t(
+                    "accessControl.filters.permissionsSheetDescription",
+                  )}
+                  expandGroupLabel={(groupLabel) =>
+                    t("accessControl.actions.expandPermissionGroup", {
+                      group: groupLabel,
+                    })
+                  }
+                  collapseGroupLabel={(groupLabel) =>
+                    t("accessControl.actions.collapsePermissionGroup", {
+                      group: groupLabel,
+                    })
+                  }
                   emptyFilteredPermissionsTitle={t(
                     "accessControl.filters.emptyFilteredPermissionsTitle",
                   )}
@@ -169,6 +191,13 @@ export function AccessControlOverviewContent({
                   searchFilterLabel={(value) =>
                     t("accessControl.filters.searchFilter", { value })
                   }
+                  openFiltersLabel={t("accessControl.filters.openFilters")}
+                  mobileFiltersTitle={t(
+                    "accessControl.filters.rolesSheetTitle",
+                  )}
+                  mobileFiltersDescription={t(
+                    "accessControl.filters.rolesSheetDescription",
+                  )}
                   emptyFilteredRolesTitle={t(
                     "accessControl.filters.emptyFilteredRolesTitle",
                   )}
@@ -179,7 +208,7 @@ export function AccessControlOverviewContent({
               </TabsContent>
             </div>
           </Tabs>
-        </>
+        </div>
       ) : null}
     </div>
   );
