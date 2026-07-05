@@ -4,25 +4,21 @@
 
 This document defines the recommended workflow for using Codex in Swiss Kit.
 
-The goal is to reduce drift, avoid oversized changes and make each task easier to review.
-
-## Default flow
-
-Use four roles:
+The canonical flow is:
 
 ```text
 Planner -> Coder -> Reviewer -> Tester
 ```
 
-For small tasks, one Codex run may perform more than one role, but it should still follow the responsibilities below.
+Use `Coder` for implementation work. Do not create a separate Implementer role.
 
 ## Planner
 
 The Planner turns a request into a repository-grounded spec.
 
-The Planner reads root `AGENTS.md`, scoped `AGENTS.md` files, relevant docs, current source files and package scripts.
+It reads the root instructions, scoped instructions, relevant docs, current source files and package scripts.
 
-The Planner writes:
+It writes:
 
 ```text
 .pipeline/runs/<run-id>/request.md
@@ -30,15 +26,15 @@ The Planner writes:
 .pipeline/runs/<run-id>/spec.md
 ```
 
-The spec must include objective, scope, likely files, public contracts affected, acceptance criteria, edge cases, existing patterns, validation commands, risks and open questions.
+The spec should cover objective, scope, likely files, public contracts, acceptance criteria, edge cases, existing patterns, validation commands, risks and open questions.
 
-If open questions affect auth, permissions, contracts, migrations or public API, the Planner stops before coding.
+If open questions affect auth, permissions, contracts, migrations or public API, planning stops before coding.
 
 ## Coder
 
 The Coder applies an approved spec.
 
-The Coder must follow the spec exactly, keep unrelated files untouched, prefer existing patterns, avoid unjustified dependencies, update docs when architecture changes and record implementation notes when using pipeline artifacts.
+It follows the spec exactly, keeps unrelated files untouched, prefers existing patterns, avoids unjustified dependencies, updates docs when architecture changes and records implementation notes when using pipeline artifacts.
 
 Suggested output:
 
@@ -50,7 +46,7 @@ Suggested output:
 
 The Reviewer is read-only.
 
-The Reviewer checks scope, architecture boundaries, contract compatibility, auth/permission risk, validation quality and template safety.
+It checks scope, architecture boundaries, contract compatibility, auth/permission risk, validation quality and template safety.
 
 Suggested output:
 
@@ -68,9 +64,7 @@ Suggested output:
 .pipeline/runs/<run-id>/test-results.md
 ```
 
-Validation should start narrow and expand when needed.
-
-Frontend examples:
+Validation examples:
 
 ```bash
 pnpm lint:web
@@ -78,15 +72,11 @@ pnpm typecheck:web
 pnpm test:web
 ```
 
-API examples:
-
 ```bash
 pnpm lint:api
 pnpm typecheck:api
 pnpm test:api
 ```
-
-Cross-workspace examples:
 
 ```bash
 pnpm lint:ci
@@ -104,18 +94,6 @@ Never claim a command passed unless it actually ran.
 - Do not hide failed tests.
 - Do not mark work complete without validation or a clear reason validation could not run.
 - Keep pipeline files out of production behavior.
-
-## Recommended task sizing
-
-Prefer small PRs:
-
-- one architecture/governance change;
-- one module scaffold change;
-- one access-control step;
-- one dependency upgrade;
-- one contract migration.
-
-Avoid combining dependency upgrades with architecture refactors.
 
 ## PR handoff checklist
 
