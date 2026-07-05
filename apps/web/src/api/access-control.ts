@@ -5,7 +5,5 @@ import {
 import { apiClient } from './client';
 
 export async function getAccessControlOverview(): Promise<AccessControlOverviewContract> {
-  const payload = await apiClient.get<unknown>('/access-control');
-
-  return AccessControlOverviewSchema.parse(payload);
+  return apiClient.getWithSchema('/access-control', AccessControlOverviewSchema);
 }

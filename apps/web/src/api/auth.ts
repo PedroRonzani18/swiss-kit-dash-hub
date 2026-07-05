@@ -11,9 +11,10 @@ export function getGoogleAuthUrl(): string {
 }
 
 export async function getMe(): Promise<UserProfile> {
-  const payload = await apiClient.get<unknown>('/auth/me');
-
-  return CurrentUserSchema.parse(payload) as UserProfile;
+  return apiClient.getWithSchema(
+    '/auth/me',
+    CurrentUserSchema,
+  ) as Promise<UserProfile>;
 }
 
 export async function logout(): Promise<void> {
