@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
+import type { AccessControlOverviewContract } from '@swisskit/contracts/access-control';
 import type {
-  AccessControlOverviewContract,
   PermissionContract,
   RoleContract,
-} from '@swisskit/contracts';
+} from '@swisskit/contracts/permissions';
 
 export class PermissionDto implements PermissionContract {
   @ApiProperty({ example: 'users.access' })
@@ -21,7 +21,10 @@ export class PermissionDto implements PermissionContract {
   @ApiProperty({ example: 'Access Users' })
   label!: string;
 
-  @ApiProperty({ example: 'Allows access to the Users module.', nullable: true })
+  @ApiProperty({
+    example: 'Allows access to the Users module.',
+    nullable: true,
+  })
   description?: string | null;
 }
 

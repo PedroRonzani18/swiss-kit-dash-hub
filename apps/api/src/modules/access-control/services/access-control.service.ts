@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import {
-  ACCESS_CONTROL_CORE_PERMISSIONS,
-  type AccessControlOverviewContract,
-} from '@swisskit/contracts/access-control';
+import type { AccessControlOverviewContract } from '@swisskit/contracts/access-control';
+import { ACCESS_CONTROL_CORE_PERMISSIONS } from '@swisskit/contracts/access-control-catalog';
 
 @Injectable()
 export class AccessControlService {
