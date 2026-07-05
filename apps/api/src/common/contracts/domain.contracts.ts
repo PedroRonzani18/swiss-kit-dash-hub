@@ -3,6 +3,7 @@ import type {
   EntityId,
   IsoDateString,
 } from '@swisskit/contracts/core';
+import type { PermissionKeyContract } from '@swisskit/contracts/permissions';
 
 export type { EntityId, IsoDateString };
 
@@ -10,6 +11,11 @@ export type BaseDomainContract = {
   id: EntityId;
   createdAt: IsoDateString;
   updatedAt: IsoDateString;
+};
+
+export type EffectiveAccessContract = {
+  roles: string[];
+  permissions: PermissionKeyContract[];
 };
 
 export type UserContract = BaseDomainContract & {
@@ -20,6 +26,8 @@ export type UserContract = BaseDomainContract & {
   providerUserId: string;
   lastLoginAt: IsoDateString | null;
 };
+
+export type CurrentUserContract = UserContract & EffectiveAccessContract;
 
 export type AuthenticatedUserContract = {
   id: EntityId;
