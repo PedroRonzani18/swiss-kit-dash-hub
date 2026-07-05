@@ -1,5 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { RequirePermissions } from '@/common/auth';
 import { SettingsOverviewDto } from '../dto/settings-overview.dto';
 import { SettingsService } from '../services/settings.service';
 
@@ -9,6 +10,7 @@ export class SettingsController {
   constructor(private readonly settingsService: SettingsService) {}
 
   @Get()
+  @RequirePermissions('settings:access')
   @ApiOkResponse({ type: SettingsOverviewDto })
   getOverview(): SettingsOverviewDto {
     return this.settingsService.getOverview();
