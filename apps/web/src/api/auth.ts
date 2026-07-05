@@ -1,3 +1,4 @@
+import { CurrentUserSchema } from '@swisskit/contracts/auth';
 import type {
   AuthCallbackResponse,
   AuthPopupMessage,
@@ -10,7 +11,9 @@ export function getGoogleAuthUrl(): string {
 }
 
 export async function getMe(): Promise<UserProfile> {
-  return apiClient.get<UserProfile>('/auth/me');
+  const payload = await apiClient.get<unknown>('/auth/me');
+
+  return CurrentUserSchema.parse(payload) as UserProfile;
 }
 
 export async function logout(): Promise<void> {
