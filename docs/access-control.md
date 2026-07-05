@@ -12,6 +12,7 @@ The current implementation is intentionally small:
 
 - shared access-control contracts live in `packages/contracts/src/access-control.ts`;
 - the API exposes `GET /api/access-control`;
+- `GET /api/access-control` reads persisted permissions and roles when the database is seeded;
 - the web app shows the permission catalog in `/access-control`;
 - Prisma models define roles and user/role permission assignments;
 - Prisma seed synchronizes baseline permissions and system roles;
@@ -120,6 +121,18 @@ getOverview() {}
 
 The global access guard allows routes with no required permissions. When permissions are required, the guard resolves direct user permissions plus role-inherited permissions and returns `403` if any required permission is missing.
 
+## Access-control overview
+
+`GET /api/access-control` returns persisted permissions and roles from Prisma.
+
+If the `Permission` table is empty, the API falls back to the static Core permission catalog so the page remains useful before the seed runs.
+
+Run the seed after adding new permission keys:
+
+```bash
+pnpm --filter api prisma:seed
+```
+
 ## Migration notes
 
 This repository stores Prisma models under `apps/api/prisma/schema`.
@@ -146,7 +159,7 @@ pnpm --filter api prisma:seed
 
 Recommended follow-up PRs:
 
-1. Protect any remaining endpoints as modules evolve.
+1. Add role/user assignment write endpoints.
 2. Add role/user assignment management UI.
 3. Add tests around access checks.
 
