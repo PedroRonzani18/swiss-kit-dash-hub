@@ -36,7 +36,7 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Modulos</SidebarGroupLabel>
+          <SidebarGroupLabel>Módulos</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navigationModules.map((module) => (
