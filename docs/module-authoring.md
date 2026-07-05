@@ -6,6 +6,32 @@ This guide defines how new modules should be planned and added to Swiss Kit.
 
 A module should be a vertical slice with clear ownership across frontend, backend and contracts when needed.
 
+## Fast start
+
+Use the scaffold for the web shell pieces:
+
+```bash
+pnpm scaffold:module <module-id>
+```
+
+Example:
+
+```bash
+pnpm scaffold:module tasks
+```
+
+The scaffold creates:
+
+```text
+apps/web/src/modules/<module>/pages/<Module>Page.tsx
+apps/web/src/features/<module>/hooks/use<Module>Overview.ts
+apps/web/src/api/<module>.ts
+```
+
+It does not modify the module registry automatically. After running it, register the module in `apps/web/src/app/navigation/modules.ts`.
+
+Use the `tasks` module as the full-stack reference implementation.
+
 ## Module decision checklist
 
 Before creating a module, answer:
@@ -46,9 +72,19 @@ Recommended location:
 apps/web/src/modules/<module>/
   pages/
   components/
+```
+
+Reusable feature behavior should live under:
+
+```text
+apps/web/src/features/<module>/
   hooks/
-  services/
-  module.definition.ts
+```
+
+Endpoint-specific API clients should live under:
+
+```text
+apps/web/src/api/<module>.ts
 ```
 
 Frontend module rules:
@@ -62,7 +98,7 @@ Frontend module rules:
 Expected dependency direction:
 
 ```text
-src/app -> src/modules -> src/features -> src/shared
+src/app -> src/modules -> src/features -> src/api/contracts/shared
 ```
 
 ## Backend module shape
@@ -74,21 +110,24 @@ apps/api/src/modules/<module>/
   <module>.module.ts
   <module>.controller.ts
   <module>.service.ts
-  repositories/
-    <module>.repository.ts
-  dto/
-    create-<resource>.dto.ts
-    update-<resource>.dto.ts
-  mappers/
-    <resource>.mapper.ts
+  <module>.dto.ts
+```
+
+For persisted modules, add repositories/mappers as needed:
+
+```text
+repositories/
+  <module>.repository.ts
+mappers/
+  <resource>.mapper.ts
 ```
 
 Backend module rules:
 
 - controllers define HTTP and delegate to services;
 - services coordinate use cases and business rules;
-- repositories wrap Prisma access;
-- DTOs validate incoming payloads;
+- repositories wrap Prisma access when persistence exists;
+- DTOs describe/validate incoming and outgoing HTTP payloads;
 - mappers isolate response shape mapping when needed.
 
 Expected dependency direction:
@@ -108,7 +147,7 @@ export const ExampleSchema = z.object({
   id: z.string(),
 });
 
-export type Example = z.infer<typeof ExampleSchema>;
+export type ExampleContract = z.infer<typeof ExampleSchema>;
 ```
 
 Contract rules:
@@ -145,6 +184,7 @@ users:access
 users:create
 settings:access
 access-control:manage
+tasks:read
 ```
 
 Use `access` to control whether the module appears in navigation or can be opened.
@@ -157,14 +197,15 @@ Do not create very granular permission keys until there is a real use case.
 
 For a new full-stack module:
 
-1. Add shared contracts if needed.
-2. Add backend module structure.
-3. Add DTOs and mappers.
-4. Add frontend service/hooks/pages.
-5. Register routes/navigation.
-6. Add permissions if required.
-7. Update docs.
-8. Run relevant validation.
+1. Run the scaffold when creating web shell files.
+2. Add shared contracts if needed.
+3. Add backend module structure.
+4. Add DTOs and mappers.
+5. Add frontend API client/hooks/pages.
+6. Register routes/navigation.
+7. Add permissions if required.
+8. Update docs.
+9. Run relevant validation.
 
 ## Validation checklist
 
