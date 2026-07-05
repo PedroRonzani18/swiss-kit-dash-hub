@@ -47,6 +47,22 @@ Before creating a module, answer:
 
 If a module requires auth, permissions, contracts or migrations, the Planner should call that out explicitly before implementation.
 
+New modules should use the full Codex pipeline:
+
+```text
+Planner -> human approval -> Coder -> Tester -> Reviewer
+```
+
+The Planner must make contracts, permissions, authentication and migrations explicit in the spec. These decisions cannot be inferred during implementation, and any unresolved decision must remain under `OPEN QUESTIONS` until a human resolves it.
+
+Start the module work with:
+
+```text
+$ship start Implement <module-id> as a generic Swiss Kit module
+```
+
+After reviewing and approving the generated spec, continue with `$ship resume <run-id>`.
+
 ## Naming
 
 Use neutral names.
