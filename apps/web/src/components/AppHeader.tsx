@@ -4,15 +4,22 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/auth";
 import { toast } from "@/components/ui/sonner";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "@/shared/i18n/LanguageSwitcher";
 
 interface AppHeaderProps {
   breadcrumbs?: string[];
   onOpenCommand?: () => void;
 }
 
-export function AppHeader({ breadcrumbs = ["SwissKit", "Core"] }: AppHeaderProps) {
+export function AppHeader({ breadcrumbs }: AppHeaderProps) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const resolvedBreadcrumbs = breadcrumbs ?? [
+    t("common.brand"),
+    t("navigation.modules.core.label"),
+  ];
 
   const triggerCommand = () => {
     const e = new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true });
@@ -22,12 +29,10 @@ export function AppHeader({ breadcrumbs = ["SwissKit", "Core"] }: AppHeaderProps
   const handleLogout = async () => {
     try {
       await logout();
-      toast.success("Sessão encerrada");
+      toast.success(t("auth.logoutSuccess"));
       navigate("/login", { replace: true });
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Não foi possível sair da sessão";
-      toast.error(message);
+    } catch {
+      toast.error(t("auth.logoutFailedFallback"));
     }
   };
 
@@ -36,10 +41,10 @@ export function AppHeader({ breadcrumbs = ["SwissKit", "Core"] }: AppHeaderProps
       <div className="flex min-w-0 items-center gap-3">
         <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
         <nav className="flex items-center gap-1 truncate text-sm text-muted-foreground">
-          {breadcrumbs.map((crumb, i) => (
+          {resolvedBreadcrumbs.map((crumb, i) => (
             <span key={i} className="flex items-center gap-1">
               {i > 0 && <span className="text-border">/</span>}
-              <span className={i === breadcrumbs.length - 1 ? "text-foreground font-medium" : ""}>
+              <span className={i === resolvedBreadcrumbs.length - 1 ? "text-foreground font-medium" : ""}>
                 {crumb}
               </span>
             </span>
@@ -52,17 +57,18 @@ export function AppHeader({ breadcrumbs = ["SwissKit", "Core"] }: AppHeaderProps
           className="group flex items-center gap-2 rounded-md border border-border/80 bg-surface-subtle px-3 py-1.5 text-xs text-muted-foreground shadow-business-sm transition-colors hover:border-brand/35 hover:bg-brand-soft hover:text-foreground"
         >
           <Search className="h-3 w-3" />
-          <span>Buscar</span>
+          <span>{t("common.actions.search")}</span>
           <kbd className="app-kbd ml-1 group-hover:border-brand/40 group-hover:bg-surface-panel">
             ⌘K
           </kbd>
         </button>
 
-        <span className="hidden max-w-48 truncate text-xs text-muted-foreground md:inline">
+        <LanguageSwitcher />
+        <span className="hidden max-w-48 truncate text-xs text-muted-foreground lg:inline">
           {user?.email}
         </span>
         <Button variant="outline" size="sm" onClick={handleLogout}>
-          Sair
+          {t("common.actions.logout")}
         </Button>
       </div>
     </header>

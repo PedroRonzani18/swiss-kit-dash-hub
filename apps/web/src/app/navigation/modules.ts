@@ -31,11 +31,15 @@ export const MODULE_ROUTES = {
 export type ModuleRouteKey = keyof typeof MODULE_ROUTES;
 export type ModulePath = (typeof MODULE_ROUTES)[ModuleRouteKey];
 
-export type ShellModuleDefinition = AppModuleDefinitionContract & {
+export type ShellModuleDefinition = Omit<
+  AppModuleDefinitionContract,
+  "label" | "description"
+> & {
   routeKey: ModuleRouteKey;
   path: ModulePath;
   icon: LucideIcon;
-  description: string;
+  labelKey: string;
+  descriptionKey: string;
   component: ComponentType;
   requiredPermissions: PermissionKeyContract[];
 };
@@ -44,74 +48,74 @@ export const APP_MODULES: ShellModuleDefinition[] = [
   {
     id: "core",
     routeKey: "core",
-    label: "Core",
+    labelKey: "navigation.modules.core.label",
     path: MODULE_ROUTES.core,
     icon: Home,
     component: CoreAppPage,
     nav: true,
     status: "available",
     requiredPermissions: ["core:access"],
-    description: "Ambiente base sem modulo de produto ativo.",
+    descriptionKey: "navigation.modules.core.description",
   },
   {
     id: "settings",
     routeKey: "settings",
-    label: "Settings",
+    labelKey: "navigation.modules.settings.label",
     path: MODULE_ROUTES.settings,
     icon: Settings,
     component: SettingsPage,
     nav: true,
     status: "available",
     requiredPermissions: ["settings:access"],
-    description: "Preferencias e opcoes do template.",
+    descriptionKey: "navigation.modules.settings.description",
   },
   {
     id: "users",
     routeKey: "users",
-    label: "Users",
+    labelKey: "navigation.modules.users.label",
     path: MODULE_ROUTES.users,
     icon: Users,
     component: UsersPage,
     nav: true,
     status: "available",
     requiredPermissions: ["users:access"],
-    description: "Usuarios autenticados do template.",
+    descriptionKey: "navigation.modules.users.description",
   },
   {
     id: "allowed-emails",
     routeKey: "allowedEmails",
-    label: "Allowed Emails",
+    labelKey: "navigation.modules.allowedEmails.label",
     path: MODULE_ROUTES.allowedEmails,
     icon: ShieldCheck,
     component: AccessListPage,
     nav: true,
     status: "available",
     requiredPermissions: ["allowed-emails:access"],
-    description: "Emails liberados para acesso ao template.",
+    descriptionKey: "navigation.modules.allowedEmails.description",
   },
   {
     id: "access-control",
     routeKey: "accessControl",
-    label: "Access Control",
+    labelKey: "navigation.modules.accessControl.label",
     path: MODULE_ROUTES.accessControl,
     icon: KeyRound,
     component: AccessControlPage,
     nav: true,
     status: "available",
     requiredPermissions: ["access-control:access"],
-    description: "Catalogo local de permissoes do template.",
+    descriptionKey: "navigation.modules.accessControl.description",
   },
   {
     id: "tasks",
     routeKey: "tasks",
-    label: "Tasks",
+    labelKey: "navigation.modules.tasks.label",
     path: MODULE_ROUTES.tasks,
     icon: ClipboardList,
     component: TasksPage,
     nav: true,
     status: "available",
     requiredPermissions: ["tasks:access"],
-    description: "Modulo exemplo para copiar ao criar novas features.",
+    descriptionKey: "navigation.modules.tasks.description",
   },
 ];
 

@@ -36,6 +36,7 @@ Swiss Kit Core
   health checks
   shared contracts
   frontend shell
+  frontend internationalization
   module registry
   module scaffold
   docs and AGENTS guidance
@@ -56,7 +57,6 @@ Out of scope for the Core baseline by default:
 - S3/file storage;
 - email sending;
 - queues;
-- i18n;
 - customer-specific structures;
 - product-specific dashboards.
 
@@ -113,6 +113,7 @@ Good Core candidates:
 - health checks;
 - shared API error/pagination/session contracts;
 - frontend module registration;
+- frontend locale catalogs and language selection;
 - module scaffold tooling;
 - CI and validation scripts;
 - reusable docs and agent instructions.

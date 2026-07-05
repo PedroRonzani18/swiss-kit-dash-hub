@@ -1,0 +1,248 @@
+{
+  "metadata": {
+    "title": "Swiss Kit Core",
+    "description": "Template modular e reutilizável para sistemas web."
+  },
+  "common": {
+    "brand": "SwissKit",
+    "language": "Idioma",
+    "languages": {
+      "pt-BR": "Português",
+      "en": "Inglês"
+    },
+    "actions": {
+      "close": "Fechar",
+      "toggleSidebar": "Alternar barra lateral",
+      "collapseSidebar": "Recolher",
+      "search": "Buscar",
+      "logout": "Sair"
+    },
+    "status": {
+      "active": "Ativo",
+      "inactive": "Inativo",
+      "todo": "A fazer",
+      "doing": "Em andamento",
+      "done": "Concluída"
+    },
+    "providers": {
+      "google": "Google"
+    }
+  },
+  "navigation": {
+    "modulesGroup": "Módulos",
+    "commandPlaceholder": "Buscar módulos e ações...",
+    "commandEmpty": "Nenhum resultado encontrado.",
+    "commandHeading": "Navegação",
+    "modules": {
+      "core": {
+        "label": "Core",
+        "description": "Ambiente base sem módulo de produto ativo."
+      },
+      "settings": {
+        "label": "Configurações",
+        "description": "Preferências e opções do template."
+      },
+      "users": {
+        "label": "Usuários",
+        "description": "Usuários autenticados do template."
+      },
+      "allowedEmails": {
+        "label": "E-mails permitidos",
+        "description": "E-mails liberados para acesso ao template."
+      },
+      "accessControl": {
+        "label": "Controle de acesso",
+        "description": "Catálogo local de permissões do template."
+      },
+      "tasks": {
+        "label": "Tarefas",
+        "description": "Módulo de exemplo para copiar ao criar novas funcionalidades."
+      }
+    }
+  },
+  "auth": {
+    "title": "Entrar no sistema",
+    "description": "Faça login com Google para acessar o Swiss Kit Core.",
+    "redirecting": "Redirecionando...",
+    "signInWithGoogle": "Entrar com Google",
+    "loadingSession": "Carregando sessão...",
+    "loginFailed": "Falha ao autenticar com Google",
+    "loginFailedFallback": "Não foi possível autenticar com Google",
+    "logoutSuccess": "Sessão encerrada",
+    "logoutFailedFallback": "Não foi possível sair da sessão"
+  },
+  "core": {
+    "eyebrow": "Swiss Kit Core",
+    "title": "Nenhum módulo de produto ativo",
+    "description": "A base do sistema está preservada com autenticação, sessão, shell web e tooling do monorepo prontos para evolução modular."
+  },
+  "settings": {
+    "eyebrow": "Módulo do template",
+    "title": "Configurações",
+    "description": "Módulo neutro para validar o padrão de páginas roteáveis sem acoplar regras de produto ao Core.",
+    "loading": "Carregando configurações...",
+    "error": "Não foi possível carregar as configurações do template.",
+    "sections": {
+      "account": {
+        "label": "Conta",
+        "description": "Espaço reservado para preferências da conta."
+      },
+      "preferences": {
+        "label": "Preferências",
+        "description": "Espaço reservado para opções da interface."
+      },
+      "system": {
+        "label": "Sistema",
+        "description": "Espaço reservado para opções do template."
+      }
+    }
+  },
+  "users": {
+    "eyebrow": "Módulo do template",
+    "title": "Usuários",
+    "description": "Módulo base para visualizar usuários autenticados sem adicionar administração, papéis ou permissões.",
+    "loading": "Carregando usuários...",
+    "error": "Não foi possível carregar os usuários.",
+    "registered": "Usuários cadastrados",
+    "count_one": "{{count}} usuário encontrado.",
+    "count_other": "{{count}} usuários encontrados."
+  },
+  "allowedEmails": {
+    "eyebrow": "Base de acesso",
+    "title": "E-mails permitidos",
+    "description": "E-mails liberados para acessar o template, com cadastro e controles básicos de ativação e sem RBAC completo.",
+    "emailPlaceholder": "usuario@exemplo.com",
+    "notePlaceholder": "Observação opcional",
+    "saving": "Salvando...",
+    "add": "Adicionar",
+    "saveError": "Não foi possível salvar o e-mail.",
+    "loading": "Carregando e-mails...",
+    "loadError": "Não foi possível carregar a lista de e-mails.",
+    "registered": "E-mails cadastrados",
+    "count_one": "{{count}} e-mail encontrado.",
+    "count_other": "{{count}} e-mails encontrados.",
+    "activate": "Ativar",
+    "deactivate": "Desativar"
+  },
+  "accessControl": {
+    "title": "Controle de acesso",
+    "description": "Papéis locais e catálogo de permissões do template Swiss Kit.",
+    "loading": "Carregando...",
+    "error": "Não foi possível carregar.",
+    "permissions": "Permissões",
+    "permissionsDescription": "Catálogo persistido de permissões usado por guards e módulos.",
+    "permissionsCount_one": "{{count}} permissão",
+    "permissionsCount_other": "{{count}} permissões",
+    "roles": "Papéis",
+    "rolesDescription": "Papéis persistidos e suas permissões atribuídas.",
+    "rolesCount_one": "{{count}} papel",
+    "rolesCount_other": "{{count}} papéis",
+    "catalog": {
+      "permissions": {
+        "core": {
+          "access": {
+            "label": "Acessar Core",
+            "description": "Permite acessar o módulo inicial do Core."
+          }
+        },
+        "settings": {
+          "access": {
+            "label": "Acessar configurações",
+            "description": "Permite acessar o módulo de configurações."
+          }
+        },
+        "users": {
+          "access": {
+            "label": "Acessar usuários",
+            "description": "Permite acessar o módulo de usuários."
+          },
+          "read": {
+            "label": "Ler usuários",
+            "description": "Permite ler perfis de usuários autenticados."
+          }
+        },
+        "allowed-emails": {
+          "access": {
+            "label": "Acessar e-mails permitidos",
+            "description": "Permite acessar o módulo de e-mails permitidos."
+          },
+          "read": {
+            "label": "Ler e-mails permitidos",
+            "description": "Permite ler entradas de e-mails permitidos."
+          },
+          "create": {
+            "label": "Criar e-mails permitidos",
+            "description": "Permite criar entradas de e-mails permitidos."
+          },
+          "update": {
+            "label": "Atualizar e-mails permitidos",
+            "description": "Permite ativar ou desativar entradas de e-mails permitidos."
+          }
+        },
+        "access-control": {
+          "access": {
+            "label": "Acessar controle de acesso",
+            "description": "Permite acessar o módulo de controle de acesso."
+          },
+          "read": {
+            "label": "Ler controle de acesso",
+            "description": "Permite ler o catálogo de permissões."
+          },
+          "manage": {
+            "label": "Gerenciar controle de acesso",
+            "description": "Permite gerenciar futuros papéis e atribuições de permissões."
+          }
+        },
+        "tasks": {
+          "access": {
+            "label": "Acessar tarefas",
+            "description": "Permite acessar o módulo de exemplo de tarefas."
+          },
+          "read": {
+            "label": "Ler tarefas",
+            "description": "Permite ler tarefas de exemplo."
+          }
+        }
+      },
+      "roles": {
+        "admin": {
+          "label": "Administrador",
+          "description": "Papel com acesso administrativo completo ao template Swiss Kit."
+        },
+        "member": {
+          "label": "Membro",
+          "description": "Papel básico para membros autenticados do template Swiss Kit."
+        }
+      }
+    },
+    "noPermissions": "Nenhuma permissão atribuída.",
+    "noRoles": "Nenhum papel encontrado. Execute o seed do Prisma para criar os papéis básicos."
+  },
+  "tasks": {
+    "eyebrow": "Módulo de exemplo",
+    "title": "Tarefas",
+    "description": "Módulo de referência que demonstra o fluxo do template entre contratos compartilhados, endpoint da API, cliente web, hook, página e registro de módulos.",
+    "loading": "Carregando tarefas...",
+    "error": "Não foi possível carregar as tarefas.",
+    "noDescription": "Sem descrição.",
+    "items": {
+      "reviewTemplate": {
+        "title": "Revisar a estrutura do template",
+        "description": "Use este módulo como referência copiável para novos sistemas."
+      },
+      "addProductModule": {
+        "title": "Adicionar um módulo específico do produto",
+        "description": "Comece pelo scaffold e substitua os dados estáticos por comportamento real da API."
+      }
+    }
+  },
+  "notFound": {
+    "message": "Página não encontrada",
+    "returnHome": "Voltar ao início"
+  },
+  "errorBoundary": {
+    "title": "Algo deu errado na interface",
+    "description": "Recarregue a página. Se o erro persistir, verifique os logs do frontend.",
+    "reload": "Recarregar aplicação"
+  }
+}

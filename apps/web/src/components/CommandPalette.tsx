@@ -10,12 +10,14 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { useTranslation } from "react-i18next";
 
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { permissions } = useAuth();
+  const { t } = useTranslation();
   const navigationModules = getNavigationModulesForUser(permissions);
 
   useEffect(() => {
@@ -39,19 +41,19 @@ export function CommandPalette() {
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder="Buscar módulos e ações..." />
+      <CommandInput placeholder={t("navigation.commandPlaceholder")} />
       <CommandList>
-        <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
-        <CommandGroup heading="Navegação">
+        <CommandEmpty>{t("navigation.commandEmpty")}</CommandEmpty>
+        <CommandGroup heading={t("navigation.commandHeading")}>
           {navigationModules.map((module) => (
             <CommandItem
               key={module.id}
               onSelect={() => handleNavigate(module.path)}
             >
               <module.icon className="mr-2 h-4 w-4" />
-              <span className="font-medium">{module.label}</span>
+              <span className="font-medium">{t(module.labelKey)}</span>
               <span className="ml-2 text-xs text-muted-foreground">
-                {module.description}
+                {t(module.descriptionKey)}
               </span>
             </CommandItem>
           ))}

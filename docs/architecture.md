@@ -29,11 +29,15 @@ Tecnologias centrais:
 - React + Vite + TypeScript
 - TanStack Query para cache/sincronização de dados
 - React Router para roteamento
+- i18next + react-i18next para internacionalização
 
 Responsabilidades principais:
 - autenticação e sessão no browser via `AuthProvider`;
 - rota protegida neutra em `/app`;
 - validação de payloads da API com schemas de `@swisskit/contracts`, quando aplicável.
+- catálogos `pt-BR` e `en` em `src/shared/i18n/locales`, com seleção explícita persistida em `localStorage`, detecção do idioma do navegador e fallback para `pt-BR`.
+
+Textos de interface pertencem aos catálogos do frontend. Quando uma resposta da API define cópia estática exibida pela interface, o contrato transporta uma chave estável de tradução, como `labelKey` ou `descriptionKey`, e o web resolve a chave no locale ativo. Dados livres criados por usuários permanecem como dados e não são tratados como chaves de tradução.
 
 Notas de integração:
 - base da API é `VITE_API_URL` (com fallback para `/api`);

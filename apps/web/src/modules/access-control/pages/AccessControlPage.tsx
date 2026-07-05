@@ -1,26 +1,55 @@
 import { AppLayout } from "@/components/AppLayout";
 import { useAccessControlOverview } from "@/features/access-control/hooks/useAccessControlOverview";
+import { useTranslation } from "react-i18next";
 
 export function AccessControlPage() {
   const query = useAccessControlOverview();
+  const { t } = useTranslation();
+
+  const getPermissionText = (
+    key: string,
+    field: "label" | "description",
+    fallback: string,
+  ) =>
+    t(`accessControl.catalog.permissions.${key.replace(":", ".")}.${field}`, {
+      defaultValue: fallback,
+    });
+
+  const getRoleText = (
+    key: string,
+    field: "label" | "description",
+    fallback: string,
+  ) =>
+    t(`accessControl.catalog.roles.${key}.${field}`, {
+      defaultValue: fallback,
+    });
 
   return (
-    <AppLayout breadcrumbs={["SwissKit", "Access Control"]}>
+    <AppLayout
+      breadcrumbs={[
+        t("common.brand"),
+        t("navigation.modules.accessControl.label"),
+      ]}
+    >
       <section className="mx-auto flex w-full max-w-6xl flex-col gap-6">
         <div>
           <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground">
-            Access Control
+            {t("accessControl.title")}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Local roles and permission catalog for the Swiss Kit template.
+            {t("accessControl.description")}
           </p>
         </div>
 
         {query.isLoading ? (
-          <p className="text-sm text-muted-foreground">Loading...</p>
+          <p className="text-sm text-muted-foreground">
+            {t("accessControl.loading")}
+          </p>
         ) : null}
         {query.isError ? (
-          <p className="text-sm text-destructive">Failed to load.</p>
+          <p className="text-sm text-destructive">
+            {t("accessControl.error")}
+          </p>
         ) : null}
 
         {query.data ? (
@@ -30,14 +59,16 @@ export function AccessControlPage() {
                 <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
                   <div>
                     <h2 className="text-base font-semibold text-foreground">
-                      Permissions
+                      {t("accessControl.permissions")}
                     </h2>
                     <p className="text-sm text-muted-foreground">
-                      Persisted permission catalog used by guards and modules.
+                      {t("accessControl.permissionsDescription")}
                     </p>
                   </div>
                   <span className="text-xs text-muted-foreground">
-                    {query.data.permissions.length} permissions
+                    {t("accessControl.permissionsCount", {
+                      count: query.data.permissions.length,
+                    })}
                   </span>
                 </div>
               </div>
@@ -49,7 +80,11 @@ export function AccessControlPage() {
                 >
                   <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
                     <span className="text-sm font-medium text-foreground">
-                      {permission.label}
+                      {getPermissionText(
+                        permission.key,
+                        "label",
+                        permission.label,
+                      )}
                     </span>
                     <code className="text-xs text-muted-foreground">
                       {permission.key}
@@ -57,7 +92,11 @@ export function AccessControlPage() {
                   </div>
                   {permission.description ? (
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {permission.description}
+                      {getPermissionText(
+                        permission.key,
+                        "description",
+                        permission.description,
+                      )}
                     </p>
                   ) : null}
                 </div>
@@ -69,14 +108,16 @@ export function AccessControlPage() {
                 <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
                   <div>
                     <h2 className="text-base font-semibold text-foreground">
-                      Roles
+                      {t("accessControl.roles")}
                     </h2>
                     <p className="text-sm text-muted-foreground">
-                      Persisted roles and their assigned permissions.
+                      {t("accessControl.rolesDescription")}
                     </p>
                   </div>
                   <span className="text-xs text-muted-foreground">
-                    {query.data.roles.length} roles
+                    {t("accessControl.rolesCount", {
+                      count: query.data.roles.length,
+                    })}
                   </span>
                 </div>
               </div>
@@ -90,11 +131,15 @@ export function AccessControlPage() {
                     <div className="flex flex-col gap-1 md:flex-row md:items-start md:justify-between">
                       <div>
                         <h3 className="text-sm font-semibold text-foreground">
-                          {role.label}
+                          {getRoleText(role.key, "label", role.label)}
                         </h3>
                         {role.description ? (
                           <p className="mt-1 text-xs text-muted-foreground">
-                            {role.description}
+                            {getRoleText(
+                              role.key,
+                              "description",
+                              role.description,
+                            )}
                           </p>
                         ) : null}
                       </div>
@@ -115,7 +160,7 @@ export function AccessControlPage() {
                         ))
                       ) : (
                         <span className="text-xs text-muted-foreground">
-                          No permissions assigned.
+                          {t("accessControl.noPermissions")}
                         </span>
                       )}
                     </div>
@@ -123,7 +168,7 @@ export function AccessControlPage() {
                 ))
               ) : (
                 <div className="px-5 py-4 text-sm text-muted-foreground">
-                  No roles found. Run the Prisma seed to create the baseline roles.
+                  {t("accessControl.noRoles")}
                 </div>
               )}
             </section>
