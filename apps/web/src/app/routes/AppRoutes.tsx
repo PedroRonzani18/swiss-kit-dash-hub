@@ -7,13 +7,18 @@ import {
 import { useAuth } from "@/auth";
 import { LoginPage } from "@/modules/auth/pages/LoginPage";
 import NotFound from "@/pages/NotFound";
+import { useTranslation } from "react-i18next";
 
 const LOGIN_ROUTE = "/login";
 
 function AuthBootstrapLoading() {
+  const { t } = useTranslation();
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-app-grid">
-      <p className="text-sm text-muted-foreground">Carregando sessão...</p>
+      <p className="text-sm text-muted-foreground">
+        {t("auth.loadingSession")}
+      </p>
     </div>
   );
 }

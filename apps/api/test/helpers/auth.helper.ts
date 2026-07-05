@@ -2,6 +2,8 @@ import { randomUUID } from 'node:crypto';
 import { INestApplication } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
+import { ACCESS_CONTROL_CORE_PERMISSIONS } from '@swisskit/contracts/access-control-catalog';
+import type { PermissionKeyContract } from '@swisskit/contracts/permissions';
 import { AUTH_PROVIDER } from '@/common/enums';
 import { PrismaService } from '@/prisma/prisma.service';
 
@@ -18,6 +20,7 @@ export async function createAuthenticatedTestUser(
   input?: {
     email?: string;
     name?: string | null;
+    permissions?: PermissionKeyContract[];
   },
 ): Promise<AuthenticatedTestUser> {
   const email = input?.email ?? `integration-${randomUUID()}@swisskit.test`;
@@ -31,6 +34,40 @@ export async function createAuthenticatedTestUser(
       lastLoginAt: new Date(),
     },
   });
+
+  for (const permissionKey of input?.permissions ?? []) {
+    const permissionDefinition = ACCESS_CONTROL_CORE_PERMISSIONS.find(
+      (permission) => permission.key === permissionKey,
+    );
+
+    if (!permissionDefinition) {
+      throw new Error(`Unknown test permission: ${permissionKey}`);
+    }
+
+    const permission = await prisma.permission.upsert({
+      where: { key: permissionDefinition.key },
+      update: {
+        moduleId: permissionDefinition.moduleId,
+        action: permissionDefinition.action,
+        label: permissionDefinition.label,
+        description: permissionDefinition.description,
+      },
+      create: {
+        key: permissionDefinition.key,
+        moduleId: permissionDefinition.moduleId,
+        action: permissionDefinition.action,
+        label: permissionDefinition.label,
+        description: permissionDefinition.description,
+      },
+    });
+
+    await prisma.userPermission.create({
+      data: {
+        userId: user.id,
+        permissionId: permission.id,
+      },
+    });
+  }
 
   const jwtService = app.get(JwtService);
   const token = await jwtService.signAsync({

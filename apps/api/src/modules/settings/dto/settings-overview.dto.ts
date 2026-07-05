@@ -15,16 +15,16 @@ export class SettingsSectionDto implements SettingsSectionContract {
   id!: SettingsSectionId;
 
   @ApiProperty({
-    example: 'Account',
-    description: 'Human-readable section label.',
+    example: 'settings.sections.account.label',
+    description: 'Stable frontend translation key for the section label.',
   })
-  label!: string;
+  labelKey!: string;
 
   @ApiProperty({
-    example: 'Account preferences placeholder.',
-    description: 'Short description of the section purpose.',
+    example: 'settings.sections.account.description',
+    description: 'Stable frontend translation key for the section description.',
   })
-  description!: string;
+  descriptionKey!: string;
 }
 
 export class SettingsOverviewDto implements SettingsOverviewContract {

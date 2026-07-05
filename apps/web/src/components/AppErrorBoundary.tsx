@@ -1,5 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
+import i18n from '@/shared/i18n';
 
 type Props = {
   children: ReactNode;
@@ -30,11 +31,15 @@ export class AppErrorBoundary extends Component<Props, State> {
       return (
         <main className="min-h-screen flex items-center justify-center p-6">
           <div className="max-w-md text-center space-y-4">
-            <h1 className="text-xl font-semibold">Algo deu errado na interface</h1>
+            <h1 className="text-xl font-semibold">
+              {i18n.t('errorBoundary.title')}
+            </h1>
             <p className="text-sm text-muted-foreground">
-              Tente recarregar a página. Se o erro persistir, verifique os logs do frontend.
+              {i18n.t('errorBoundary.description')}
             </p>
-            <Button onClick={this.handleReset}>Recarregar aplicação</Button>
+            <Button onClick={this.handleReset}>
+              {i18n.t('errorBoundary.reload')}
+            </Button>
           </div>
         </main>
       );

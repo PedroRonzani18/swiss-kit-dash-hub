@@ -4,8 +4,8 @@ export const SettingsSectionIdSchema = z.enum(['account', 'preferences', 'system
 
 export const SettingsSectionSchema = z.object({
   id: SettingsSectionIdSchema,
-  label: z.string(),
-  description: z.string(),
+  labelKey: z.string().min(1),
+  descriptionKey: z.string().min(1),
 });
 
 export const SettingsOverviewSchema = z.object({

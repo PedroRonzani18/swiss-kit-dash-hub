@@ -9,14 +9,14 @@ export class TaskDto implements TaskContract {
   @ApiProperty({ example: 'task-1' })
   id!: string;
 
-  @ApiProperty({ example: 'Review template structure' })
-  title!: string;
+  @ApiProperty({ example: 'tasks.items.reviewTemplate.title' })
+  titleKey!: string;
 
   @ApiProperty({
     nullable: true,
-    example: 'Use this module as a copyable reference.',
+    example: 'tasks.items.reviewTemplate.description',
   })
-  description!: string | null;
+  descriptionKey!: string | null;
 
   @ApiProperty({ example: 'todo', enum: ['todo', 'doing', 'done'] })
   status!: TaskStatusContract;

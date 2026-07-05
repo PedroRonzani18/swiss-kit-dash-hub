@@ -6,6 +6,7 @@ import { AppRoutes } from "@/app/routes/AppRoutes";
 import { AuthProvider } from "@/auth";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { LocaleDocument } from "@/shared/i18n/LocaleDocument";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,6 +32,7 @@ const App = () => (
       >
         <AuthProvider>
           <TooltipProvider>
+            <LocaleDocument />
             <SonnerToaster />
             <BrowserRouter>
               <AppRoutes />

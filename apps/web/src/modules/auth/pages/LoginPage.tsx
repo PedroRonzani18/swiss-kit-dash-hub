@@ -4,9 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Layers } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
+import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "@/shared/i18n/LanguageSwitcher";
 
 export function LoginPage() {
   const { isLoading, loginWithGoogle } = useAuth();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -16,28 +19,27 @@ export function LoginPage() {
       return;
     }
 
-    toast.error("Falha ao autenticar com Google");
+    toast.error(t("auth.loginFailed"));
 
     params.delete("authError");
     const nextSearch = params.toString();
     const nextUrl = `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ""}${window.location.hash}`;
     window.history.replaceState({}, "", nextUrl);
-  }, []);
+  }, [t]);
 
   const handleLogin = async () => {
     try {
       await loginWithGoogle();
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Não foi possível autenticar com Google";
-      toast.error(message);
+    } catch {
+      toast.error(t("auth.loginFailedFallback"));
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-app-grid px-4">
+    <div className="relative flex min-h-screen items-center justify-center bg-app-grid px-4">
+      <div className="absolute right-4 top-4">
+        <LanguageSwitcher />
+      </div>
       <Card className="w-full max-w-md border-border/70 bg-surface-panel/95 shadow-business-lg">
         <CardHeader className="space-y-4">
           <div className="flex items-center gap-2 text-brand">
@@ -47,15 +49,15 @@ export function LoginPage() {
             </span>
           </div>
           <div className="space-y-1">
-            <CardTitle className="text-2xl">Entrar no sistema</CardTitle>
+            <CardTitle className="text-2xl">{t("auth.title")}</CardTitle>
             <CardDescription>
-              Faça login com Google para acessar o Swiss Kit Core.
+              {t("auth.description")}
             </CardDescription>
           </div>
         </CardHeader>
         <CardContent>
           <Button onClick={handleLogin} disabled={isLoading} className="w-full">
-            {isLoading ? "Redirecionando..." : "Entrar com Google"}
+            {isLoading ? t("auth.redirecting") : t("auth.signInWithGoogle")}
           </Button>
         </CardContent>
       </Card>

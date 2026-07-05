@@ -4,8 +4,8 @@ export const TaskStatusSchema = z.enum(['todo', 'doing', 'done']);
 
 export const TaskSchema = z.object({
   id: z.string(),
-  title: z.string(),
-  description: z.string().nullable(),
+  titleKey: z.string().min(1),
+  descriptionKey: z.string().min(1).nullable(),
   status: TaskStatusSchema,
 });
 

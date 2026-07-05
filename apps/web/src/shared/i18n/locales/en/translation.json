@@ -1,0 +1,248 @@
+{
+  "metadata": {
+    "title": "Swiss Kit Core",
+    "description": "A reusable modular web system template."
+  },
+  "common": {
+    "brand": "SwissKit",
+    "language": "Language",
+    "languages": {
+      "pt-BR": "Portuguese",
+      "en": "English"
+    },
+    "actions": {
+      "close": "Close",
+      "toggleSidebar": "Toggle sidebar",
+      "collapseSidebar": "Collapse",
+      "search": "Search",
+      "logout": "Sign out"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "todo": "To do",
+      "doing": "In progress",
+      "done": "Done"
+    },
+    "providers": {
+      "google": "Google"
+    }
+  },
+  "navigation": {
+    "modulesGroup": "Modules",
+    "commandPlaceholder": "Search modules and actions...",
+    "commandEmpty": "No results found.",
+    "commandHeading": "Navigation",
+    "modules": {
+      "core": {
+        "label": "Core",
+        "description": "Base environment with no active product module."
+      },
+      "settings": {
+        "label": "Settings",
+        "description": "Template preferences and options."
+      },
+      "users": {
+        "label": "Users",
+        "description": "Authenticated template users."
+      },
+      "allowedEmails": {
+        "label": "Allowed Emails",
+        "description": "Emails allowed to access the template."
+      },
+      "accessControl": {
+        "label": "Access Control",
+        "description": "Local template permission catalog."
+      },
+      "tasks": {
+        "label": "Tasks",
+        "description": "Example module to copy when creating new features."
+      }
+    }
+  },
+  "auth": {
+    "title": "Sign in",
+    "description": "Sign in with Google to access Swiss Kit Core.",
+    "redirecting": "Redirecting...",
+    "signInWithGoogle": "Sign in with Google",
+    "loadingSession": "Loading session...",
+    "loginFailed": "Google authentication failed",
+    "loginFailedFallback": "Could not authenticate with Google",
+    "logoutSuccess": "Session ended",
+    "logoutFailedFallback": "Could not end the session"
+  },
+  "core": {
+    "eyebrow": "Swiss Kit Core",
+    "title": "No active product module",
+    "description": "The system baseline is preserved with authentication, session, web shell, and monorepo tooling ready for modular evolution."
+  },
+  "settings": {
+    "eyebrow": "Template module",
+    "title": "Settings",
+    "description": "Neutral module that validates the routable page pattern without coupling product rules to Core.",
+    "loading": "Loading settings...",
+    "error": "Could not load the template settings.",
+    "sections": {
+      "account": {
+        "label": "Account",
+        "description": "Account preferences placeholder."
+      },
+      "preferences": {
+        "label": "Preferences",
+        "description": "Interface options placeholder."
+      },
+      "system": {
+        "label": "System",
+        "description": "Template options placeholder."
+      }
+    }
+  },
+  "users": {
+    "eyebrow": "Template module",
+    "title": "Users",
+    "description": "Base module for viewing authenticated users without adding administration, roles, or permissions.",
+    "loading": "Loading users...",
+    "error": "Could not load users.",
+    "registered": "Registered users",
+    "count_one": "{{count}} user found.",
+    "count_other": "{{count}} users found."
+  },
+  "allowedEmails": {
+    "eyebrow": "Access baseline",
+    "title": "Allowed Emails",
+    "description": "Emails allowed to access the template, with basic registration and activation controls and no complete RBAC.",
+    "emailPlaceholder": "user@example.com",
+    "notePlaceholder": "Optional note",
+    "saving": "Saving...",
+    "add": "Add",
+    "saveError": "Could not save the email.",
+    "loading": "Loading emails...",
+    "loadError": "Could not load the email list.",
+    "registered": "Registered emails",
+    "count_one": "{{count}} email found.",
+    "count_other": "{{count}} emails found.",
+    "activate": "Activate",
+    "deactivate": "Deactivate"
+  },
+  "accessControl": {
+    "title": "Access Control",
+    "description": "Local roles and permission catalog for the Swiss Kit template.",
+    "loading": "Loading...",
+    "error": "Failed to load.",
+    "permissions": "Permissions",
+    "permissionsDescription": "Persisted permission catalog used by guards and modules.",
+    "permissionsCount_one": "{{count}} permission",
+    "permissionsCount_other": "{{count}} permissions",
+    "roles": "Roles",
+    "rolesDescription": "Persisted roles and their assigned permissions.",
+    "rolesCount_one": "{{count}} role",
+    "rolesCount_other": "{{count}} roles",
+    "catalog": {
+      "permissions": {
+        "core": {
+          "access": {
+            "label": "Access Core",
+            "description": "Allows access to the Core landing module."
+          }
+        },
+        "settings": {
+          "access": {
+            "label": "Access Settings",
+            "description": "Allows access to the Settings module."
+          }
+        },
+        "users": {
+          "access": {
+            "label": "Access Users",
+            "description": "Allows access to the Users module."
+          },
+          "read": {
+            "label": "Read Users",
+            "description": "Allows reading authenticated user profiles."
+          }
+        },
+        "allowed-emails": {
+          "access": {
+            "label": "Access Allowed Emails",
+            "description": "Allows access to the allowed emails module."
+          },
+          "read": {
+            "label": "Read Allowed Emails",
+            "description": "Allows reading allowed email entries."
+          },
+          "create": {
+            "label": "Create Allowed Emails",
+            "description": "Allows creating allowed email entries."
+          },
+          "update": {
+            "label": "Update Allowed Emails",
+            "description": "Allows enabling or disabling allowed email entries."
+          }
+        },
+        "access-control": {
+          "access": {
+            "label": "Access Control Module",
+            "description": "Allows access to the access-control module."
+          },
+          "read": {
+            "label": "Read Access Control",
+            "description": "Allows reading the permission catalog."
+          },
+          "manage": {
+            "label": "Manage Access Control",
+            "description": "Allows managing future roles and permission assignments."
+          }
+        },
+        "tasks": {
+          "access": {
+            "label": "Access Tasks",
+            "description": "Allows access to the example Tasks module."
+          },
+          "read": {
+            "label": "Read Tasks",
+            "description": "Allows reading example tasks."
+          }
+        }
+      },
+      "roles": {
+        "admin": {
+          "label": "Admin",
+          "description": "Full administrator role for the Swiss Kit template."
+        },
+        "member": {
+          "label": "Member",
+          "description": "Baseline authenticated member role for the Swiss Kit template."
+        }
+      }
+    },
+    "noPermissions": "No permissions assigned.",
+    "noRoles": "No roles found. Run the Prisma seed to create the baseline roles."
+  },
+  "tasks": {
+    "eyebrow": "Example module",
+    "title": "Tasks",
+    "description": "Reference module showing the template flow from shared contracts to API endpoint, web API client, hook, page, and module registry.",
+    "loading": "Loading tasks...",
+    "error": "Failed to load tasks.",
+    "noDescription": "No description.",
+    "items": {
+      "reviewTemplate": {
+        "title": "Review template structure",
+        "description": "Use this module as a copyable reference for new systems."
+      },
+      "addProductModule": {
+        "title": "Add a product-specific module",
+        "description": "Start with the scaffold and replace static data with real API behavior."
+      }
+    }
+  },
+  "notFound": {
+    "message": "Page not found",
+    "returnHome": "Return to Home"
+  },
+  "errorBoundary": {
+    "title": "Something went wrong in the interface",
+    "description": "Reload the page. If the error persists, check the frontend logs.",
+    "reload": "Reload application"
+  }
+}

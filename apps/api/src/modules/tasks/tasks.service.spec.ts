@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import type { TasksOverviewContract } from '@swisskit/contracts/tasks';
+import { TasksService } from './tasks.service';
 
-@Injectable()
-export class TasksService {
-  getOverview(): TasksOverviewContract {
-    return {
+describe('TasksService', () => {
+  it('returns stable translation keys for UI-facing task copy', () => {
+    const service = new TasksService();
+
+    expect(service.getOverview()).toEqual({
       module: 'tasks',
       status: 'available',
       tasks: [
@@ -21,6 +21,6 @@ export class TasksService {
           status: 'todo',
         },
       ],
-    };
-  }
-}
+    });
+  });
+});

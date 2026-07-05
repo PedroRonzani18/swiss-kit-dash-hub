@@ -1,36 +1,42 @@
 import { AppLayout } from "@/components/AppLayout";
 import { useSettingsOverview } from "@/features/settings";
+import { useTranslation } from "react-i18next";
 
 export function SettingsPage() {
   const settingsOverviewQuery = useSettingsOverview();
+  const { t } = useTranslation();
 
   return (
-    <AppLayout breadcrumbs={["SwissKit", "Settings"]}>
+    <AppLayout
+      breadcrumbs={[
+        t("common.brand"),
+        t("navigation.modules.settings.label"),
+      ]}
+    >
       <section className="mx-auto flex w-full max-w-5xl flex-col gap-8">
         <div className="space-y-3">
           <p className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
-            Template module
+            {t("settings.eyebrow")}
           </p>
           <div className="space-y-2">
             <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
-              Settings
+              {t("settings.title")}
             </h1>
             <p className="max-w-2xl text-sm leading-6 text-muted-foreground md:text-base">
-              Modulo neutro para validar o padrao de paginas roteaveis do
-              Swiss Kit sem acoplar regras de produto ao Core.
+              {t("settings.description")}
             </p>
           </div>
         </div>
 
         {settingsOverviewQuery.isLoading ? (
           <div className="rounded-2xl border border-border/70 bg-card/70 p-5 text-sm text-muted-foreground shadow-sm">
-            Carregando configuracoes...
+            {t("settings.loading")}
           </div>
         ) : null}
 
         {settingsOverviewQuery.isError ? (
           <div className="rounded-2xl border border-destructive/40 bg-destructive/10 p-5 text-sm text-destructive shadow-sm">
-            Nao foi possivel carregar as configuracoes do template.
+            {t("settings.error")}
           </div>
         ) : null}
 
@@ -42,10 +48,10 @@ export function SettingsPage() {
                 className="rounded-2xl border border-border/70 bg-card/70 p-5 shadow-sm"
               >
                 <h2 className="text-base font-semibold text-foreground">
-                  {section.label}
+                  {t(section.labelKey)}
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  {section.description}
+                  {t(section.descriptionKey)}
                 </p>
               </article>
             ))}

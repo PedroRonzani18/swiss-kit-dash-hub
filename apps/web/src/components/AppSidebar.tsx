@@ -15,10 +15,12 @@ import {
   SidebarFooter,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useTranslation } from "react-i18next";
 
 export function AppSidebar() {
   const { state, toggleSidebar } = useSidebar();
   const { permissions } = useAuth();
+  const { t } = useTranslation();
   const collapsed = state === "collapsed";
   const navigationModules = getNavigationModulesForUser(permissions);
 
@@ -36,7 +38,7 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Módulos</SidebarGroupLabel>
+          <SidebarGroupLabel>{t("navigation.modulesGroup")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navigationModules.map((module) => (
@@ -48,7 +50,7 @@ export function AppSidebar() {
                       activeClassName="bg-brand-soft text-brand-strong font-semibold shadow-business-sm"
                     >
                       <module.icon className="mr-2 h-4 w-4 shrink-0" />
-                      {!collapsed && <span>{module.label}</span>}
+                      {!collapsed && <span>{t(module.labelKey)}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -64,7 +66,7 @@ export function AppSidebar() {
             className="flex w-full items-center gap-2 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-subtle hover:text-foreground"
           >
             <ChevronLeft className="h-3 w-3" />
-            Recolher
+            {t("common.actions.collapseSidebar")}
           </button>
         )}
       </SidebarFooter>

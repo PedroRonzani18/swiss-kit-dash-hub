@@ -36,6 +36,8 @@ async function mockAuthenticatedSession(page: Page) {
       email: "core@example.com",
       name: "Core User",
       provider: "google",
+      permissions: ["core:access"],
+      roles: ["member"],
       avatarUrl: null,
       lastLoginAt: null,
       createdAt: "2026-01-01T00:00:00.000Z",
@@ -50,6 +52,14 @@ async function mockAuthenticatedSession(page: Page) {
 }
 
 test.describe("Smoke | Core shell", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      if (!window.localStorage.getItem("i18nextLng")) {
+        window.localStorage.setItem("i18nextLng", "pt-BR");
+      }
+    });
+  });
+
   test("redirects unauthenticated users to login", async ({ page }) => {
     const pageErrors: Error[] = [];
     page.on("pageerror", error => pageErrors.push(error));
@@ -78,9 +88,38 @@ test.describe("Smoke | Core shell", () => {
 
     await expect(page).toHaveURL(/\/app$/);
     await expect(
-      page.getByRole("heading", { name: "Nenhum modulo de produto ativo" }),
+      page.getByRole("heading", { name: "Nenhum módulo de produto ativo" }),
     ).toBeVisible();
     await expect(page.getByText("core@example.com")).toBeVisible();
+    expect(pageErrors).toEqual([]);
+  });
+
+  test("switches language and persists the selection after reload", async ({
+    page,
+  }) => {
+    const pageErrors: Error[] = [];
+    page.on("pageerror", error => pageErrors.push(error));
+
+    await mockAuthenticatedSession(page);
+    await page.goto("/app");
+
+    await page.getByRole("combobox", { name: "Idioma" }).selectOption("en");
+
+    await expect(
+      page.getByRole("heading", { name: "No active product module" }),
+    ).toBeVisible();
+    await expect
+      .poll(() => page.evaluate(() => window.localStorage.getItem("i18nextLng")))
+      .toBe("en");
+
+    await page.reload();
+
+    await expect(
+      page.getByRole("combobox", { name: "Language" }),
+    ).toHaveValue("en");
+    await expect(
+      page.getByRole("heading", { name: "No active product module" }),
+    ).toBeVisible();
     expect(pageErrors).toEqual([]);
   });
 
