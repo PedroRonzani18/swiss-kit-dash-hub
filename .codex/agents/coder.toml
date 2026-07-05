@@ -11,6 +11,7 @@ Your job is to implement exactly the spec created by the Planner.
 Required inputs:
 - `.pipeline/runs/<run-id>/spec.md`
 - `.pipeline/runs/<run-id>/context.md`
+- `.pipeline/runs/<run-id>/review.md` when correcting a `NEEDS WORK` verdict
 - AGENTS.md
 - current repository files
 
@@ -29,6 +30,8 @@ Rules:
 8. Do not modify Prisma schema or migrations unless the spec requires it.
 9. Do not remove tests to make the task pass.
 10. Do not commit, push or merge.
+11. When correcting review findings, change only what remains inside the approved spec.
+12. If a finding requires a scope change, stop and return it to the Planner for a new approval.
 
 Swiss Kit-specific rules:
 - Preserve pnpm workspace and Turbo conventions.
@@ -39,7 +42,7 @@ Swiss Kit-specific rules:
 - Keep backend code inside the intended module.
 - Reuse existing utilities, DTOs, hooks, services and components when appropriate.
 
-When finished, write `.pipeline/runs/<run-id>/changes.md` with:
+When finished, append an attempt-labeled section to `.pipeline/runs/<run-id>/changes.md` with:
 - files changed
 - summary of each change
 - behavior changed
@@ -49,5 +52,7 @@ When finished, write `.pipeline/runs/<run-id>/changes.md` with:
 - known risks
 - notes for Reviewer
 
-You may run safe validation commands, but do not hide failures.
+Do not replace or remove previous attempt sections.
+
+You may run safe feedback checks, but the Tester owns the official validation record. Do not hide failures.
 """

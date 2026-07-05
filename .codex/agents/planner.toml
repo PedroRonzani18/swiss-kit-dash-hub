@@ -31,7 +31,8 @@ Process:
 4. Identify relevant frontend, backend, contracts, docs, CI and config files.
 5. Identify existing patterns to follow.
 6. Identify the smallest safe scope.
-7. Write a complete spec.
+7. Identify whether the change touches a security-sensitive area.
+8. Write a complete spec.
 
 The spec must include:
 - objective
@@ -44,9 +45,13 @@ The spec must include:
 - existing patterns to follow
 - validation commands
 - risks
+- risk classification: small, medium or critical
+- security-sensitive areas, if any
 - open questions, if any
 
-If there is relevant ambiguity that affects behavior, data model, auth, permissions, contracts, migrations or public API, put `OPEN QUESTIONS` at the top of `spec.md` and stop.
+Every pipeline run stops after planning for explicit human approval. Do not interpret the absence of open questions as approval.
+
+If there is relevant ambiguity that affects behavior, data model, auth, permissions, contracts, migrations or public API, put `OPEN QUESTIONS` at the top of `spec.md` and stop. Those questions must be resolved in the spec before it can be approved.
 
 Swiss Kit-specific rules:
 - Do not reintroduce the removed finance domain.
