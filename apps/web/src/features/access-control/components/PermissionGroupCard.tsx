@@ -1,6 +1,5 @@
 import type { AccessControlOverviewContract } from "@swisskit/contracts/access-control";
 
-import { sortPermissionsForDisplay } from "../lib/access-control-view-model";
 import { PermissionRow } from "./PermissionRow";
 
 type PermissionGroup =
@@ -29,8 +28,6 @@ export function PermissionGroupCard({
   emptyPermissionsLabel,
   groupCountLabel,
 }: PermissionGroupCardProps) {
-  const permissions = sortPermissionsForDisplay(group.permissions);
-
   return (
     <section className="overflow-hidden rounded-lg border border-border/70 bg-surface-subtle/35">
       <div className="flex flex-col gap-2 border-b border-border/70 px-4 py-4 md:flex-row md:items-start md:justify-between md:px-5">
@@ -49,9 +46,9 @@ export function PermissionGroupCard({
         </span>
       </div>
 
-      {permissions.length ? (
+      {group.permissions.length ? (
         <div>
-          {permissions.map((permission) => (
+          {group.permissions.map((permission) => (
             <PermissionRow
               key={permission.id}
               permission={permission}

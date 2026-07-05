@@ -143,6 +143,25 @@
       "expandRolePermissions": "Mostrar permissões",
       "collapseRolePermissions": "Ocultar permissões"
     },
+    "filters": {
+      "permissionsSearchLabel": "Buscar permissões",
+      "permissionsSearchPlaceholder": "Busque por rótulo, descrição, chave, grupo ou ação",
+      "rolesSearchLabel": "Buscar papéis",
+      "rolesSearchPlaceholder": "Busque por rótulo, descrição, chave ou chave de permissão",
+      "actionLabel": "Ação",
+      "allActions": "Todas as ações",
+      "clear": "Limpar",
+      "noPermissionResults": "Nenhuma permissão corresponde aos filtros atuais.",
+      "noRoleResults": "Nenhum papel corresponde à busca atual.",
+      "actions": {
+        "access": "Acessar",
+        "read": "Ler",
+        "create": "Criar",
+        "update": "Atualizar",
+        "delete": "Excluir",
+        "manage": "Gerenciar"
+      }
+    },
     "permissions": "Permissões",
     "permissionsDescription": "Catálogo persistido de permissões usado por guards e módulos.",
     "permissionsCount_one": "{{count}} permissão",

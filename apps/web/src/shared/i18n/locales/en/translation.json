@@ -143,6 +143,25 @@
       "expandRolePermissions": "Show permissions",
       "collapseRolePermissions": "Hide permissions"
     },
+    "filters": {
+      "permissionsSearchLabel": "Search permissions",
+      "permissionsSearchPlaceholder": "Search by label, description, key, group or action",
+      "rolesSearchLabel": "Search roles",
+      "rolesSearchPlaceholder": "Search by label, description, key or permission key",
+      "actionLabel": "Action",
+      "allActions": "All actions",
+      "clear": "Clear",
+      "noPermissionResults": "No permissions matched the current filters.",
+      "noRoleResults": "No roles matched the current search.",
+      "actions": {
+        "access": "Access",
+        "read": "Read",
+        "create": "Create",
+        "update": "Update",
+        "delete": "Delete",
+        "manage": "Manage"
+      }
+    },
     "permissions": "Permissions",
     "permissionsDescription": "Persisted permission catalog used by guards and modules.",
     "permissionsCount_one": "{{count}} permission",

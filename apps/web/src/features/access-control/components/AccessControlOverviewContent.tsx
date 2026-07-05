@@ -1,10 +1,8 @@
 import type { AccessControlOverviewContract } from "@swisskit/contracts/access-control";
 import type { UseQueryResult } from "@tanstack/react-query";
 
-import { ShieldCheck } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { PageHeader } from "@/components/PageHeader";
 import { SectionCard } from "@/components/SectionCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -50,13 +48,6 @@ export function AccessControlOverviewContent({
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader
-        eyebrow={t("navigation.modules.accessControl.label")}
-        icon={ShieldCheck}
-        title={t("accessControl.title")}
-        description={t("accessControl.description")}
-      />
-
       {query.isLoading ? (
         <div className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -104,13 +95,28 @@ export function AccessControlOverviewContent({
                 getPermissionText={getPermissionText}
                 permissionsTitle={t("accessControl.permissions")}
                 permissionsDescription={t("accessControl.permissionsDescription")}
-                permissionsCountLabel={t("accessControl.permissionsCount", {
-                  count: query.data.permissions.length,
-                })}
+                permissionsCountLabel={(count) =>
+                  t("accessControl.permissionsCount", { count })
+                }
                 emptyGroupsLabel={t("accessControl.empty.permissionGroups")}
                 emptyPermissionsLabel={t("accessControl.noPermissions")}
+                noPermissionResultsLabel={t(
+                  "accessControl.filters.noPermissionResults",
+                )}
                 groupCountLabel={(count) =>
                   t("accessControl.groupCount", { count })
+                }
+                permissionsSearchLabel={t(
+                  "accessControl.filters.permissionsSearchLabel",
+                )}
+                permissionsSearchPlaceholder={t(
+                  "accessControl.filters.permissionsSearchPlaceholder",
+                )}
+                actionLabel={t("accessControl.filters.actionLabel")}
+                allActionsLabel={t("accessControl.filters.allActions")}
+                clearFiltersLabel={t("accessControl.filters.clear")}
+                actionOptionLabel={(action) =>
+                  t(`accessControl.filters.actions.${action}`)
                 }
               />
             </TabsContent>
@@ -121,10 +127,11 @@ export function AccessControlOverviewContent({
                 getRoleText={getRoleText}
                 rolesTitle={t("accessControl.roles")}
                 rolesDescription={t("accessControl.rolesDescription")}
-                rolesCountLabel={t("accessControl.rolesCount", {
-                  count: query.data.roles.length,
-                })}
+                rolesCountLabel={(count) =>
+                  t("accessControl.rolesCount", { count })
+                }
                 noRolesLabel={t("accessControl.noRoles")}
+                noRoleResultsLabel={t("accessControl.filters.noRoleResults")}
                 noPermissionsLabel={t("accessControl.noPermissions")}
                 permissionCountLabel={(count) =>
                   t("accessControl.groupCount", { count })
@@ -133,6 +140,11 @@ export function AccessControlOverviewContent({
                 collapseLabel={t(
                   "accessControl.actions.collapseRolePermissions",
                 )}
+                rolesSearchLabel={t("accessControl.filters.rolesSearchLabel")}
+                rolesSearchPlaceholder={t(
+                  "accessControl.filters.rolesSearchPlaceholder",
+                )}
+                clearFiltersLabel={t("accessControl.filters.clear")}
               />
             </TabsContent>
           </Tabs>
