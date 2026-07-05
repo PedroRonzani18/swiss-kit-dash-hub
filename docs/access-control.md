@@ -17,7 +17,8 @@ The current implementation is intentionally small:
 - Prisma seed synchronizes baseline permissions and system roles;
 - `/auth/me` returns effective `roles` and `permissions`;
 - frontend shell routes, sidebar and command palette filter modules by permissions;
-- backend endpoint enforcement is the next step.
+- backend endpoints can require permissions with `@RequirePermissions()`;
+- a global access guard enforces required permissions after JWT authentication.
 
 ## Permission keys
 
@@ -67,7 +68,7 @@ Effective permissions are resolved as:
 user direct permissions + permissions inherited from assigned roles
 ```
 
-`Permission.key` is the stable identifier used by code, contracts and future guards.
+`Permission.key` is the stable identifier used by code, contracts and guards.
 
 `Role.key` is the stable identifier for seeded roles such as `admin` or `member`.
 
@@ -105,7 +106,19 @@ The frontend uses effective permissions from `/auth/me` for UX-level filtering o
 module registry -> auth permissions -> visible routes/navigation
 ```
 
-Frontend filtering is not a security boundary. Backend guards must still enforce permission checks on protected endpoints.
+Frontend filtering is not a security boundary. Backend guards still enforce permission checks on protected endpoints.
+
+## Backend enforcement
+
+Use `@RequirePermissions()` on controllers or handlers:
+
+```ts
+@RequirePermissions('users:read')
+@Get()
+getOverview() {}
+```
+
+The global access guard allows routes with no required permissions. When permissions are required, the guard resolves direct user permissions plus role-inherited permissions and returns `403` if any required permission is missing.
 
 ## Migration notes
 
@@ -133,8 +146,8 @@ pnpm --filter api prisma:seed
 
 Recommended follow-up PRs:
 
-1. Add backend permission decorators and guards.
-2. Protect Core endpoints with `@RequirePermissions()`.
-3. Add role/user assignment management UI.
+1. Protect any remaining endpoints as modules evolve.
+2. Add role/user assignment management UI.
+3. Add tests around access checks.
 
 Do not add multi-tenant authorization, Redis-backed sessions or external policy engines to the Core baseline.
