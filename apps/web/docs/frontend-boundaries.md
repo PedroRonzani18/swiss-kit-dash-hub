@@ -9,7 +9,7 @@ The current frontend should behave as a neutral Core shell. Product-specific mod
 Recommended dependency flow:
 
 ```text
-app -> modules -> features -> shared
+app -> modules -> features -> api/contracts/shared
 ```
 
 Layer responsibilities:
@@ -17,6 +17,7 @@ Layer responsibilities:
 - `src/app` owns app-wide orchestration: routes, providers, shell wiring, module registration and navigation composition.
 - `src/modules/*` owns page-level module composition: route pages, module layouts and module-specific orchestration.
 - `src/features/*` owns reusable feature behavior: feature UI, hooks, services and data access that can be consumed by modules.
+- `src/api/*` owns endpoint-specific web API clients.
 - `src/components/*` owns generic reusable UI only.
 - `src/lib/*`, `src/auth/*` and other shared layers own cross-cutting utilities.
 
@@ -39,17 +40,19 @@ Current shell entrypoints:
 - `/` redirects by auth state.
 - `/login` is public-only.
 - `/app` is the protected neutral Core shell.
+- `/tasks` is an example module for template authors.
 - `*` falls through to the Not Found page.
 
-Module paths, navigation metadata, route components and future permission metadata are centralized in `src/app/navigation/modules.ts`.
+Module paths, navigation metadata, route components and permission metadata are centralized in `src/app/navigation/modules.ts`.
 
 When adding a module route:
 
-1. Add or update the module definition in `src/app/navigation/modules.ts`.
-2. Set `nav: true` only if it should appear in shell navigation and command palette.
-3. Keep the page component under `src/modules/<module>/pages`.
-4. Add `requiredPermissions` when access-control is implemented for the module.
-5. Keep reusable domain behavior under `src/features/<feature>` when it can be shared by more than one page.
+1. Start with `pnpm scaffold:module <module-id>` when creating a web module.
+2. Add or update the module definition in `src/app/navigation/modules.ts`.
+3. Set `nav: true` only if it should appear in shell navigation and command palette.
+4. Keep the page component under `src/modules/<module>/pages`.
+5. Add `requiredPermissions` when access-control is implemented for the module.
+6. Keep reusable domain behavior under `src/features/<feature>` when it can be shared by more than one page.
 
 ## Enforced lint guardrails
 
@@ -79,7 +82,7 @@ Before adding a new frontend module, answer:
 
 Because Swiss Kit is meant to become a reusable template:
 
-- Prefer neutral names such as `core`, `users`, `access-control`, `settings`, `files` and `notifications`.
+- Prefer neutral names such as `core`, `users`, `access-control`, `settings`, `files`, `notifications` and `tasks`.
 - Avoid client-specific, company-specific or product-specific names in the Core shell.
 - Do not copy a full product module from another system into the template baseline.
 - Treat product modules as optional presets unless they are required by the Core template.
