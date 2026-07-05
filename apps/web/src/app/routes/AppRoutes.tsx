@@ -1,14 +1,10 @@
 import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import {
   DEFAULT_MODULE_ROUTE,
-  MODULE_ROUTES,
+  PROTECTED_MODULE_ROUTES,
 } from "@/app/navigation/modules";
 import { useAuth } from "@/auth";
 import { LoginPage } from "@/modules/auth/pages/LoginPage";
-import { AccessListPage } from "@/modules/access-list/pages/AccessListPage";
-import { CoreAppPage } from "@/modules/core/pages/CoreAppPage";
-import { SettingsPage } from "@/modules/settings/pages/SettingsPage";
-import { UsersPage } from "@/modules/users/pages/UsersPage";
 import NotFound from "@/pages/NotFound";
 
 const LOGIN_ROUTE = "/login";
@@ -89,10 +85,17 @@ export function AppRoutes() {
       </Route>
 
       <Route element={<ProtectedAppRoutes />}>
-        <Route path={MODULE_ROUTES.core} element={<CoreAppPage />} />
-        <Route path={MODULE_ROUTES.settings} element={<SettingsPage />} />
-        <Route path={MODULE_ROUTES.users} element={<UsersPage />} />
-        <Route path={MODULE_ROUTES.accessList} element={<AccessListPage />} />
+        {PROTECTED_MODULE_ROUTES.map((module) => {
+          const ModuleComponent = module.component;
+
+          return (
+            <Route
+              key={module.id}
+              path={module.path}
+              element={<ModuleComponent />}
+            />
+          );
+        })}
       </Route>
 
       <Route path="*" element={<NotFound />} />
