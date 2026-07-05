@@ -24,10 +24,7 @@ describe('Auth integration', () => {
   });
 
   it('denies access to protected routes without authentication', async () => {
-    const protectedRoutes = [
-      '/api/auth/me',
-      '/api/core/session-check',
-    ];
+    const protectedRoutes = ['/api/auth/me', '/api/core/session-check'];
 
     for (const route of protectedRoutes) {
       await request(app.getHttpServer()).get(route).expect(401);
@@ -51,7 +48,9 @@ describe('Auth integration', () => {
   });
 
   it('returns authenticated status on GET /api/core/session-check', async () => {
-    const authUser = await createAuthenticatedTestUser(app, prisma);
+    const authUser = await createAuthenticatedTestUser(app, prisma, {
+      permissions: ['core:access'],
+    });
 
     const response = await request(app.getHttpServer())
       .get('/api/core/session-check')

@@ -30,3 +30,4 @@ dist-ssr
 *.sw?
 
 .env
+apps/api/test/setup/.runtime-test-env.json

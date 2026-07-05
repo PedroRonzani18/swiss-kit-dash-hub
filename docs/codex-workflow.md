@@ -75,13 +75,13 @@ pnpm test:web
 ```bash
 pnpm lint:api
 pnpm typecheck:api
-pnpm test:api
+TEST_DATABASE_URL='postgresql://postgres:postgres@localhost:5432/swisskit?schema=swisskit_test' pnpm test:api
 ```
 
 ```bash
-pnpm lint:ci
-pnpm typecheck
-pnpm test:ci
+pnpm lint:ci &&
+pnpm typecheck &&
+TEST_DATABASE_URL='postgresql://postgres:postgres@localhost:5432/swisskit?schema=swisskit_test' pnpm test:ci &&
 pnpm build:ci
 ```
 

@@ -7,22 +7,11 @@ import {
   RUNTIME_ENV_PATH,
   RuntimeTestEnv,
 } from './test-env.constants';
-
-function resolveBaseDatabaseUrl(): string {
-  return (
-    process.env.TEST_DATABASE_URL ??
-    process.env.DATABASE_URL ??
-    'postgresql://postgres:postgres@localhost:5432/swisskit'
-  );
-}
+import { resolveTestDatabaseUrl } from './test-database-url';
 
 function buildRuntimeEnv(): RuntimeTestEnv {
-  const baseDatabaseUrl = resolveBaseDatabaseUrl();
-  const databaseUrl = new URL(baseDatabaseUrl);
-  databaseUrl.searchParams.delete('schema');
-
   return {
-    DATABASE_URL: databaseUrl.toString(),
+    DATABASE_URL: resolveTestDatabaseUrl(process.env.TEST_DATABASE_URL),
   };
 }
 

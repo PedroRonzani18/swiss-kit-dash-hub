@@ -22,6 +22,7 @@ Arquivo base: `apps/api/.env.example`
 | `NODE_ENV` | Não | default: `development` | usar `production` | Ambiente da aplicação. |
 | `PORT` | Não | default: `3001` | definido pelo provider/plataforma | Porta HTTP da API. |
 | `DATABASE_URL` | Condicional | necessária para recursos com banco | obrigatória para operação completa | String de conexão PostgreSQL usada pelo Prisma. |
+| `TEST_DATABASE_URL` | Não | default: `postgresql://postgres:postgres@localhost:5432/swisskit?schema=swisskit_test` | não usada em produção | String PostgreSQL exclusiva dos testes de integração. Deve informar um schema seguro diferente de `public`. |
 | `WEB_APP_URL` | Não | default: `http://localhost:8080` | obrigatória na prática | URL da aplicação web (origem de confiança para OAuth e redirecionamentos). |
 | `CORS_ALLOWED_ORIGINS` | Não | default: valor de `WEB_APP_URL` | obrigatória na prática | Lista de origens permitidas para CORS (separada por vírgula). |
 | `AUTH_COOKIE_NAME` | Não | default: `swisskit_auth` | recomendado manter explícita | Nome do cookie de autenticação. |
@@ -38,7 +39,14 @@ Arquivo base: `apps/api/.env.example`
 - `AUTH_COOKIE_SAME_SITE=none` exige `AUTH_COOKIE_SECURE=true`.
 - `CORS_ALLOWED_ORIGINS` deve incluir exatamente as origens que consomem a API.
 - `GOOGLE_CALLBACK_URL` precisa casar com a URL registrada no Google Cloud.
+- Os testes da API nunca usam `DATABASE_URL` como fallback. `TEST_DATABASE_URL` deve usar PostgreSQL e um schema não público com nome seguro.
 - A baseline Prisma atual é Core (`User`, `AllowedEmail`, `AuthProvider`).
+
+Para executar os testes de integração no PostgreSQL local:
+
+```bash
+TEST_DATABASE_URL='postgresql://postgres:postgres@localhost:5432/swisskit?schema=swisskit_test' pnpm test:api
+```
 
 ## Guia rápido: dev vs produção
 
