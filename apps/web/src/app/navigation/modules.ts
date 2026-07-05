@@ -4,6 +4,7 @@ import type {
   PermissionKeyContract,
 } from "@swisskit/contracts";
 import {
+  ClipboardList,
   Home,
   KeyRound,
   Settings,
@@ -15,6 +16,7 @@ import { AccessListPage } from "@/modules/access-list/pages/AccessListPage";
 import { AccessControlPage } from "@/modules/access-control/pages/AccessControlPage";
 import { CoreAppPage } from "@/modules/core/pages/CoreAppPage";
 import { SettingsPage } from "@/modules/settings/pages/SettingsPage";
+import { TasksPage } from "@/modules/tasks/pages/TasksPage";
 import { UsersPage } from "@/modules/users/pages/UsersPage";
 
 export const MODULE_ROUTES = {
@@ -23,6 +25,7 @@ export const MODULE_ROUTES = {
   users: "/users",
   allowedEmails: "/allowed-emails",
   accessControl: "/access-control",
+  tasks: "/tasks",
 } as const;
 
 export type ModuleRouteKey = keyof typeof MODULE_ROUTES;
@@ -97,6 +100,18 @@ export const APP_MODULES: ShellModuleDefinition[] = [
     status: "available",
     requiredPermissions: ["access-control:access"],
     description: "Catalogo local de permissoes do template.",
+  },
+  {
+    id: "tasks",
+    routeKey: "tasks",
+    label: "Tasks",
+    path: MODULE_ROUTES.tasks,
+    icon: ClipboardList,
+    component: TasksPage,
+    nav: true,
+    status: "available",
+    requiredPermissions: ["tasks:access"],
+    description: "Modulo exemplo para copiar ao criar novas features.",
   },
 ];
 
