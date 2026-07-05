@@ -4,30 +4,21 @@
 
 This document defines the recommended workflow for using Codex in Swiss Kit.
 
-The goal is to reduce drift, avoid oversized changes and make each task easier to review.
-
-## Default flow
-
-Use four roles:
+The canonical flow is:
 
 ```text
-Planner -> Implementer -> Reviewer -> Tester
+Planner -> Coder -> Reviewer -> Tester
 ```
 
-For small tasks, one Codex run may perform more than one role, but it should still follow the responsibilities below.
+Use `Coder` for implementation work. Do not create a separate Implementer role.
 
 ## Planner
 
 The Planner turns a request into a repository-grounded spec.
 
-The Planner reads:
+It reads the root instructions, scoped instructions, relevant docs, current source files and package scripts.
 
-- root `AGENTS.md`;
-- scoped `AGENTS.md` files for touched areas;
-- relevant docs;
-- current source files and package scripts.
-
-The Planner writes:
+It writes:
 
 ```text
 .pipeline/runs/<run-id>/request.md
@@ -35,34 +26,15 @@ The Planner writes:
 .pipeline/runs/<run-id>/spec.md
 ```
 
-The spec must include:
+The spec should cover objective, scope, likely files, public contracts, acceptance criteria, edge cases, existing patterns, validation commands, risks and open questions.
 
-- objective;
-- in scope;
-- out of scope;
-- likely files to change;
-- public contracts affected;
-- acceptance criteria;
-- edge cases;
-- existing patterns to follow;
-- validation commands;
-- risks;
-- open questions, if any.
+If open questions affect auth, permissions, contracts, migrations or public API, planning stops before coding.
 
-If open questions affect auth, permissions, contracts, migrations or public API, the Planner must stop before coding.
+## Coder
 
-## Implementer
+The Coder applies an approved spec.
 
-The Implementer applies an approved spec.
-
-The Implementer must:
-
-- follow the spec exactly;
-- keep unrelated files untouched;
-- prefer existing patterns;
-- avoid new dependencies unless explicitly justified;
-- update docs when architecture, commands, setup or contracts change;
-- record changes when using pipeline artifacts.
+It follows the spec exactly, keeps unrelated files untouched, prefers existing patterns, avoids unjustified dependencies, updates docs when architecture changes and records implementation notes when using pipeline artifacts.
 
 Suggested output:
 
@@ -74,15 +46,7 @@ Suggested output:
 
 The Reviewer is read-only.
 
-The Reviewer checks:
-
-- whether implementation matches the spec;
-- whether scope expanded silently;
-- whether frontend boundaries were respected;
-- whether backend boundaries were respected;
-- whether contracts stayed compatible;
-- whether auth, permissions, validation or type safety were weakened;
-- whether product-specific naming leaked into Core.
+It checks scope, architecture boundaries, contract compatibility, auth/permission risk, validation quality and template safety.
 
 Suggested output:
 
@@ -100,9 +64,7 @@ Suggested output:
 .pipeline/runs/<run-id>/test-results.md
 ```
 
-Validation should start narrow and expand when needed.
-
-Examples:
+Validation examples:
 
 ```bash
 pnpm lint:web
@@ -133,27 +95,8 @@ Never claim a command passed unless it actually ran.
 - Do not mark work complete without validation or a clear reason validation could not run.
 - Keep pipeline files out of production behavior.
 
-## Recommended task sizing
-
-Prefer small PRs:
-
-- one architecture/governance change;
-- one module scaffold change;
-- one access-control step;
-- one dependency upgrade;
-- one contract migration.
-
-Avoid combining dependency upgrades with architecture refactors.
-
 ## PR handoff checklist
 
-A good PR description should include:
-
-- summary;
-- changed files or areas;
-- what is intentionally out of scope;
-- validation performed;
-- validation not performed and why;
-- follow-up PRs.
+A good PR description should include summary, changed areas, out-of-scope notes, validation performed, validation not performed and follow-up PRs.
 
 For docs-only changes, say that runtime validation was not run if no commands were executed.
