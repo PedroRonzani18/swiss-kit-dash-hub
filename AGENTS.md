@@ -15,43 +15,37 @@ The repository uses:
 
 The current goal is to preserve the Core baseline and gradually evolve it into a template that can be reused to bootstrap other systems.
 
-## Current architecture
+## Codex operating model
 
-### Monorepo
+This repository is optimized for Codex-driven development. Treat these instructions as the source of truth before planning, editing, reviewing or testing.
 
-Root workspaces:
+Required reading before any task:
 
-- `apps/*`
-- `packages/*`
+1. Read this root `AGENTS.md`.
+2. Read the nearest scoped `AGENTS.md` for every area you will touch.
+3. Read relevant architecture or boundary docs before changing structure.
+4. Read existing code patterns before adding new abstractions.
 
-### Frontend
+Scoped instruction files:
 
-Path: `apps/web`
+- `apps/web/AGENTS.md` for frontend work.
+- `apps/api/AGENTS.md` for backend work.
+- `packages/contracts/AGENTS.md` for shared contracts.
+- `docs/AGENTS.md` for documentation changes.
+
+When instructions conflict, follow the most specific applicable file, unless it violates this root file.
+
+## Architecture boundaries
+
+Frontend path: `apps/web`.
 
 Expected layering:
 
 ```text
-src/app
-  -> routes, providers, app shell
-
-src/modules/*
-  -> pages and module-level composition
-
-src/features/*
-  -> domain behavior and feature UI
-
-src/components
-  -> reusable UI and layout
-
-src/shared
-  -> HTTP, query, utilities, auth helpers and cross-cutting code
+src/app -> src/modules -> src/features -> src/shared
 ```
 
-Do not bypass existing frontend boundaries unless the task explicitly asks for a structural refactor.
-
-### Backend
-
-Path: `apps/api`
+Backend path: `apps/api`.
 
 Expected backend style:
 
@@ -59,78 +53,9 @@ Expected backend style:
 controller -> service -> repository/prisma
 ```
 
-Keep modules focused. Do not introduce enterprise features such as multi-tenant, Redis, S3, email, permissions or i18n unless the task explicitly asks for that.
-
-### Contracts
-
-Path: `packages/contracts`
+Contracts path: `packages/contracts`.
 
 Shared contracts should remain generic and template-friendly.
-
-- Do not introduce product-specific or client-specific naming into shared contracts.
-- Validate API responses on the frontend when appropriate.
-- Preserve frontend/backend compatibility unless the task explicitly asks for a breaking change.
-
-## Commands
-
-Use pnpm from the repository root.
-
-### Root commands
-
-- Install: `pnpm install`
-- Dev all: `pnpm dev`
-- Build all: `pnpm build`
-- Build CI: `pnpm build:ci`
-- Lint all: `pnpm lint`
-- Lint CI: `pnpm lint:ci`
-- Test all: `pnpm test`
-- Test CI: `pnpm test:ci`
-- Typecheck all: `pnpm typecheck`
-
-### Filtered commands
-
-- Dev web: `pnpm dev:web`
-- Dev api: `pnpm dev:api`
-- Build web: `pnpm build:web`
-- Build api: `pnpm build:api`
-- Lint web: `pnpm lint:web`
-- Lint api: `pnpm lint:api`
-- Test web: `pnpm test:web`
-- Test web E2E: `pnpm test:web:e2e`
-- Test api: `pnpm test:api`
-- Typecheck web: `pnpm typecheck:web`
-- Typecheck api: `pnpm typecheck:api`
-
-### Validation preference
-
-For narrow changes, run the most specific relevant command first.
-
-For larger changes, prefer:
-
-1. `pnpm lint:ci`
-2. `pnpm typecheck`
-3. `pnpm test:ci`
-4. `pnpm build:ci`
-
-For frontend E2E changes, also run `pnpm test:web:e2e` when applicable.
-
-If a command cannot run because of the local environment, record exactly why.
-
-## General rules
-
-- Never commit unless explicitly asked.
-- Never merge unless explicitly asked.
-- Never push unless explicitly asked.
-- Never alter files outside the task scope.
-- Prefer small, localized and reversible changes.
-- Do not refactor unrelated code.
-- Do not introduce new dependencies without justification.
-- Do not invent business rules.
-- Do not reintroduce removed finance-domain behavior.
-- Do not turn this Core template into a product-specific application.
-- Preserve API compatibility unless the task explicitly asks for a breaking change.
-- Preserve shared contracts unless a contract change is part of the spec.
-- When unsure about a domain rule, stop and document the question.
 
 ## Swiss Kit template direction
 
@@ -146,9 +71,121 @@ Prefer generic names such as:
 - `files`
 - `notifications`
 
-Avoid product-specific names unless the task is explicitly creating an example module.
+Do not copy Oppem systems wholesale. Use them as references for patterns, governance and optional ideas, not as the architecture source of truth.
 
-Do not copy Oppem systems wholesale. Use them as references for patterns and optional presets, not as the architecture source of truth.
+Recommended template shape:
+
+```text
+Swiss Kit Core
+  auth Google + HttpOnly cookie
+  users baseline
+  settings baseline
+  health checks
+  shared contracts
+  web shell
+  module registry
+  local access-control
+  module scaffold
+  CI and validation
+  Codex governance
+```
+
+Avoid turning Core into a mandatory enterprise product with multi-tenant isolation, Redis sessions, S3, email, i18n or customer-specific structure.
+
+## Codex agent roles
+
+Use this default flow:
+
+```text
+Planner -> Coder -> Reviewer -> Tester
+```
+
+### Planner
+
+The Planner turns a request into a repository-grounded implementation spec.
+
+The Planner must inspect current repo state, read applicable docs, identify the smallest safe scope and write pipeline planning artifacts.
+
+The Planner must not implement production code, write tests, refactor or modify files outside `.pipeline/runs/<run-id>/`.
+
+### Coder
+
+The Coder applies an approved spec with minimal scope.
+
+The Coder must follow the spec exactly, keep unrelated files untouched, prefer existing patterns and record implementation notes in `.pipeline/runs/<run-id>/changes.md` when using the pipeline.
+
+The Coder must not invent business rules, expand scope silently, add dependencies without justification or change migrations, auth, permissions or contracts without explicit scope.
+
+### Reviewer
+
+The Reviewer performs a read-only review.
+
+The Reviewer checks scope adherence, frontend/backend/contracts boundaries, auth and authorization risk, template safety, product-specific leakage and missing validation notes.
+
+The Reviewer must not modify files.
+
+### Tester
+
+The Tester validates the change and records what ran.
+
+The Tester must run the narrowest relevant commands first, capture failures honestly and write `.pipeline/runs/<run-id>/test-results.md` when using the pipeline.
+
+The Tester must not hide failures or claim validation that did not run.
+
+## Commands
+
+Use pnpm from the repository root.
+
+Root commands:
+
+- Install: `pnpm install`
+- Dev all: `pnpm dev`
+- Build all: `pnpm build`
+- Build CI: `pnpm build:ci`
+- Lint all: `pnpm lint`
+- Lint CI: `pnpm lint:ci`
+- Test all: `pnpm test`
+- Test CI: `pnpm test:ci`
+- Typecheck all: `pnpm typecheck`
+
+Filtered commands:
+
+- Dev web: `pnpm dev:web`
+- Dev api: `pnpm dev:api`
+- Build web: `pnpm build:web`
+- Build api: `pnpm build:api`
+- Lint web: `pnpm lint:web`
+- Lint api: `pnpm lint:api`
+- Test web: `pnpm test:web`
+- Test web E2E: `pnpm test:web:e2e`
+- Test api: `pnpm test:api`
+- Typecheck web: `pnpm typecheck:web`
+- Typecheck api: `pnpm typecheck:api`
+
+For larger changes, prefer:
+
+1. `pnpm lint:ci`
+2. `pnpm typecheck`
+3. `pnpm test:ci`
+4. `pnpm build:ci`
+
+For documentation-only changes, validation may be limited to a read-through and link/path checks. If commands are not run, state that clearly in the PR.
+
+## General rules
+
+- Never merge unless explicitly asked.
+- Never alter files outside the task scope.
+- Prefer small, localized and reversible changes.
+- Do not refactor unrelated code.
+- Do not introduce new dependencies without justification.
+- Do not invent business rules.
+- Do not reintroduce removed finance-domain behavior.
+- Do not turn this Core template into a product-specific application.
+- Preserve API compatibility unless the task explicitly asks for a breaking change.
+- Preserve shared contracts unless a contract change is part of the spec.
+- When unsure about a domain rule, stop and document the question.
+
+Creating branches, commits or pull requests is allowed only when the user explicitly asks for it. Merging requires a separate explicit request.
 
 ## Sensitive areas
 
@@ -156,6 +193,8 @@ Treat changes as high risk when they touch:
 
 - authentication
 - authorization
+- access-control
+- permission checks
 - JWT
 - cookies
 - CORS
@@ -198,40 +237,12 @@ Rules:
 
 ## Planning standards
 
-A good spec must include:
-
-- objective
-- in scope
-- out of scope
-- files likely to change
-- contracts or public interfaces affected
-- acceptance criteria
-- edge cases
-- relevant commands
-- risks
-- open questions, if any
+A good spec must include objective, scope, likely files to change, public interfaces affected, acceptance criteria, edge cases, relevant commands, risks and open questions.
 
 ## Implementation standards
 
-The implementation must:
-
-- follow the spec exactly
-- keep unrelated files untouched
-- use existing patterns before creating new abstractions
-- update tests when behavior changes
-- update docs when architecture, commands or setup change
-- explain any dependency, contract or schema change
+The implementation must follow the spec, keep unrelated files untouched, use existing patterns before new abstractions, update tests when behavior changes and update docs when architecture, commands or setup change.
 
 ## Review standards
 
-A change is not ready if:
-
-- it does not implement the spec
-- it changes behavior outside scope
-- tests are superficial or missing
-- it weakens auth, validation or type safety
-- it adds product-specific naming to the template core
-- it breaks frontend/backend contracts
-- it bypasses existing layering
-- it modifies migrations or schema without justification
-- it cannot be validated and the limitation is not clearly documented
+A change is not ready if it changes behavior outside scope, weakens auth/validation/type safety, adds product-specific naming to the template core, breaks contracts, bypasses layering, modifies migrations without justification or cannot be validated clearly.
