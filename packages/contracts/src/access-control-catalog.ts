@@ -13,6 +13,8 @@ export const CORE_PERMISSION_KEYS = [
   'access-control:access',
   'access-control:read',
   'access-control:manage',
+  'tasks:access',
+  'tasks:read',
 ] as const;
 
 export const CorePermissionKeySchema = z.enum(CORE_PERMISSION_KEYS);
@@ -105,6 +107,22 @@ export const ACCESS_CONTROL_CORE_PERMISSIONS = [
     action: 'manage',
     label: 'Manage Access Control',
     description: 'Allows managing future roles and permission assignments.',
+  },
+  {
+    id: 'tasks.access',
+    key: 'tasks:access',
+    moduleId: 'tasks',
+    action: 'access',
+    label: 'Access Tasks',
+    description: 'Allows access to the example Tasks module.',
+  },
+  {
+    id: 'tasks.read',
+    key: 'tasks:read',
+    moduleId: 'tasks',
+    action: 'read',
+    label: 'Read Tasks',
+    description: 'Allows reading example tasks.',
   },
 ] as const satisfies readonly PermissionContract[];
 
