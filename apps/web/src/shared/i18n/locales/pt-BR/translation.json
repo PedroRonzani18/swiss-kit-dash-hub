@@ -129,6 +129,20 @@
     "description": "Papéis locais e catálogo de permissões do template Swiss Kit.",
     "loading": "Carregando...",
     "error": "Não foi possível carregar.",
+    "summary": {
+      "permissions": "Total de permissões",
+      "roles": "Total de papéis",
+      "groups": "Total de grupos",
+      "managePermissions": "Permissões de gestão"
+    },
+    "tabs": {
+      "permissions": "Permissões",
+      "roles": "Papéis"
+    },
+    "actions": {
+      "expandRolePermissions": "Mostrar permissões",
+      "collapseRolePermissions": "Ocultar permissões"
+    },
     "permissions": "Permissões",
     "permissionsDescription": "Catálogo persistido de permissões usado por guards e módulos.",
     "permissionsCount_one": "{{count}} permissão",
@@ -266,6 +280,9 @@
           "description": "Visualiza o módulo de exemplo de tarefas."
         }
       }
+    },
+    "empty": {
+      "permissionGroups": "Nenhum grupo de permissões encontrado."
     },
     "noPermissions": "Nenhuma permissão atribuída.",
     "noRoles": "Nenhum papel encontrado. Execute o seed do Prisma para criar os papéis básicos."

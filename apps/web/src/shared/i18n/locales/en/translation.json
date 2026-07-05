@@ -129,6 +129,20 @@
     "description": "Local roles and permission catalog for the Swiss Kit template.",
     "loading": "Loading...",
     "error": "Failed to load.",
+    "summary": {
+      "permissions": "Total permissions",
+      "roles": "Total roles",
+      "groups": "Total groups",
+      "managePermissions": "Manage permissions"
+    },
+    "tabs": {
+      "permissions": "Permissions",
+      "roles": "Roles"
+    },
+    "actions": {
+      "expandRolePermissions": "Show permissions",
+      "collapseRolePermissions": "Hide permissions"
+    },
     "permissions": "Permissions",
     "permissionsDescription": "Persisted permission catalog used by guards and modules.",
     "permissionsCount_one": "{{count}} permission",
@@ -266,6 +280,9 @@
           "description": "Views the example tasks module."
         }
       }
+    },
+    "empty": {
+      "permissionGroups": "No permission groups found."
     },
     "noPermissions": "No permissions assigned.",
     "noRoles": "No roles found. Run the Prisma seed to create the baseline roles."
