@@ -133,11 +133,39 @@
     "permissionsDescription": "Catálogo persistido de permissões usado por guards e módulos.",
     "permissionsCount_one": "{{count}} permissão",
     "permissionsCount_other": "{{count}} permissões",
+    "groupCount_one": "{{count}} permissão",
+    "groupCount_other": "{{count}} permissões",
     "roles": "Papéis",
     "rolesDescription": "Papéis persistidos e suas permissões atribuídas.",
     "rolesCount_one": "{{count}} papel",
     "rolesCount_other": "{{count}} papéis",
     "catalog": {
+      "groups": {
+        "core": {
+          "label": "Core",
+          "description": "Acesso ao shell do Core e pontos de entrada autenticados básicos."
+        },
+        "settings": {
+          "label": "Configurações",
+          "description": "Visibilidade das configurações do template."
+        },
+        "users": {
+          "label": "Usuários",
+          "description": "Visibilidade do diretório e perfis de usuários autenticados."
+        },
+        "allowed-emails": {
+          "label": "E-mails permitidos",
+          "description": "Administração da lista de e-mails permitidos."
+        },
+        "access-control": {
+          "label": "Controle de acesso",
+          "description": "Visão de papéis, permissões e acesso."
+        },
+        "tasks": {
+          "label": "Tarefas",
+          "description": "Visibilidade do módulo de exemplo de tarefas."
+        }
+      },
       "permissions": {
         "core": {
           "access": {
@@ -212,6 +240,30 @@
         "member": {
           "label": "Membro",
           "description": "Papel básico para membros autenticados do template Swiss Kit."
+        },
+        "allowed-emails-manager": {
+          "label": "Gestor de e-mails permitidos",
+          "description": "Gerencia entradas de e-mails permitidos para o onboarding de acesso do template."
+        },
+        "allowed-emails-viewer": {
+          "label": "Leitor de e-mails permitidos",
+          "description": "Visualiza entradas de e-mails permitidos sem alterá-las."
+        },
+        "users-manager": {
+          "label": "Gestor de usuários",
+          "description": "Papel do template para visibilidade de usuários e futuras operações de gestão."
+        },
+        "users-viewer": {
+          "label": "Leitor de usuários",
+          "description": "Visualiza perfis de usuários autenticados."
+        },
+        "access-control-manager": {
+          "label": "Gestor de controle de acesso",
+          "description": "Visualiza o catálogo de controle de acesso e futuras superfícies de gestão."
+        },
+        "tasks-viewer": {
+          "label": "Leitor de tarefas",
+          "description": "Visualiza o módulo de exemplo de tarefas."
         }
       }
     },
