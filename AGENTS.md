@@ -150,6 +150,19 @@ The Reviewer must not modify implementation, tests or configuration. When using 
 
 Use pnpm from the repository root.
 
+For noisy read-heavy shell work, prefer `rtk` wrappers when the exact raw output is not required. This applies especially to repository inspection, search, diff, lint, typecheck, test and build commands.
+
+Examples:
+
+- `rtk git status`
+- `rtk git diff --stat`
+- `rtk rg "pattern" .`
+- `rtk find .`
+- `rtk pnpm lint`
+- `rtk pnpm typecheck`
+- `rtk pnpm test`
+- `rtk pnpm build`
+
 Root commands:
 
 - Install: `pnpm install`
