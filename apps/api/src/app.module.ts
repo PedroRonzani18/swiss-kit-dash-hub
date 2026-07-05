@@ -12,6 +12,7 @@ import { SettingsModule } from './modules/settings/settings.module';
 import { UsersModule } from './modules/users/users.module';
 import { AccessRegistryModule } from './modules/access-list/access-list.module';
 import { AccessControlModule } from './modules/access-control/access-control.module';
+import { TasksModule } from './modules/tasks/tasks.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { AccessControlModule } from './modules/access-control/access-control.mod
     UsersModule,
     AccessRegistryModule,
     AccessControlModule,
+    TasksModule,
     HealthModule,
   ],
   providers: [
