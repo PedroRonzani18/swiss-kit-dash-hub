@@ -11,7 +11,7 @@ The goal is to reduce drift, avoid oversized changes and make each task easier t
 Use four roles:
 
 ```text
-Planner -> Implementer -> Reviewer -> Tester
+Planner -> Coder -> Reviewer -> Tester
 ```
 
 For small tasks, one Codex run may perform more than one role, but it should still follow the responsibilities below.
@@ -20,12 +20,7 @@ For small tasks, one Codex run may perform more than one role, but it should sti
 
 The Planner turns a request into a repository-grounded spec.
 
-The Planner reads:
-
-- root `AGENTS.md`;
-- scoped `AGENTS.md` files for touched areas;
-- relevant docs;
-- current source files and package scripts.
+The Planner reads root `AGENTS.md`, scoped `AGENTS.md` files, relevant docs, current source files and package scripts.
 
 The Planner writes:
 
@@ -35,34 +30,15 @@ The Planner writes:
 .pipeline/runs/<run-id>/spec.md
 ```
 
-The spec must include:
+The spec must include objective, scope, likely files, public contracts affected, acceptance criteria, edge cases, existing patterns, validation commands, risks and open questions.
 
-- objective;
-- in scope;
-- out of scope;
-- likely files to change;
-- public contracts affected;
-- acceptance criteria;
-- edge cases;
-- existing patterns to follow;
-- validation commands;
-- risks;
-- open questions, if any.
+If open questions affect auth, permissions, contracts, migrations or public API, the Planner stops before coding.
 
-If open questions affect auth, permissions, contracts, migrations or public API, the Planner must stop before coding.
+## Coder
 
-## Implementer
+The Coder applies an approved spec.
 
-The Implementer applies an approved spec.
-
-The Implementer must:
-
-- follow the spec exactly;
-- keep unrelated files untouched;
-- prefer existing patterns;
-- avoid new dependencies unless explicitly justified;
-- update docs when architecture, commands, setup or contracts change;
-- record changes when using pipeline artifacts.
+The Coder must follow the spec exactly, keep unrelated files untouched, prefer existing patterns, avoid unjustified dependencies, update docs when architecture changes and record implementation notes when using pipeline artifacts.
 
 Suggested output:
 
@@ -74,15 +50,7 @@ Suggested output:
 
 The Reviewer is read-only.
 
-The Reviewer checks:
-
-- whether implementation matches the spec;
-- whether scope expanded silently;
-- whether frontend boundaries were respected;
-- whether backend boundaries were respected;
-- whether contracts stayed compatible;
-- whether auth, permissions, validation or type safety were weakened;
-- whether product-specific naming leaked into Core.
+The Reviewer checks scope, architecture boundaries, contract compatibility, auth/permission risk, validation quality and template safety.
 
 Suggested output:
 
@@ -102,7 +70,7 @@ Suggested output:
 
 Validation should start narrow and expand when needed.
 
-Examples:
+Frontend examples:
 
 ```bash
 pnpm lint:web
@@ -110,11 +78,15 @@ pnpm typecheck:web
 pnpm test:web
 ```
 
+API examples:
+
 ```bash
 pnpm lint:api
 pnpm typecheck:api
 pnpm test:api
 ```
+
+Cross-workspace examples:
 
 ```bash
 pnpm lint:ci
@@ -147,13 +119,6 @@ Avoid combining dependency upgrades with architecture refactors.
 
 ## PR handoff checklist
 
-A good PR description should include:
-
-- summary;
-- changed files or areas;
-- what is intentionally out of scope;
-- validation performed;
-- validation not performed and why;
-- follow-up PRs.
+A good PR description should include summary, changed areas, out-of-scope notes, validation performed, validation not performed and follow-up PRs.
 
 For docs-only changes, say that runtime validation was not run if no commands were executed.
