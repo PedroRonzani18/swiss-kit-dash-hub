@@ -44,10 +44,37 @@ export async function createAuthenticatedTestUser(
       throw new Error(`Unknown test permission: ${permissionKey}`);
     }
 
+    const groupDefinition = permissionDefinition.group;
+
+    if (!groupDefinition) {
+      throw new Error(
+        `Permission group not found for test permission: ${permissionKey}`,
+      );
+    }
+
+    const group = await prisma.permissionGroup.upsert({
+      where: { key: groupDefinition.key },
+      update: {
+        label: groupDefinition.label,
+        description: groupDefinition.description,
+        sortOrder: groupDefinition.sortOrder,
+      },
+      create: {
+        key: groupDefinition.key,
+        label: groupDefinition.label,
+        description: groupDefinition.description,
+        sortOrder: groupDefinition.sortOrder,
+      },
+      select: {
+        id: true,
+      },
+    });
+
     const permission = await prisma.permission.upsert({
       where: { key: permissionDefinition.key },
       update: {
         moduleId: permissionDefinition.moduleId,
+        groupId: group.id,
         action: permissionDefinition.action,
         label: permissionDefinition.label,
         description: permissionDefinition.description,
@@ -55,6 +82,7 @@ export async function createAuthenticatedTestUser(
       create: {
         key: permissionDefinition.key,
         moduleId: permissionDefinition.moduleId,
+        groupId: group.id,
         action: permissionDefinition.action,
         label: permissionDefinition.label,
         description: permissionDefinition.description,

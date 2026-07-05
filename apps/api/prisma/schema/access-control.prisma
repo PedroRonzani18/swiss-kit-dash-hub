@@ -1,17 +1,34 @@
+model PermissionGroup {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  label       String
+  description String?
+  sortOrder   Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  permissions Permission[]
+
+  @@index([sortOrder])
+}
+
 model Permission {
   id          String   @id @default(uuid())
   key         String   @unique
   moduleId    String
+  groupId     String
   action      String
   label       String
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  group PermissionGroup @relation(fields: [groupId], references: [id], onDelete: Restrict)
   rolePermissions RolePermission[]
   userPermissions UserPermission[]
 
   @@index([moduleId])
+  @@index([groupId])
   @@index([action])
 }
 
