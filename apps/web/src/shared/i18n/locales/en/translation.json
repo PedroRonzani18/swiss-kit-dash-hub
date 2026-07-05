@@ -133,11 +133,39 @@
     "permissionsDescription": "Persisted permission catalog used by guards and modules.",
     "permissionsCount_one": "{{count}} permission",
     "permissionsCount_other": "{{count}} permissions",
+    "groupCount_one": "{{count}} permission",
+    "groupCount_other": "{{count}} permissions",
     "roles": "Roles",
     "rolesDescription": "Persisted roles and their assigned permissions.",
     "rolesCount_one": "{{count}} role",
     "rolesCount_other": "{{count}} roles",
     "catalog": {
+      "groups": {
+        "core": {
+          "label": "Core",
+          "description": "Core shell access and baseline authenticated entrypoints."
+        },
+        "settings": {
+          "label": "Settings",
+          "description": "Template settings and configuration visibility."
+        },
+        "users": {
+          "label": "Users",
+          "description": "Authenticated user directory and profile visibility."
+        },
+        "allowed-emails": {
+          "label": "Allowed Emails",
+          "description": "Allowed email list administration."
+        },
+        "access-control": {
+          "label": "Access Control",
+          "description": "Roles, permissions and access overview."
+        },
+        "tasks": {
+          "label": "Tasks",
+          "description": "Example tasks module visibility."
+        }
+      },
       "permissions": {
         "core": {
           "access": {
@@ -212,6 +240,30 @@
         "member": {
           "label": "Member",
           "description": "Baseline authenticated member role for the Swiss Kit template."
+        },
+        "allowed-emails-manager": {
+          "label": "Allowed Emails Manager",
+          "description": "Manages allowed email entries for template access onboarding."
+        },
+        "allowed-emails-viewer": {
+          "label": "Allowed Emails Viewer",
+          "description": "Views allowed email entries without changing them."
+        },
+        "users-manager": {
+          "label": "Users Manager",
+          "description": "Template role for user visibility and future user-management operations."
+        },
+        "users-viewer": {
+          "label": "Users Viewer",
+          "description": "Views authenticated user profiles."
+        },
+        "access-control-manager": {
+          "label": "Access Control Manager",
+          "description": "Views the access-control catalog and future management surfaces."
+        },
+        "tasks-viewer": {
+          "label": "Tasks Viewer",
+          "description": "Views the example tasks module."
         }
       }
     },

@@ -1,15 +1,22 @@
 import { z } from 'zod';
 import {
   PermissionKeySchema,
+  PermissionGroupSchema,
   PermissionSchema,
   RoleSchema,
 } from './permissions';
 
 export * from './access-control-catalog';
 
+export const PermissionGroupWithPermissionsSchema =
+  PermissionGroupSchema.extend({
+    permissions: z.array(PermissionSchema),
+  });
+
 export const AccessControlOverviewSchema = z.object({
   module: z.literal('access-control'),
   status: z.literal('available'),
+  permissionGroups: z.array(PermissionGroupWithPermissionsSchema),
   permissions: z.array(PermissionSchema),
   roles: z.array(RoleSchema),
 });

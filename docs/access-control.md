@@ -56,6 +56,7 @@ Access-control persistence is local and template-friendly.
 Prisma models:
 
 ```text
+PermissionGroup
 Permission
 Role
 UserRole
@@ -69,17 +70,27 @@ Effective permissions are resolved as:
 user direct permissions + permissions inherited from assigned roles
 ```
 
+Target relationship:
+
+```text
+User -> UserRole -> Role -> RolePermission -> Permission -> PermissionGroup
+User -> UserPermission -> Permission -> PermissionGroup
+```
+
 `Permission.key` is the stable identifier used by code, contracts and guards.
+
+`PermissionGroup` organizes permissions for administration and visibility only. It does not grant access by itself.
 
 `Role.key` is the stable identifier for seeded roles such as `admin` or `member`.
 
 ## Seed model
 
-The Prisma seed is idempotent and currently does three access-control steps:
+The Prisma seed is idempotent and currently does four access-control steps:
 
-1. Upserts every permission from `ACCESS_CONTROL_CORE_PERMISSIONS`.
-2. Upserts system roles.
-3. Upserts role-permission assignments.
+1. Upserts every permission group from `ACCESS_CONTROL_PERMISSION_GROUPS`.
+2. Upserts every permission from `ACCESS_CONTROL_CORE_PERMISSIONS`.
+3. Upserts system roles.
+4. Upserts role-permission assignments.
 
 Default roles:
 
@@ -91,6 +102,39 @@ member
   core:access
   settings:access
 ```
+
+Area-specific roles:
+
+```text
+allowed-emails-manager
+  allowed-emails:access
+  allowed-emails:read
+  allowed-emails:create
+  allowed-emails:update
+
+allowed-emails-viewer
+  allowed-emails:access
+  allowed-emails:read
+
+users-manager
+  users:access
+  users:read
+
+users-viewer
+  users:access
+  users:read
+
+access-control-manager
+  access-control:access
+  access-control:read
+  access-control:manage
+
+tasks-viewer
+  tasks:access
+  tasks:read
+```
+
+`users-manager` is intentionally seeded now even though the current template does not expose user write permissions yet. In this baseline, it is equivalent to `users-viewer` until write permissions are introduced.
 
 On Google login, users are assigned a default role if the role exists:
 
@@ -123,9 +167,9 @@ The global access guard allows routes with no required permissions. When permiss
 
 ## Access-control overview
 
-`GET /api/access-control` returns persisted permissions and roles from Prisma.
+`GET /api/access-control` returns persisted permission groups, permissions and roles from Prisma.
 
-If the `Permission` table is empty, the API falls back to the static Core permission catalog so the page remains useful before the seed runs.
+If the access-control tables are empty, the API falls back to the static group and permission catalog so the page remains useful before the seed runs.
 
 Run the seed after adding new permission keys:
 
@@ -154,6 +198,14 @@ After the schema exists in the database, run the seed:
 ```bash
 pnpm --filter api prisma:seed
 ```
+
+## Model notes
+
+- `Permission` remains the authorization unit enforced by backend guards.
+- `PermissionGroup` is organizational metadata only.
+- `Role` packages explicit permissions through `RolePermission`.
+- `UserPermission` remains the direct-grant exception path for administrators.
+- This baseline does not add tenant scoping, deny rules or external policy engines.
 
 ## Next steps
 
