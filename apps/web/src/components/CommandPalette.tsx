@@ -8,7 +8,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { APP_MODULES } from "@/app/navigation/modules";
+import { NAVIGATION_MODULES } from "@/app/navigation/modules";
 
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
@@ -40,7 +40,7 @@ export function CommandPalette() {
       <CommandList>
         <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
         <CommandGroup heading="Navegação">
-          {APP_MODULES.map((module) => (
+          {NAVIGATION_MODULES.map((module) => (
             <CommandItem
               key={module.id}
               onSelect={() => handleNavigate(module.path)}

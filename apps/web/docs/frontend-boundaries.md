@@ -32,7 +32,7 @@ Practical rules:
 
 ## Route ownership
 
-Routes are centralized in `src/app/routes/AppRoutes.tsx`.
+Routes are rendered by `src/app/routes/AppRoutes.tsx` from the declarative registry in `src/app/navigation/modules.ts`.
 
 Current shell entrypoints:
 
@@ -41,14 +41,14 @@ Current shell entrypoints:
 - `/app` is the protected neutral Core shell.
 - `*` falls through to the Not Found page.
 
-Module paths and navigation metadata are centralized in `src/app/navigation/modules.ts`.
+Module paths, navigation metadata, route components and future permission metadata are centralized in `src/app/navigation/modules.ts`.
 
 When adding a module route:
 
-1. Add or update the route constant in `src/app/navigation/modules.ts`.
-2. Add the navigation item to `APP_MODULES` only if it should appear in the shell navigation.
-3. Add the route wiring in `src/app/routes/AppRoutes.tsx`.
-4. Keep the page component under `src/modules/<module>/pages`.
+1. Add or update the module definition in `src/app/navigation/modules.ts`.
+2. Set `nav: true` only if it should appear in shell navigation and command palette.
+3. Keep the page component under `src/modules/<module>/pages`.
+4. Add `requiredPermissions` when access-control is implemented for the module.
 5. Keep reusable domain behavior under `src/features/<feature>` when it can be shared by more than one page.
 
 ## Enforced lint guardrails

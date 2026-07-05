@@ -1,8 +1,5 @@
-import {
-  ChevronLeft,
-  Layers,
-} from "lucide-react";
-import { APP_MODULES } from "@/app/navigation/modules";
+import { ChevronLeft, Layers } from "lucide-react";
+import { NAVIGATION_MODULES } from "@/app/navigation/modules";
 import { NavLink } from "@/components/NavLink";
 import {
   Sidebar,
@@ -36,10 +33,10 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Módulos</SidebarGroupLabel>
+          <SidebarGroupLabel>Modulos</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {APP_MODULES.map((module) => (
+              {NAVIGATION_MODULES.map((module) => (
                 <SidebarMenuItem key={module.id}>
                   <SidebarMenuButton asChild>
                     <NavLink
