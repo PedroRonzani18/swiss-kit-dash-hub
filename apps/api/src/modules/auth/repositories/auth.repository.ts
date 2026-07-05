@@ -106,7 +106,9 @@ export class AuthRepository {
 
     return {
       roles: [...roles].sort(),
-      permissions: [...permissions].sort() as EffectiveAccessContract['permissions'],
+      permissions: [
+        ...permissions,
+      ].sort() as EffectiveAccessContract['permissions'],
     };
   }
 

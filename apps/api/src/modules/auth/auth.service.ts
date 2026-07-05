@@ -115,7 +115,9 @@ export class AuthService {
       throw new UnauthorizedException('Authenticated user not found');
     }
 
-    const effectiveAccess = await this.authRepository.getEffectiveAccess(user.id);
+    const effectiveAccess = await this.authRepository.getEffectiveAccess(
+      user.id,
+    );
 
     return {
       ...user,
