@@ -7,3 +7,4 @@ export * from './allowed-emails';
 export * from './permissions';
 export * from './modules';
 export * from './access-control';
+export * from './tasks';
