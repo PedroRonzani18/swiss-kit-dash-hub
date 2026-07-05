@@ -129,6 +129,54 @@
     "description": "Local roles and permission catalog for the Swiss Kit template.",
     "loading": "Loading...",
     "error": "Failed to load.",
+    "summary": {
+      "permissions": "Total permissions",
+      "roles": "Total roles",
+      "groups": "Total groups",
+      "managePermissions": "Manage permissions"
+    },
+    "tabs": {
+      "permissions": "Permissions",
+      "roles": "Roles"
+    },
+    "actions": {
+      "expandRolePermissions": "Show permissions",
+      "collapseRolePermissions": "Hide permissions",
+      "expandPermissionGroup": "Show {{group}} permissions",
+      "collapsePermissionGroup": "Hide {{group}} permissions"
+    },
+    "filters": {
+      "permissionsSearchLabel": "Search permissions",
+      "permissionsSearchPlaceholder": "Search by label, description, key, group or action",
+      "rolesSearchLabel": "Search roles",
+      "rolesSearchPlaceholder": "Search by label, description, key or permission key",
+      "openFilters": "Filters",
+      "permissionsSheetTitle": "Filter permissions",
+      "permissionsSheetDescription": "Refine the permission catalog without leaving the current tab.",
+      "rolesSheetTitle": "Filter roles",
+      "rolesSheetDescription": "Refine the roles list without leaving the current tab.",
+      "actionLabel": "Action",
+      "allActions": "All actions",
+      "clear": "Clear",
+      "filteredPermissions": "Filtered permissions",
+      "filteredRoles": "Filtered roles",
+      "searchFilter": "Search: {{value}}",
+      "actionFilter": "Action: {{value}}",
+      "noPermissionResults": "No permissions matched the current filters.",
+      "noRoleResults": "No roles matched the current search.",
+      "emptyFilteredPermissionsTitle": "No permissions found",
+      "emptyFilteredPermissionsDescription": "Adjust or clear the current filters to see matching permissions again.",
+      "emptyFilteredRolesTitle": "No roles found",
+      "emptyFilteredRolesDescription": "Adjust or clear the current search to see matching roles again.",
+      "actions": {
+        "access": "Access",
+        "read": "Read",
+        "create": "Create",
+        "update": "Update",
+        "delete": "Delete",
+        "manage": "Manage"
+      }
+    },
     "permissions": "Permissions",
     "permissionsDescription": "Persisted permission catalog used by guards and modules.",
     "permissionsCount_one": "{{count}} permission",
@@ -266,6 +314,9 @@
           "description": "Views the example tasks module."
         }
       }
+    },
+    "empty": {
+      "permissionGroups": "No permission groups found."
     },
     "noPermissions": "No permissions assigned.",
     "noRoles": "No roles found. Run the Prisma seed to create the baseline roles."

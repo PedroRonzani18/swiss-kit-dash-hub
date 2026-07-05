@@ -129,6 +129,54 @@
     "description": "Papéis locais e catálogo de permissões do template Swiss Kit.",
     "loading": "Carregando...",
     "error": "Não foi possível carregar.",
+    "summary": {
+      "permissions": "Total de permissões",
+      "roles": "Total de papéis",
+      "groups": "Total de grupos",
+      "managePermissions": "Permissões de gestão"
+    },
+    "tabs": {
+      "permissions": "Permissões",
+      "roles": "Papéis"
+    },
+    "actions": {
+      "expandRolePermissions": "Mostrar permissões",
+      "collapseRolePermissions": "Ocultar permissões",
+      "expandPermissionGroup": "Mostrar permissões de {{group}}",
+      "collapsePermissionGroup": "Ocultar permissões de {{group}}"
+    },
+    "filters": {
+      "permissionsSearchLabel": "Buscar permissões",
+      "permissionsSearchPlaceholder": "Busque por rótulo, descrição, chave, grupo ou ação",
+      "rolesSearchLabel": "Buscar papéis",
+      "rolesSearchPlaceholder": "Busque por rótulo, descrição, chave ou chave de permissão",
+      "openFilters": "Filtros",
+      "permissionsSheetTitle": "Filtrar permissões",
+      "permissionsSheetDescription": "Refine o catálogo de permissões sem sair da aba atual.",
+      "rolesSheetTitle": "Filtrar papéis",
+      "rolesSheetDescription": "Refine a lista de papéis sem sair da aba atual.",
+      "actionLabel": "Ação",
+      "allActions": "Todas as ações",
+      "clear": "Limpar",
+      "filteredPermissions": "Permissões filtradas",
+      "filteredRoles": "Papéis filtrados",
+      "searchFilter": "Busca: {{value}}",
+      "actionFilter": "Ação: {{value}}",
+      "noPermissionResults": "Nenhuma permissão corresponde aos filtros atuais.",
+      "noRoleResults": "Nenhum papel corresponde à busca atual.",
+      "emptyFilteredPermissionsTitle": "Nenhuma permissão encontrada",
+      "emptyFilteredPermissionsDescription": "Ajuste ou limpe os filtros atuais para ver permissões correspondentes novamente.",
+      "emptyFilteredRolesTitle": "Nenhum papel encontrado",
+      "emptyFilteredRolesDescription": "Ajuste ou limpe a busca atual para ver papéis correspondentes novamente.",
+      "actions": {
+        "access": "Acessar",
+        "read": "Ler",
+        "create": "Criar",
+        "update": "Atualizar",
+        "delete": "Excluir",
+        "manage": "Gerenciar"
+      }
+    },
     "permissions": "Permissões",
     "permissionsDescription": "Catálogo persistido de permissões usado por guards e módulos.",
     "permissionsCount_one": "{{count}} permissão",
@@ -266,6 +314,9 @@
           "description": "Visualiza o módulo de exemplo de tarefas."
         }
       }
+    },
+    "empty": {
+      "permissionGroups": "Nenhum grupo de permissões encontrado."
     },
     "noPermissions": "Nenhuma permissão atribuída.",
     "noRoles": "Nenhum papel encontrado. Execute o seed do Prisma para criar os papéis básicos."
