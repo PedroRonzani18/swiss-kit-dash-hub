@@ -1,5 +1,6 @@
 import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import {
+  PROTECTED_MODULE_ROUTES,
   getDefaultModuleRouteForUser,
   getProtectedModuleRoutesForUser,
 } from "@/app/navigation/modules";
@@ -78,8 +79,10 @@ function PublicOnlyRoutes() {
 }
 
 export function AppRoutes() {
-  const { permissions } = useAuth();
-  const protectedModuleRoutes = getProtectedModuleRoutesForUser(permissions);
+  const { permissions, isLoading } = useAuth();
+  const protectedModuleRoutes = isLoading
+    ? PROTECTED_MODULE_ROUTES
+    : getProtectedModuleRoutesForUser(permissions);
 
   return (
     <Routes>
