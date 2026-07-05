@@ -12,7 +12,7 @@ export class AccessControlController {
   @Get()
   @RequirePermissions('access-control:read')
   @ApiOkResponse({ type: AccessControlOverviewDto })
-  getOverview(): AccessControlOverviewDto {
+  getOverview(): Promise<AccessControlOverviewDto> {
     return this.accessControlService.getOverview();
   }
 }

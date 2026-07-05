@@ -1,9 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import type { AccessControlOverviewContract } from '@swisskit/contracts/access-control';
+import type {
+  AccessControlOverviewContract,
+  AssignUserRoleInputContract,
+  UserAccessOverviewContract,
+} from '@swisskit/contracts/access-control';
 import type {
   PermissionContract,
+  PermissionKeyContract,
   RoleContract,
 } from '@swisskit/contracts/permissions';
+import { IsString, MinLength } from 'class-validator';
 
 export class PermissionDto implements PermissionContract {
   @ApiProperty({ example: 'users.access' })
@@ -57,4 +63,25 @@ export class AccessControlOverviewDto implements AccessControlOverviewContract {
 
   @ApiProperty({ type: () => [RoleDto] })
   roles!: RoleDto[];
+}
+
+export class AssignUserRoleInputDto implements AssignUserRoleInputContract {
+  @ApiProperty({ example: 'member' })
+  @IsString()
+  @MinLength(1)
+  roleKey!: string;
+}
+
+export class UserAccessOverviewDto implements UserAccessOverviewContract {
+  @ApiProperty({ example: 'user-id' })
+  userId!: string;
+
+  @ApiProperty({ type: [String], example: ['member'] })
+  roles!: string[];
+
+  @ApiProperty({
+    type: [String],
+    example: ['core:access', 'settings:access'],
+  })
+  permissions!: PermissionKeyContract[];
 }

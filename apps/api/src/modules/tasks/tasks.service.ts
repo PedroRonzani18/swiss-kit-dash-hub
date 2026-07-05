@@ -11,13 +11,15 @@ export class TasksService {
         {
           id: 'task-1',
           title: 'Review template structure',
-          description: 'Use this module as a copyable reference for new systems.',
+          description:
+            'Use this module as a copyable reference for new systems.',
           status: 'done',
         },
         {
           id: 'task-2',
           title: 'Add a product-specific module',
-          description: 'Start with the scaffold and replace static data with real API behavior.',
+          description:
+            'Start with the scaffold and replace static data with real API behavior.',
           status: 'todo',
         },
       ],

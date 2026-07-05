@@ -12,7 +12,10 @@ export class TaskDto implements TaskContract {
   @ApiProperty({ example: 'Review template structure' })
   title!: string;
 
-  @ApiProperty({ nullable: true, example: 'Use this module as a copyable reference.' })
+  @ApiProperty({
+    nullable: true,
+    example: 'Use this module as a copyable reference.',
+  })
   description!: string | null;
 
   @ApiProperty({ example: 'todo', enum: ['todo', 'doing', 'done'] })
