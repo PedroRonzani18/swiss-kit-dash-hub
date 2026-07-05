@@ -51,7 +51,9 @@ describe('Auth integration', () => {
   });
 
   it('returns authenticated status on GET /api/core/session-check', async () => {
-    const authUser = await createAuthenticatedTestUser(app, prisma);
+    const authUser = await createAuthenticatedTestUser(app, prisma, {
+      permissions: ['core:access'],
+    });
 
     const response = await request(app.getHttpServer())
       .get('/api/core/session-check')
