@@ -8,9 +8,9 @@ import { JwtService } from '@nestjs/jwt';
 import type { CookieOptions } from 'express';
 import type {
   AuthLoginResultContract,
+  CurrentUserContract,
   GoogleAuthProfileContract,
   JwtPayloadContract,
-  UserContract,
 } from '@/common/contracts';
 import { mapAuthenticatedUser } from '@/common/mappers';
 import { parseJwtExpiresInToMs } from '@/config/jwt-duration';
@@ -109,13 +109,18 @@ export class AuthService {
     return this.getAuthCookieBaseOptions();
   }
 
-  async getMe(userId: string): Promise<UserContract> {
+  async getMe(userId: string): Promise<CurrentUserContract> {
     const user = await this.authRepository.findById(userId);
     if (!user) {
       throw new UnauthorizedException('Authenticated user not found');
     }
 
-    return user;
+    const effectiveAccess = await this.authRepository.getEffectiveAccess(user.id);
+
+    return {
+      ...user,
+      ...effectiveAccess,
+    };
   }
 
   private async assertAllowedEmail(email: string): Promise<void> {
