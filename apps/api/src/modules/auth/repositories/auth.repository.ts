@@ -140,9 +140,14 @@ export class AuthRepository {
     return mapUserFromPersistence(record as UserRow);
   }
 
-  private async assignDefaultRole(userId: string, email: string): Promise<void> {
+  private async assignDefaultRole(
+    userId: string,
+    email: string,
+  ): Promise<void> {
     const roleKey =
-      email.toLowerCase() === PRIMARY_OWNER_EMAIL ? ADMIN_ROLE_KEY : MEMBER_ROLE_KEY;
+      email.toLowerCase() === PRIMARY_OWNER_EMAIL
+        ? ADMIN_ROLE_KEY
+        : MEMBER_ROLE_KEY;
 
     const role = await this.prisma.role.findUnique({
       select: { id: true },
