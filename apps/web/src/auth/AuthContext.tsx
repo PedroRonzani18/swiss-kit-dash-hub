@@ -27,8 +27,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { loginWithGoogle, isLoading: isGoogleLoginLoading } = useGoogleLogin();
   const { logout, isLoading: isLogoutLoading } = useLogout();
 
-  const permissions = user?.permissions ?? [];
-  const roles = user?.roles ?? [];
+  const permissions = useMemo(
+    () => user?.permissions ?? [],
+    [user?.permissions],
+  );
+  const roles = useMemo(() => user?.roles ?? [], [user?.roles]);
 
   const can = useCallback(
     (permission: PermissionKeyContract) => permissions.includes(permission),
