@@ -6,13 +6,14 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { CurrentUser } from '@/common/auth';
+import { CurrentUser, RequirePermissions } from '@/common/auth';
 import type { AuthenticatedUserContract } from '@/common/contracts';
 
 @ApiTags('Core')
 @Controller('core')
 export class CoreController {
   @Get('session-check')
+  @RequirePermissions('core:access')
   @ApiCookieAuth('cookie')
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Verify authenticated core session' })
