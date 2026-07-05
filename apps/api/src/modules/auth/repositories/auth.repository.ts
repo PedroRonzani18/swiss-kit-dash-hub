@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
 import type {
+  EffectiveAccessContract,
   GoogleAuthProfileContract,
   UserContract,
 } from '@/common/contracts';
@@ -49,6 +50,60 @@ export class AuthRepository {
     });
 
     return record ? mapUserFromPersistence(record as UserRow) : null;
+  }
+
+  async getEffectiveAccess(userId: string): Promise<EffectiveAccessContract> {
+    const [directPermissions, roleAssignments] = await Promise.all([
+      this.prisma.userPermission.findMany({
+        select: {
+          permission: {
+            select: {
+              key: true,
+            },
+          },
+        },
+        where: { userId },
+      }),
+      this.prisma.userRole.findMany({
+        select: {
+          role: {
+            select: {
+              key: true,
+              permissions: {
+                select: {
+                  permission: {
+                    select: {
+                      key: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        where: { userId },
+      }),
+    ]);
+
+    const roles = new Set<string>();
+    const permissions = new Set<string>();
+
+    for (const directPermission of directPermissions) {
+      permissions.add(directPermission.permission.key);
+    }
+
+    for (const assignment of roleAssignments) {
+      roles.add(assignment.role.key);
+
+      for (const rolePermission of assignment.role.permissions) {
+        permissions.add(rolePermission.permission.key);
+      }
+    }
+
+    return {
+      roles: [...roles].sort(),
+      permissions: [...permissions].sort() as EffectiveAccessContract['permissions'],
+    };
   }
 
   async upsertGoogleUser(
