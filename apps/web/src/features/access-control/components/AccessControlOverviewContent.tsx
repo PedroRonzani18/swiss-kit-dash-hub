@@ -49,8 +49,8 @@ export function AccessControlOverviewContent({
   return (
     <div className="flex flex-col gap-6">
       {query.isLoading ? (
-        <div className="space-y-4 xl:grid xl:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] xl:items-start xl:gap-6 xl:space-y-0">
-          <div className="flex gap-4 overflow-hidden sm:grid sm:grid-cols-2 xl:grid-cols-1">
+        <div className="space-y-4">
+          <div className="flex gap-4 overflow-hidden sm:grid sm:grid-cols-2 xl:grid-cols-4">
             {Array.from({ length: 4 }).map((_, index) => (
               <Skeleton
                 key={index}
@@ -58,10 +58,8 @@ export function AccessControlOverviewContent({
               />
             ))}
           </div>
-          <div className="space-y-4">
-            <Skeleton className="h-12 w-64 rounded-lg" />
-            <Skeleton className="h-96 rounded-xl" />
-          </div>
+          <Skeleton className="h-12 w-64 rounded-lg" />
+          <Skeleton className="h-96 rounded-xl" />
         </div>
       ) : null}
 
@@ -72,7 +70,7 @@ export function AccessControlOverviewContent({
       ) : null}
 
       {query.data ? (
-        <div className="space-y-6 xl:grid xl:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] xl:items-start xl:gap-6 xl:space-y-0">
+        <>
           <AccessControlSummaryCards
             data={query.data}
             labels={{
@@ -208,7 +206,7 @@ export function AccessControlOverviewContent({
               </TabsContent>
             </div>
           </Tabs>
-        </div>
+        </>
       ) : null}
     </div>
   );

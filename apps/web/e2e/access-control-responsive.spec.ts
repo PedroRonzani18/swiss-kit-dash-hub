@@ -154,7 +154,7 @@ async function mockAuthenticatedAccessControl(page: Page) {
 }
 
 test.describe("Access control | responsive layout", () => {
-  test("shows side summary and inline filters on xl desktop", async ({
+  test("shows top summary and inline filters on xl desktop", async ({
     page,
   }) => {
     const pageErrors: Error[] = [];
@@ -182,7 +182,7 @@ test.describe("Access control | responsive layout", () => {
 
     expect(summaryBox).not.toBeNull();
     expect(catalogBox).not.toBeNull();
-    expect(summaryBox!.x + summaryBox!.width).toBeLessThan(catalogBox!.x + 8);
+    expect(summaryBox!.y + summaryBox!.height).toBeLessThan(catalogBox!.y + 8);
     expect(pageErrors).toEqual([]);
   });
 
