@@ -10,6 +10,7 @@ import { CoreModule } from './modules/core/core.module';
 import { SettingsModule } from './modules/settings/settings.module';
 import { UsersModule } from './modules/users/users.module';
 import { AccessRegistryModule } from './modules/access-list/access-list.module';
+import { AccessControlModule } from './modules/access-control/access-control.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AccessRegistryModule } from './modules/access-list/access-list.module';
     SettingsModule,
     UsersModule,
     AccessRegistryModule,
+    AccessControlModule,
     HealthModule,
   ],
   providers: [

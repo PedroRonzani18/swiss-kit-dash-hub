@@ -3,8 +3,16 @@ import type {
   AppModuleDefinitionContract,
   PermissionKeyContract,
 } from "@swisskit/contracts";
-import { Home, Settings, ShieldCheck, Users, type LucideIcon } from "lucide-react";
+import {
+  Home,
+  KeyRound,
+  Settings,
+  ShieldCheck,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 import { AccessListPage } from "@/modules/access-list/pages/AccessListPage";
+import { AccessControlPage } from "@/modules/access-control/pages/AccessControlPage";
 import { CoreAppPage } from "@/modules/core/pages/CoreAppPage";
 import { SettingsPage } from "@/modules/settings/pages/SettingsPage";
 import { UsersPage } from "@/modules/users/pages/UsersPage";
@@ -14,6 +22,7 @@ export const MODULE_ROUTES = {
   settings: "/settings",
   users: "/users",
   allowedEmails: "/allowed-emails",
+  accessControl: "/access-control",
 } as const;
 
 export type ModuleRouteKey = keyof typeof MODULE_ROUTES;
@@ -76,6 +85,18 @@ export const APP_MODULES: ShellModuleDefinition[] = [
     status: "available",
     requiredPermissions: [],
     description: "Emails liberados para acesso ao template.",
+  },
+  {
+    id: "access-control",
+    routeKey: "accessControl",
+    label: "Access Control",
+    path: MODULE_ROUTES.accessControl,
+    icon: KeyRound,
+    component: AccessControlPage,
+    nav: true,
+    status: "available",
+    requiredPermissions: [],
+    description: "Catalogo local de permissoes do template.",
   },
 ];
 
