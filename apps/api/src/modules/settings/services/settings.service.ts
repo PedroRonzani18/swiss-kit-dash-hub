@@ -7,18 +7,18 @@ import type {
 const SETTINGS_SECTIONS: SettingsSectionDto[] = [
   {
     id: 'account',
-    label: 'Account',
-    description: 'Account preferences placeholder.',
+    labelKey: 'settings.sections.account.label',
+    descriptionKey: 'settings.sections.account.description',
   },
   {
     id: 'preferences',
-    label: 'Preferences',
-    description: 'Interface options placeholder.',
+    labelKey: 'settings.sections.preferences.label',
+    descriptionKey: 'settings.sections.preferences.description',
   },
   {
     id: 'system',
-    label: 'System',
-    description: 'Template options placeholder.',
+    labelKey: 'settings.sections.system.label',
+    descriptionKey: 'settings.sections.system.description',
   },
 ];
 
