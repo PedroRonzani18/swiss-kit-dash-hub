@@ -33,6 +33,11 @@ Scoped instruction files:
 - `packages/contracts/AGENTS.md` for shared contracts.
 - `docs/AGENTS.md` for documentation changes.
 
+Repository skills:
+
+- `$ship`: controlled implementation pipeline for medium, broad, or sensitive changes.
+- `$new-module`: module creation guidance using `docs/module-authoring.md` and `pnpm scaffold:module`.
+
 When instructions conflict, follow the most specific applicable file, unless it violates this root file.
 
 ## Codex flow selection
