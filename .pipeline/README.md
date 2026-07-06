@@ -10,6 +10,14 @@ The canonical order is:
 Planner -> human approval -> Coder -> Tester -> Reviewer
 ```
 
+Use this full pipeline only when the task justifies independent roles: auth, authorization, access-control, contracts, Prisma schema, migrations, environment validation, CI/deploy, security-sensitive configuration, broad architecture changes or an explicit user request for `$ship`.
+
+For small localized or non-sensitive changes, use a direct flow outside the pipeline:
+
+```text
+inspect -> implement -> targeted validation -> review diff -> handoff
+```
+
 The project skill at `.agents/skills/ship/SKILL.md` is the executable source of truth:
 
 ```text
@@ -18,6 +26,22 @@ $ship resume <run-id>
 ```
 
 `start` creates a fresh run and stops after planning. `resume` in `awaiting-approval` explicitly approves the current spec when it has no `OPEN QUESTIONS`.
+
+## Helper commands
+
+Use deterministic helper scripts for mechanical pipeline operations:
+
+```bash
+pnpm pipeline:create-run -- "<request>" [--run-id <run-id>]
+pnpm pipeline:set-state -- <run-id> <status> [--attempt 0|1|2] [--verdict "SHIP|NEEDS WORK|BLOCK|null"]
+pnpm pipeline:check-run -- <run-id>
+pnpm pipeline:archive-review -- <run-id>
+```
+
+- `pipeline:create-run` validates or generates the run ID, creates the run directory, writes `request.md` and initializes `state.json`.
+- `pipeline:set-state` validates status, attempt and verdict values, then updates `state.json`.
+- `pipeline:check-run` prints a compact status summary, missing artifacts, the `OPEN QUESTIONS` marker state and the current review verdict.
+- `pipeline:archive-review` moves `review.md` to `review-attempt-1.md` and refuses to overwrite an existing archive.
 
 ## Structure
 
@@ -139,6 +163,17 @@ Approval starts attempt 1. The single allowed correction cycle uses attempt 2.
 - The first `NEEDS WORK` allows one Coder -> Tester -> Reviewer correction cycle.
 - A second `NEEDS WORK` stops and returns control to the human.
 - A finding that changes scope returns to Planner and requires a new approval.
+
+## Cost-control rules
+
+- Keep the orchestrator focused on state transitions, not implementation, validation or review work.
+- Read each required instruction or artifact once unless it changes.
+- Prefer summarized `rtk` output for noisy commands.
+- Do not repeat Coder, Tester or Reviewer work in the main thread.
+- When using subagents, pass the role, run ID, artifact paths, attempt and expected output instead of the full conversation whenever possible.
+- When supported, spawn subagents with `fork_turns="none"` and rely on pipeline artifacts as the contract.
+- Use one long wait per stage instead of frequent polling.
+- Consolidate related visual or cleanup refinements into one run with one validation pass.
 
 ## Git policy
 

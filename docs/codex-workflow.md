@@ -4,15 +4,57 @@
 
 This document defines the recommended workflow for using Codex in Swiss Kit.
 
-The canonical flow is:
+Codex work should use the lightest safe process.
+
+## Flow selection
+
+Use the direct flow by default:
+
+```text
+inspect -> implement -> targeted validation -> review diff -> handoff
+```
+
+This is appropriate for explanation, diagnosis, small localized fixes and non-sensitive changes with clear validation.
+
+Use a controlled lightweight flow when the change is medium-sized or needs explicit approval before implementation:
+
+```text
+short plan -> human approval -> implementation -> targeted validation -> handoff
+```
+
+Use the full `$ship` pipeline only when independent roles materially reduce risk:
 
 ```text
 Planner -> human approval -> Coder -> Tester -> Reviewer
 ```
 
+Use the full flow for auth, authorization, access-control, contracts, Prisma schema, migrations, environment validation, CI/deploy, security-sensitive configuration, broad architecture changes or when the user explicitly requests `$ship`.
+
 Use `Coder` for implementation work. Do not create a separate Implementer role.
 
 Every run started through the project skill at `.agents/skills/ship/SKILL.md` uses the full flow and pauses for approval after planning. A trivial, unambiguous change may be handled outside `$ship`, with validation proportional to its scope.
+
+Do not split related micro-refinements into separate runs. Consolidate related visual, copy, spacing, responsive and cleanup adjustments into one scoped request with one validation pass.
+
+## Cost control
+
+Keep Codex runs bounded:
+
+- read each required instruction or source file once unless it changes;
+- use `rg` to locate symbols before opening broad file ranges;
+- avoid relaying long command output when a summarized `rtk` command is sufficient;
+- consolidate related edits into logical patches instead of applying many tiny patches;
+- run targeted validation first and avoid repeating full suites after every micro-adjustment;
+- pause and report if the run starts requiring repeated inspection, repeated validation or a context-heavy restart.
+
+For `$ship`, the orchestrator should stay state-focused:
+
+- read `state.json` and only the artifact sections needed for the current transition;
+- do not redo the Coder, Tester or Reviewer work in the main thread;
+- when using subagents, prefer minimal context handoff such as role, run ID, artifact paths, attempt and expected output;
+- when the environment supports it, spawn subagents with `fork_turns="none"` and rely on pipeline artifacts as the contract;
+- avoid inheriting the full conversation into subagents when the run artifacts already contain the contract;
+- wait once per stage with a long timeout instead of polling repeatedly.
 
 Start a run with:
 
@@ -133,6 +175,24 @@ Allowed statuses are `planning`, `awaiting-approval`, `implementing`, `testing`,
 Approval starts attempt 1. A correction starts attempt 2. `lastVerdict` is `null`, `SHIP`, `NEEDS WORK` or `BLOCK`.
 
 The `$ship resume <run-id>` command uses this state to continue an interrupted run without duplicating completed attempt sections. Runs in `blocked`, second-attempt `needs-work` or `ready-for-human-review` require human direction and do not resume automatically.
+
+## Pipeline helper commands
+
+Use deterministic helper scripts for mechanical pipeline operations instead of editing JSON or moving review files manually:
+
+```bash
+pnpm pipeline:create-run -- "<request>" [--run-id <run-id>]
+pnpm pipeline:set-state -- <run-id> <status> [--attempt 0|1|2] [--verdict "SHIP|NEEDS WORK|BLOCK|null"]
+pnpm pipeline:check-run -- <run-id>
+pnpm pipeline:archive-review -- <run-id>
+```
+
+Responsibilities:
+
+- `pipeline:create-run` validates or generates the run ID, creates the run directory, writes `request.md` and initializes `state.json`.
+- `pipeline:set-state` validates status, attempt and verdict values, then updates `state.json` with a fresh `updatedAt`.
+- `pipeline:check-run` prints a compact status summary, missing artifacts, whether `spec.md` contains an `OPEN QUESTIONS` marker and the current review verdict.
+- `pipeline:archive-review` moves `review.md` to `review-attempt-1.md` and refuses to overwrite an existing archive.
 
 ## Pipeline artifact rules
 

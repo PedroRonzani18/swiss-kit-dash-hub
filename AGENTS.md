@@ -35,6 +35,43 @@ Scoped instruction files:
 
 When instructions conflict, follow the most specific applicable file, unless it violates this root file.
 
+## Codex flow selection
+
+Use the lightest workflow that can safely complete the task.
+
+Default to the direct flow:
+
+```text
+inspect -> implement -> targeted validation -> review diff -> handoff
+```
+
+Use this for explanation, diagnosis, small localized fixes and non-sensitive changes with clear validation.
+
+Use a controlled lightweight flow when the change is medium-sized or benefits from explicit approval:
+
+```text
+short plan -> human approval -> implementation -> targeted validation -> handoff
+```
+
+Reserve the full `$ship` pipeline for changes where independent roles materially reduce risk:
+
+- authentication, authorization, access-control, JWT, cookies, CORS or allowed emails;
+- contracts or public API compatibility;
+- Prisma schema, migrations or environment validation;
+- CI, deployment or security-sensitive configuration;
+- broad architecture, module-boundary or template-direction changes;
+- any change where the user explicitly requests `$ship`.
+
+Do not use `$ship` for every micro-refinement. Consolidate related visual, copy, spacing, responsive and cleanup adjustments into one scoped request with one validation pass.
+
+For every workflow:
+
+- read each required instruction or source file once unless it changes;
+- use `rg` to locate symbols before opening broad file ranges;
+- consolidate related patches by logical unit;
+- run targeted validation before wider suites;
+- pause and report if the task starts requiring repeated inspection, repeated validation or a context-heavy restart.
+
 ## Architecture boundaries
 
 Frontend path: `apps/web`.
@@ -94,13 +131,13 @@ Avoid turning Core into a mandatory enterprise product with multi-tenant isolati
 
 ## Codex agent roles
 
-Use this default flow:
+Use this full pipeline flow only when the task selection rules above justify it:
 
 ```text
 Planner -> human approval -> Coder -> Tester -> Reviewer
 ```
 
-Every run started through the `$ship` skill must stop after planning and wait for explicit human approval, even when the spec has no open questions. Trivial work may be handled outside the pipeline when the request and validation scope are already unambiguous.
+Every run started through the `$ship` skill must stop after planning and wait for explicit human approval, even when the spec has no open questions. Trivial or low-risk work should be handled outside the pipeline when the request and validation scope are already unambiguous.
 
 ### Planner
 
@@ -188,6 +225,13 @@ Filtered commands:
 - Test api: `pnpm test:api`
 - Typecheck web: `pnpm typecheck:web`
 - Typecheck api: `pnpm typecheck:api`
+
+Pipeline helper commands:
+
+- Create run state: `pnpm pipeline:create-run -- "<request>" [--run-id <run-id>]`
+- Update run state: `pnpm pipeline:set-state -- <run-id> <status> [--attempt 0|1|2] [--verdict "SHIP|NEEDS WORK|BLOCK|null"]`
+- Check run summary: `pnpm pipeline:check-run -- <run-id>`
+- Archive first review: `pnpm pipeline:archive-review -- <run-id>`
 
 For larger changes, prefer:
 

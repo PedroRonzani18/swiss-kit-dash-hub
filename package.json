@@ -28,6 +28,10 @@
     "test:api": "pnpm --filter api test",
     "lint:web": "pnpm --filter web lint",
     "lint:api": "pnpm --filter api lint",
+    "pipeline:create-run": "node scripts/pipeline/create-run.mjs",
+    "pipeline:set-state": "node scripts/pipeline/set-state.mjs",
+    "pipeline:check-run": "node scripts/pipeline/check-run.mjs",
+    "pipeline:archive-review": "node scripts/pipeline/archive-review.mjs",
     "scaffold:module": "node scripts/scaffold-module.mjs"
   },
   "devDependencies": {
