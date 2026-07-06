@@ -37,6 +37,7 @@ Repository skills:
 
 - `$ship`: controlled implementation pipeline for medium, broad, or sensitive changes.
 - `$new-module`: module creation guidance using `docs/module-authoring.md` and `pnpm scaffold:module`.
+- `$create-migration`: Prisma schema and migration guidance with explicit approval and database-backed validation.
 
 When instructions conflict, follow the most specific applicable file, unless it violates this root file.
 
