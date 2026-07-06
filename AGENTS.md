@@ -181,6 +181,12 @@ The Reviewer checks scope adherence, frontend/backend/contracts boundaries, auth
 
 The Reviewer must not modify implementation, tests or configuration. When using the pipeline, it may write only its review artifact under `.pipeline/runs/<run-id>/`.
 
+### Security Reviewer
+
+Use `security-reviewer` only when a change touches auth, authorization, access-control, JWT, cookies, CORS, Google OAuth, allowed emails, Prisma, environment validation, CI, deployment secrets or sensitive logging.
+
+The Security Reviewer is read-only. In pipeline work, it may write only `.pipeline/runs/<run-id>/security-review.md`. It is optional for low-risk work and should not be spawned for routine UI or documentation changes.
+
 ### Pipeline outcomes
 
 - `VERDICT: SHIP` hands the diff to a human for final review.
