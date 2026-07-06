@@ -245,6 +245,13 @@ Codex hook helpers:
 - Protected-path hook script: `node .codex/hooks/protect-paths.mjs`
 - Hooks are guardrails, not a complete enforcement boundary. Confirm with `/hooks` after enabling or changing them.
 
+Codex MCP usage:
+
+- Context7 is available project-locally for current framework/library docs. Use it when implementation depends on current external APIs or behavior, such as Prisma, NestJS, React, Vite, Playwright, TanStack Query or Codex docs.
+- Playwright MCP is available project-locally for browser/UI inspection. Use it for visual validation, responsive checks, DOM inspection and browser-flow debugging.
+- Do not use MCPs for simple repository lookup, local code search or tasks where existing code patterns are sufficient.
+- Prefer one focused MCP lookup over repeated exploratory calls.
+
 For larger changes, prefer:
 
 1. `pnpm lint:ci`
