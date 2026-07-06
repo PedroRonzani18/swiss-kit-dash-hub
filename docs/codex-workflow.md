@@ -194,6 +194,21 @@ Responsibilities:
 - `pipeline:check-run` prints a compact status summary, missing artifacts, whether `spec.md` contains an `OPEN QUESTIONS` marker and the current review verdict.
 - `pipeline:archive-review` moves `review.md` to `review-attempt-1.md` and refuses to overwrite an existing archive.
 
+## Hook guardrails
+
+Project hooks live in `.codex/hooks.json`.
+
+The protected-path hook runs before supported tool calls and denies edits that target:
+
+- real `.env*` files, except example/template files;
+- `pnpm-lock.yaml`, `bun.lock` and `bun.lockb`;
+- `.git/**`;
+- existing files under `apps/api/prisma/migrations/**`.
+
+The hook script is `.codex/hooks/protect-paths.mjs`. It is intentionally narrow: it prevents common accidental edits to sensitive files, but it is not a complete enforcement boundary. Codex hook interception is incomplete for some shell paths and non-shell tools, so sensitive changes still require human review and normal git diff inspection.
+
+If hooks are disabled in the active Codex config, enable them outside the repo config and restart Codex. Then inspect and trust the project hook with `/hooks`.
+
 ## Pipeline artifact rules
 
 - Use a fresh `.pipeline/runs/<run-id>/` for each task.

@@ -233,6 +233,12 @@ Pipeline helper commands:
 - Check run summary: `pnpm pipeline:check-run -- <run-id>`
 - Archive first review: `pnpm pipeline:archive-review -- <run-id>`
 
+Codex hook helpers:
+
+- Protected-path hook config: `.codex/hooks.json`
+- Protected-path hook script: `node .codex/hooks/protect-paths.mjs`
+- Hooks are guardrails, not a complete enforcement boundary. Confirm with `/hooks` after enabling or changing them.
+
 For larger changes, prefer:
 
 1. `pnpm lint:ci`
