@@ -14,10 +14,6 @@ dist
 dist-ssr
 *.local
 
-# Codex pipeline generated runs
-.pipeline/runs/*
-!.pipeline/runs/.gitkeep
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

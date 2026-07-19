@@ -45,23 +45,15 @@ Before creating a module, answer:
 - Does it require Prisma schema changes?
 - Which validation commands should run?
 
-If a module requires auth, permissions, contracts or migrations, the Planner should call that out explicitly before implementation.
+If a module requires auth, permissions, contracts, or migrations, make those decisions explicit in the scope map before implementation. Ask for a human decision only when the request leaves a material choice unresolved.
 
-New modules should use the full Codex pipeline:
-
-```text
-Planner -> human approval -> Coder -> Tester -> Reviewer
-```
-
-The Planner must make contracts, permissions, authentication and migrations explicit in the spec. These decisions cannot be inferred during implementation, and any unresolved decision must remain under `OPEN QUESTIONS` until a human resolves it.
-
-Start the module work with:
+Start module work with:
 
 ```text
-$ship start Implement <module-id> as a generic Swiss Kit module
+$deliver-swiss-card Implement <module-id> as a generic Swiss Kit module
 ```
 
-After reviewing and approving the generated spec, continue with `$ship resume <run-id>`.
+For a broad module, use `spec-scout` to map affected layers and validation. Validate the finished change with `$validate-change`; add `critical-reviewer` for sensitive work.
 
 ## Naming
 
