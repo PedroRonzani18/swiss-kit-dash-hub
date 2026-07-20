@@ -2,45 +2,21 @@
 
 Obrigado por contribuir com o `swiss-kit-dash-hub`.
 
-## Pré-requisitos
+## Configuração e comandos
 
-- Node.js 22+
-- pnpm 10+
-
-## Instalação
-
-```bash
-pnpm install
-```
-
-## Como rodar localmente
-
-Frontend (`apps/web`):
-
-```bash
-pnpm dev:web
-```
-
-Backend (`apps/api`):
-
-```bash
-pnpm dev:api
-```
+Siga o [guia de configuração local](./docs/guides/local-setup.md). A [referência de comandos](./docs/reference/scripts.md) é a fonte de verdade para setup, banco, desenvolvimento e validação. Consulte também as [convenções do repositório](./docs/reference/repository-conventions.md).
 
 ## Fluxo de branches (sugestão)
 
-Use nomes curtos e descritivos, por exemplo:
+Use `<type>/KAN-<número>-<descrição-curta>`, por exemplo:
 
-- `feat/<descricao-curta>`
-- `fix/<descricao-curta>`
-- `chore/<descricao-curta>`
-- `refactor/<descricao-curta>`
-- `docs/<descricao-curta>`
-- `test/<descricao-curta>`
+- `feat/KAN-123-add-user-preferences`
+- `fix/KAN-123-handle-empty-session`
+- `chore/KAN-123-refresh-tooling`
 
 ## Convenção de commits
 
-Preferencialmente siga Conventional Commits com os tipos abaixo:
+Use a chave do card seguida de um assunto no estilo Conventional Commits:
 
 - `feat`
 - `fix`
@@ -52,27 +28,14 @@ Preferencialmente siga Conventional Commits com os tipos abaixo:
 Exemplo:
 
 ```txt
-feat(auth): add refresh token flow
+KAN-123 feat(auth): describe the change
 ```
+
+Títulos de Pull Request seguem o mesmo formato. Consulte as [convenções do repositório](./docs/reference/repository-conventions.md) para a referência completa.
 
 ## Antes de abrir PR
 
-Garanta CI localmente:
-
-```bash
-pnpm lint
-pnpm test
-pnpm build
-```
-
-Para validar o monorepo completo (web + api):
-
-```bash
-pnpm lint:ci
-pnpm typecheck
-pnpm test:ci
-pnpm build:ci
-```
+Execute `pnpm check` e, quando a alteração exigir a validação completa, `pnpm verify`. Consulte a [referência de comandos](./docs/reference/scripts.md) para os pré-requisitos e o comportamento de cada porta.
 
 ## Como abrir um Pull Request
 

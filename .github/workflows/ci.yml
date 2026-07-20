@@ -1,35 +1,23 @@
-name: PR CI
+name: CI
 
 on:
   pull_request:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
-  group: pr-ci-${{ github.event.pull_request.number || github.ref }}
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
-  quality_gate:
+  quality-gate:
     name: quality-gate
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_DB: swisskit
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U postgres -d swisskit"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -40,27 +28,18 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version-file: .node-version
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Bootstrap
+        run: pnpm bootstrap
 
-      - name: Lint
-        run: pnpm lint:ci
+      - name: Check
+        run: pnpm check
 
-      - name: Typecheck
-        run: pnpm typecheck
-
-      - name: Test
-        run: pnpm test:ci
-
-      - name: Install Playwright browser
+      - name: Install Playwright browser and Linux dependencies
         run: pnpm --filter web exec playwright install --with-deps chromium
 
-      - name: E2E Smoke (Web)
-        run: pnpm test:web:e2e
-
-      - name: Build
-        run: pnpm build:ci
+      - name: Verify
+        run: pnpm verify

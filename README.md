@@ -12,30 +12,9 @@ The checked-in runtime is documented in [docs/current](./docs/current/README.md)
 - **Optional / not implemented:** files and notifications.
 - **Out of scope / not implemented:** multi-tenancy.
 
-## Requirements and local start
+## Local start and commands
 
-- Node.js 24
-- pnpm 10+
-- PostgreSQL (Docker is optional for local development)
-
-```bash
-pnpm install
-cp apps/web/.env.example apps/web/.env.local
-cp apps/api/.env.example apps/api/.env
-docker compose -f apps/api/docker-compose.yml up -d
-pnpm --filter api prisma:generate
-pnpm --filter api prisma:migrate:dev
-pnpm --filter api prisma:seed
-pnpm dev
-```
-
-Set the required API runtime variables before starting. Optionally set `INITIAL_ADMIN_EMAIL` when running `prisma:seed` to create a new active administrator with the persistent `admin` role. Existing users are never changed by this flag. The running API never reads it. See [environment configuration](./docs/env.md).
-
-Default local URLs:
-
-- Web: `http://localhost:8080`
-- API: `http://localhost:3001/api`
-- Swagger: `http://localhost:3001/api/docs`
+Follow the [local setup guide](./docs/guides/local-setup.md). The [command reference](./docs/reference/scripts.md) is the source of truth for setup, database, development, and validation commands.
 
 ## Repository layout
 
@@ -49,6 +28,8 @@ docs/current       runtime source of truth
 ## Documentation
 
 - [Current implementation](./docs/current/README.md)
+- [Local setup](./docs/guides/local-setup.md)
+- [Command reference](./docs/reference/scripts.md)
 - [Core scope](./docs/core-scope.md)
 - [Architecture](./docs/architecture.md)
 - [Template usage](./docs/template-usage.md)
@@ -59,9 +40,4 @@ docs/current       runtime source of truth
 
 ## Validation
 
-```bash
-pnpm lint:ci
-pnpm typecheck
-pnpm test:ci
-pnpm build:ci
-```
+Run `pnpm check` for the Docker-free gate and `pnpm verify` for the complete isolated verification gate. See the [command reference](./docs/reference/scripts.md) for prerequisites and exact behavior.

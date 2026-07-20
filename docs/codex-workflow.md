@@ -43,6 +43,13 @@ pnpm test:ci
 pnpm build:ci
 ```
 
+For repository delivery, prefer the standard gates:
+
+```bash
+pnpm check  # Docker-free lint, typecheck, Prisma generation, web/API unit tests
+pnpm verify # isolated PostgreSQL integration tests, E2E, and production build
+```
+
 ## Handoff
 
 Report the covered acceptance criteria, changed files and behavior, validation receipt, review findings, remaining risks, and required manual checks. Git commits, pushes, pull requests, and merges remain explicit user actions.

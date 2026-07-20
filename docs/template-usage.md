@@ -18,10 +18,10 @@ Use it when you need:
 Start with the scaffold:
 
 ```bash
-pnpm scaffold:module my-module
+pnpm scaffold:module -- my-module --type full-stack
 ```
 
-The scaffold creates a web module page, feature hook and API client placeholder.
+Supported types are `web-only`, `api-only`, `contracts-only`, and `full-stack`. The scaffold creates only local starter files. It never registers routes, navigation, API modules, permissions, or contract barrel exports; make those decisions as part of the feature implementation.
 
 Then complete the module by adding only what the feature needs:
 
