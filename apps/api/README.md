@@ -1,124 +1,46 @@
-# SwissKit API
+# Swiss Kit API
 
-Backend NestJS core do monorepo (`apps/api`), com autenticação, health checks e integração Prisma para a baseline modular do Swiss Kit Core.
+NestJS API for the Swiss Kit Core baseline. The current runtime surface is maintained in [docs/current](../../docs/current/README.md).
 
-## Arquitetura
+## Active modules
 
-- Camadas por módulo: `controller -> service -> repositories -> PrismaService`
-- Tipagem core/auth em `src/common/contracts`
-- Enums compartilhados de auth em `src/common/enums`
-- Mapeadores core/auth em `src/common/mappers`
-- Swagger habilitado em `/api/docs`
-- Prisma 7 com `@prisma/adapter-pg`
-- Auth Google + JWT em cookie HttpOnly (`src/modules/auth`)
+- `auth`: Google OAuth, JWT cookie session, logout, and current user.
+- `core`: protected neutral session check.
+- `health`: liveness and readiness checks.
+- `settings`: protected static overview only (**Core / Partial**).
+- `users`: persisted user-profile overview (**Core / Implemented**).
+- `access-list`: allowed-email list/create/reactivate/status update routes exposed as `allowed-emails` (**Core / Implemented**).
+- `access-control`: persisted catalog and roles overview with permission enforcement (**Core / Implemented**).
+- `tasks`: static full-stack module example (**Reference / Implemented**).
 
-## Módulos
+Files and notifications are Optional / Not implemented. Multi-tenancy is Out of scope / Not implemented.
 
-- `health`
-- `auth`
-- `core`
-- `settings`
+## Run locally
 
-## Prisma (multi-file schema)
-
-```txt
-prisma/
-  schema/
-    schema.prisma
-    enums.prisma
-    allowed-email.prisma
-    user.prisma
-  migrations/
-    20260621000000_core_baseline/
-  seed.ts
-```
-
-A baseline Prisma atual é Core: apenas `User`, `AllowedEmail` e `AuthProvider`.
-
-## Rodar localmente
+When provisioning an administrator through seed, set `INITIAL_ADMIN_EMAIL` and run:
 
 ```bash
-pnpm install
 pnpm --filter api prisma:generate
 pnpm --filter api prisma:migrate:dev
 pnpm --filter api prisma:seed
 pnpm dev:api
 ```
 
-## Configuração de ambiente
+Use `prisma:migrate:dev` only with a local or disposable database.
 
-Use `apps/api/.env.example` como base para o seu `.env`.
+## Environment and bootstrap
 
-Variáveis obrigatórias:
+Copy `apps/api/.env.example` to `apps/api/.env` and set required runtime values. `INITIAL_ADMIN_EMAIL` is optional and used only by Prisma seed. When present for an email with no existing user or allowlist record, seed creates the allowed email, placeholder user, and persistent `admin` assignment. The running API does not validate or read the variable or alter existing access from it.
 
-- `DATABASE_URL`
-- `WEB_APP_URL`
-- `CORS_ALLOWED_ORIGINS`
-- `AUTH_COOKIE_NAME`
-- `AUTH_COOKIE_SAME_SITE` (`lax`, `none` ou `strict`)
-- `AUTH_COOKIE_SECURE` (`true` ou `false`)
-- `AUTH_COOKIE_DOMAIN` (opcional, ex: `.example.com`)
-- `GOOGLE_CLIENT_ID`
-- `GOOGLE_CLIENT_SECRET`
-- `GOOGLE_CALLBACK_URL`
-- `JWT_SECRET`
-- `JWT_EXPIRES_IN`
+Google login updates the placeholder user for the same email while retaining its role; users without any role assignment receive `member` when that seeded role exists.
 
-Nota para deploy no Railway (`*.up.railway.app`):
+## Operational endpoints
 
-- Use `AUTH_COOKIE_SAME_SITE=none` para permitir envio do cookie em chamadas cross-site entre frontend e API.
-- Use `AUTH_COOKIE_SECURE=true` em produção (especialmente com `sameSite=none`).
+- `GET /api/health/live`
+- `GET /api/health/ready`
+- `GET /api/health` (readiness compatibility alias)
+- Swagger: `/api/docs`
 
-Swagger:
+Authentication starts at `GET /api/auth/google`. The OAuth callback sets an HttpOnly cookie. Protected routes accept that cookie, with optional `Authorization: Bearer` fallback. API guards, not frontend visibility, enforce permissions.
 
-- `http://localhost:3001/api/docs`
-
-## Operação (produção)
-
-Health checks:
-
-- `GET /api/health/live`: liveness da aplicação (processo ativo)
-- `GET /api/health/ready`: readiness (valida dependência crítica do banco via Prisma)
-- `GET /api/health`: alias de compatibilidade para readiness
-
-Comportamento esperado:
-
-- `live` responde `200` com `status=ok` quando o processo está de pé
-- `ready` responde `200` com `status=ready` quando o banco está acessível
-- `ready` responde `503` com `status=not_ready` quando o banco está indisponível ou sem `DATABASE_URL`
-
-Logging operacional:
-
-- Logs HTTP incluem `requestId`, método, path (sem query string), status e latência
-- Em produção, respostas de erro interno (`500`) são sanitizadas para não expor detalhes sensíveis
-- O header `x-request-id` é retornado em todas as respostas para facilitar correlação de logs
-
-Hardening HTTP:
-
-- `helmet` habilitado no bootstrap da API
-- `contentSecurityPolicy` e `crossOriginEmbedderPolicy` desativados para manter compatibilidade com Swagger em `/api/docs`
-
-## Fluxo de autenticação
-
-- Inicie em `GET /api/auth/google`
-- O callback `GET /api/auth/google/callback` emite um JWT e salva em cookie HttpOnly
-- O popup OAuth sinaliza sucesso/erro via `postMessage` restrito ao `WEB_APP_URL`
-- `POST /api/auth/logout` limpa o cookie de autenticação
-- `GET /api/auth/me` retorna o perfil autenticado
-- Rotas protegidas aceitam cookie HttpOnly (com fallback opcional para `Authorization: Bearer`)
-
-Restrição de acesso atual:
-
-- Apenas e-mails ativos na tabela `AllowedEmail`
-- Valor inicial incluído no seed: `pedroaugustogabironzani@gmail.com`
-
-## Endpoints de template
-
-- `GET /api/core/session-check`: verifica sessão autenticada do Core
-- `GET /api/settings`: retorna a visão geral estática do módulo Settings
-
-## Banco local com Docker
-
-```bash
-docker compose up -d
-```
+See [backend boundaries](./docs/backend-boundaries.md), [environment docs](../../docs/env.md), and [access-control docs](../../docs/access-control.md).

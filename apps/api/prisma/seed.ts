@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
+import { isEmail } from 'class-validator';
 import {
   ACCESS_CONTROL_CORE_PERMISSIONS,
   ACCESS_CONTROL_PERMISSION_GROUPS,
@@ -17,8 +18,6 @@ const prisma = new PrismaClient({
     connectionString: databaseUrl,
   }),
 });
-
-const PRIMARY_ALLOWED_EMAIL = 'pedroaugustogabironzani@gmail.com';
 
 const DEFAULT_ROLE_DEFINITIONS = [
   {
@@ -85,21 +84,6 @@ const DEFAULT_ROLE_DEFINITIONS = [
     permissionKeys: ['tasks:access', 'tasks:read'],
   },
 ] as const;
-
-async function seedAllowedEmails() {
-  await prisma.allowedEmail.upsert({
-    where: { email: PRIMARY_ALLOWED_EMAIL },
-    update: {
-      isActive: true,
-      note: 'Primary owner access',
-    },
-    create: {
-      email: PRIMARY_ALLOWED_EMAIL,
-      isActive: true,
-      note: 'Primary owner access',
-    },
-  });
-}
 
 async function seedDemoUser() {
   await prisma.user.upsert({
@@ -233,12 +217,70 @@ async function seedRoles(permissionRows: Map<string, { id: string }>) {
   }
 }
 
+async function seedInitialAdmin() {
+  const initialAdminEmail = process.env.INITIAL_ADMIN_EMAIL
+    ?.trim()
+    .toLowerCase();
+
+  if (!initialAdminEmail) {
+    return;
+  }
+
+  if (!isEmail(initialAdminEmail)) {
+    throw new Error('INITIAL_ADMIN_EMAIL must be a valid email address');
+  }
+
+  const [existingAllowedEmail, existingUser] = await Promise.all([
+    prisma.allowedEmail.findUnique({
+      where: { email: initialAdminEmail },
+      select: { id: true },
+    }),
+    prisma.user.findUnique({
+      where: { email: initialAdminEmail },
+      select: { id: true },
+    }),
+  ]);
+
+  if (existingAllowedEmail || existingUser) {
+    return;
+  }
+
+  await prisma.allowedEmail.create({
+    data: {
+      email: initialAdminEmail,
+      isActive: true,
+      note: 'Seed administrator access',
+    },
+  });
+
+  const user = await prisma.user.create({
+    data: {
+      email: initialAdminEmail,
+      name: 'Seed Administrator',
+      provider: 'google',
+      providerUserId: `seed-admin:${initialAdminEmail}`,
+    },
+    select: { id: true },
+  });
+  const adminRole = await prisma.role.findUniqueOrThrow({
+    where: { key: 'admin' },
+    select: { id: true },
+  });
+
+  await prisma.userRole.create({
+    data: {
+      userId: user.id,
+      roleId: adminRole.id,
+    },
+  });
+}
+
 async function main() {
-  await seedAllowedEmails();
   await seedDemoUser();
 
   const permissionRows = await seedPermissions();
   await seedRoles(permissionRows);
+  await seedInitialAdmin();
 }
 
 main()

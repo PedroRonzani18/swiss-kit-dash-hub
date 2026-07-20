@@ -9,8 +9,6 @@ import type {
 import { mapUserFromPersistence } from '@/common/mappers';
 import { AUTH_PROVIDER } from '@/common/enums';
 
-const PRIMARY_OWNER_EMAIL = 'pedroaugustogabironzani@gmail.com';
-const ADMIN_ROLE_KEY = 'admin';
 const MEMBER_ROLE_KEY = 'member';
 
 const userSelect = {
@@ -135,23 +133,24 @@ export class AuthRepository {
       },
     });
 
-    await this.assignDefaultRole(record.id, record.email);
+    await this.assignMemberRoleWhenUnassigned(record.id);
 
     return mapUserFromPersistence(record as UserRow);
   }
 
-  private async assignDefaultRole(
-    userId: string,
-    email: string,
-  ): Promise<void> {
-    const roleKey =
-      email.toLowerCase() === PRIMARY_OWNER_EMAIL
-        ? ADMIN_ROLE_KEY
-        : MEMBER_ROLE_KEY;
+  private async assignMemberRoleWhenUnassigned(userId: string): Promise<void> {
+    const existingAssignment = await this.prisma.userRole.findFirst({
+      select: { userId: true },
+      where: { userId },
+    });
+
+    if (existingAssignment) {
+      return;
+    }
 
     const role = await this.prisma.role.findUnique({
       select: { id: true },
-      where: { key: roleKey },
+      where: { key: MEMBER_ROLE_KEY },
     });
 
     if (!role) {
