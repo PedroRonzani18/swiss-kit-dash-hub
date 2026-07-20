@@ -1,10 +1,43 @@
+import { useState, type FormEvent } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/auth";
+import { createOrReactivateUser, updateUserStatus } from "@/api/users";
+import { usersKeys } from "@/api/queryKeys";
 import { AppLayout } from "@/components/AppLayout";
 import { useUsersOverview } from "@/features/users/hooks/useUsersOverview";
 import { useTranslation } from "react-i18next";
 
 export function UsersPage() {
   const usersOverviewQuery = useUsersOverview();
+  const queryClient = useQueryClient();
+  const { can } = useAuth();
   const { t } = useTranslation();
+  const [email, setEmail] = useState("");
+  const [note, setNote] = useState("");
+  const canCreate = can("users:create");
+  const canUpdate = can("users:update");
+
+  const createMutation = useMutation({
+    mutationFn: createOrReactivateUser,
+    onSuccess: async () => {
+      setEmail("");
+      setNote("");
+      await queryClient.invalidateQueries({ queryKey: usersKeys.overview() });
+    },
+  });
+
+  const statusMutation = useMutation({
+    mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) =>
+      updateUserStatus(id, { isActive }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: usersKeys.overview() });
+    },
+  });
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    createMutation.mutate({ email, note: note || null });
+  }
 
   return (
     <AppLayout
@@ -27,6 +60,42 @@ export function UsersPage() {
             </p>
           </div>
         </div>
+
+        {canCreate ? (
+          <form
+            className="grid gap-3 rounded-2xl border border-border/70 bg-card/70 p-5 shadow-sm md:grid-cols-[1fr_1fr_auto]"
+            onSubmit={handleSubmit}
+          >
+            <input
+              className="rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder={t("users.emailPlaceholder")}
+              required
+              type="email"
+              value={email}
+            />
+            <input
+              className="rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
+              onChange={(event) => setNote(event.target.value)}
+              placeholder={t("users.notePlaceholder")}
+              type="text"
+              value={note}
+            />
+            <button
+              className="rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={createMutation.isPending}
+              type="submit"
+            >
+              {createMutation.isPending ? t("users.saving") : t("users.add")}
+            </button>
+          </form>
+        ) : null}
+
+        {createMutation.isError ? (
+          <div className="rounded-2xl border border-destructive/40 bg-destructive/10 p-5 text-sm text-destructive shadow-sm">
+            {t("users.saveError")}
+          </div>
+        ) : null}
 
         {usersOverviewQuery.isLoading ? (
           <div className="rounded-2xl border border-border/70 bg-card/70 p-5 text-sm text-muted-foreground shadow-sm">
@@ -64,12 +133,39 @@ export function UsersPage() {
                       <p className="text-sm text-muted-foreground">
                         {user.email}
                       </p>
+                      {user.note ? (
+                        <p className="text-sm text-muted-foreground">{user.note}</p>
+                      ) : null}
                     </div>
-                    <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                      {t(`common.providers.${user.provider}`, {
-                        defaultValue: user.provider,
-                      })}
-                    </p>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                        {user.isActive
+                          ? t("common.status.active")
+                          : t("common.status.inactive")}
+                      </span>
+                      <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                        {user.provider
+                          ? t(`common.providers.${user.provider}`, {
+                              defaultValue: user.provider,
+                            })
+                          : t("users.pending")}
+                      </span>
+                      {canUpdate ? (
+                        <button
+                          className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-foreground disabled:cursor-not-allowed disabled:opacity-60"
+                          disabled={statusMutation.isPending}
+                          onClick={() =>
+                            statusMutation.mutate({
+                              id: user.id,
+                              isActive: !user.isActive,
+                            })
+                          }
+                          type="button"
+                        >
+                          {user.isActive ? t("users.deactivate") : t("users.activate")}
+                        </button>
+                      ) : null}
+                    </div>
                   </div>
                 </article>
               ))}

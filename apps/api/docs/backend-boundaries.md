@@ -6,9 +6,9 @@ The API should remain a neutral Core baseline. Product-specific behavior can be 
 
 ## Current baseline
 
-The API currently registers `health`, `auth`, `core`, `settings`, `users`, `access-list`, `access-control`, and `tasks`. Consult the repository [capability matrix](../../../docs/current/capability-matrix.md) for classification: settings is Core / Partial and tasks is Reference / Implemented.
+The API currently registers `health`, `auth`, `core`, `settings`, `users`, `access-control`, and `tasks`. Consult the repository [capability matrix](../../../docs/current/capability-matrix.md) for classification: settings is Core / Partial and tasks is Reference / Implemented.
 
-Prisma persists Core auth/allowlist and local access-control records, including users, allowed emails, permission groups, permissions, roles, and direct/role assignments.
+Prisma persists Core authentication, user access state, and local access-control records, including users, permission groups, permissions, roles, and direct/role assignments.
 
 Files and notifications are Optional / Not implemented. Multi-tenancy is Out of scope / Not implemented. Do not add tenant isolation, Redis, S3, email delivery, queues, or external policy engines unless explicitly scoped.
 
@@ -193,7 +193,7 @@ Auth-sensitive changes include:
 - JWT;
 - Google OAuth;
 - CORS;
-- allowed email behavior;
+- user activation behavior;
 - user profile shape;
 - logout/session behavior.
 

@@ -31,7 +31,6 @@ modules.ts
 
 users.ts
 settings.ts
-allowed-emails.ts
 access-control.ts
 access-control-catalog.ts
 tasks.ts

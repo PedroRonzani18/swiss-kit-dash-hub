@@ -36,29 +36,11 @@ const DEFAULT_ROLE_DEFINITIONS = [
     permissionKeys: ['core:access', 'settings:access'],
   },
   {
-    key: 'allowed-emails-manager',
-    label: 'Allowed Emails Manager',
-    description:
-      'Manages allowed email entries for template access onboarding.',
-    permissionKeys: [
-      'allowed-emails:access',
-      'allowed-emails:read',
-      'allowed-emails:create',
-      'allowed-emails:update',
-    ],
-  },
-  {
-    key: 'allowed-emails-viewer',
-    label: 'Allowed Emails Viewer',
-    description: 'Views allowed email entries without changing them.',
-    permissionKeys: ['allowed-emails:access', 'allowed-emails:read'],
-  },
-  {
     key: 'users-manager',
     label: 'Users Manager',
     description:
-      'Template role for user visibility and future user-management operations.',
-    permissionKeys: ['users:access', 'users:read'],
+      'Manages user provisioning, activation, and directory visibility.',
+    permissionKeys: ['users:access', 'users:read', 'users:create', 'users:update'],
   },
   {
     key: 'users-viewer',
@@ -230,35 +212,21 @@ async function seedInitialAdmin() {
     throw new Error('INITIAL_ADMIN_EMAIL must be a valid email address');
   }
 
-  const [existingAllowedEmail, existingUser] = await Promise.all([
-    prisma.allowedEmail.findUnique({
-      where: { email: initialAdminEmail },
-      select: { id: true },
-    }),
-    prisma.user.findUnique({
-      where: { email: initialAdminEmail },
-      select: { id: true },
-    }),
-  ]);
+  const existingUser = await prisma.user.findUnique({
+    where: { email: initialAdminEmail },
+    select: { id: true },
+  });
 
-  if (existingAllowedEmail || existingUser) {
+  if (existingUser) {
     return;
   }
-
-  await prisma.allowedEmail.create({
-    data: {
-      email: initialAdminEmail,
-      isActive: true,
-      note: 'Seed administrator access',
-    },
-  });
 
   const user = await prisma.user.create({
     data: {
       email: initialAdminEmail,
+      isActive: true,
+      note: 'Seed administrator access',
       name: 'Seed Administrator',
-      provider: 'google',
-      providerUserId: `seed-admin:${initialAdminEmail}`,
     },
     select: { id: true },
   });

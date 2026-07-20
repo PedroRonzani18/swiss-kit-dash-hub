@@ -15,67 +15,94 @@ const user = {
 };
 
 describe('AuthRepository', () => {
-  const prisma = {
+  const transaction = {
     user: {
-      upsert: jest.fn(),
-    },
-    role: {
       findUnique: jest.fn(),
+      updateMany: jest.fn(),
+      findUniqueOrThrow: jest.fn(),
     },
-    userRole: {
-      findFirst: jest.fn(),
-      upsert: jest.fn(),
-    },
+    role: { findUnique: jest.fn() },
+    userRole: { findFirst: jest.fn(), upsert: jest.fn() },
   };
+  const prisma = { $transaction: jest.fn() };
 
   let repository: AuthRepository;
 
   beforeEach(() => {
     jest.resetAllMocks();
     repository = new AuthRepository(prisma as unknown as PrismaService);
-    prisma.user.upsert.mockResolvedValue(user);
-    prisma.userRole.findFirst.mockResolvedValue(null);
-    prisma.role.findUnique.mockResolvedValue({ id: 'role-1' });
+    prisma.$transaction.mockImplementation((callback) => callback(transaction));
+    transaction.user.findUnique
+      .mockResolvedValueOnce({
+        id: user.id,
+        isActive: true,
+        providerUserId: null,
+      })
+      .mockResolvedValueOnce(null);
+    transaction.user.updateMany.mockResolvedValue({ count: 1 });
+    transaction.user.findUniqueOrThrow.mockResolvedValue(user);
+    transaction.userRole.findFirst.mockResolvedValue(null);
+    transaction.role.findUnique.mockResolvedValue({ id: 'role-1' });
   });
 
-  it('assigns the member role to a user with no role assignments', async () => {
-    await repository.upsertGoogleUser({
-      email: 'initial-admin@swisskit.test',
-      name: 'Initial Admin',
-      avatarUrl: null,
-      providerUserId: 'google-user-1',
-    });
+  it('claims an active unbound user and assigns the member role', async () => {
+    await expect(
+      repository.claimGoogleUser({
+        email: user.email,
+        name: user.name,
+        avatarUrl: null,
+        providerUserId: user.providerUserId,
+      }),
+    ).resolves.toMatchObject({ status: 'claimed', user: { id: user.id } });
 
-    expect(prisma.role.findUnique).toHaveBeenCalledWith({
-      select: { id: true },
-      where: { key: 'member' },
-    });
-    expect(prisma.userRole.upsert).toHaveBeenCalledWith({
-      where: {
-        userId_roleId: {
-          userId: user.id,
-          roleId: 'role-1',
-        },
-      },
-      update: {},
-      create: {
-        userId: user.id,
-        roleId: 'role-1',
-      },
-    });
+    expect(transaction.user.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ isActive: true }),
+      }),
+    );
   });
 
-  it('preserves existing role assignments on later logins', async () => {
-    prisma.userRole.findFirst.mockResolvedValue({ userId: user.id });
+  it('rejects an inactive or unknown email without creating a user', async () => {
+    transaction.user.findUnique.mockReset();
+    transaction.user.findUnique
+      .mockResolvedValueOnce({
+        id: user.id,
+        isActive: false,
+        providerUserId: null,
+      })
+      .mockResolvedValueOnce(null);
 
-    await repository.upsertGoogleUser({
-      email: user.email,
-      name: user.name,
-      avatarUrl: null,
-      providerUserId: user.providerUserId,
-    });
+    await expect(
+      repository.claimGoogleUser({
+        email: user.email,
+        name: user.name,
+        avatarUrl: null,
+        providerUserId: user.providerUserId,
+      }),
+    ).resolves.toEqual({ status: 'not-allowed' });
 
-    expect(prisma.role.findUnique).not.toHaveBeenCalled();
-    expect(prisma.userRole.upsert).not.toHaveBeenCalled();
+    expect(transaction.user.updateMany).not.toHaveBeenCalled();
+  });
+
+  it('does not rebind a Google identity owned by another user', async () => {
+    transaction.user.findUnique.mockReset();
+    transaction.user.findUnique
+      .mockResolvedValueOnce({
+        id: user.id,
+        isActive: true,
+        providerUserId: null,
+      })
+      .mockResolvedValueOnce({ id: 'other-user' });
+
+    await expect(
+      repository.claimGoogleUser({
+        email: user.email,
+        name: user.name,
+        avatarUrl: null,
+        providerUserId: user.providerUserId,
+      }),
+    ).resolves.toEqual({ status: 'identity-conflict' });
+
+    expect(transaction.user.updateMany).not.toHaveBeenCalled();
   });
 });

@@ -44,11 +44,7 @@
       },
       "users": {
         "label": "Usuários",
-        "description": "Usuários autenticados do template."
-      },
-      "allowedEmails": {
-        "label": "E-mails permitidos",
-        "description": "E-mails liberados para acesso ao template."
+        "description": "Diretório, provisionamento e ativação de usuários."
       },
       "accessControl": {
         "label": "Controle de acesso",
@@ -100,27 +96,18 @@
   "users": {
     "eyebrow": "Módulo do template",
     "title": "Usuários",
-    "description": "Módulo base para visualizar usuários autenticados sem adicionar administração, papéis ou permissões.",
+    "description": "Gerencie usuários provisionados e seus estados de acesso.",
     "loading": "Carregando usuários...",
     "error": "Não foi possível carregar os usuários.",
     "registered": "Usuários cadastrados",
     "count_one": "{{count}} usuário encontrado.",
-    "count_other": "{{count}} usuários encontrados."
-  },
-  "allowedEmails": {
-    "eyebrow": "Base de acesso",
-    "title": "E-mails permitidos",
-    "description": "E-mails liberados para acessar o template, com cadastro e controles básicos de ativação e sem RBAC completo.",
+    "count_other": "{{count}} usuários encontrados.",
     "emailPlaceholder": "usuario@exemplo.com",
     "notePlaceholder": "Observação opcional",
     "saving": "Salvando...",
     "add": "Adicionar",
-    "saveError": "Não foi possível salvar o e-mail.",
-    "loading": "Carregando e-mails...",
-    "loadError": "Não foi possível carregar a lista de e-mails.",
-    "registered": "E-mails cadastrados",
-    "count_one": "{{count}} e-mail encontrado.",
-    "count_other": "{{count}} e-mails encontrados.",
+    "saveError": "Não foi possível salvar o usuário.",
+    "pending": "Pendente",
     "activate": "Ativar",
     "deactivate": "Desativar"
   },
@@ -199,11 +186,7 @@
         },
         "users": {
           "label": "Usuários",
-          "description": "Visibilidade do diretório e perfis de usuários autenticados."
-        },
-        "allowed-emails": {
-          "label": "E-mails permitidos",
-          "description": "Administração da lista de e-mails permitidos."
+          "description": "Diretório, provisionamento e ativação de usuários."
         },
         "access-control": {
           "label": "Controle de acesso",
@@ -234,25 +217,15 @@
           },
           "read": {
             "label": "Ler usuários",
-            "description": "Permite ler perfis de usuários autenticados."
-          }
-        },
-        "allowed-emails": {
-          "access": {
-            "label": "Acessar e-mails permitidos",
-            "description": "Permite acessar o módulo de e-mails permitidos."
-          },
-          "read": {
-            "label": "Ler e-mails permitidos",
-            "description": "Permite ler entradas de e-mails permitidos."
+            "description": "Permite ler perfis de usuários."
           },
           "create": {
-            "label": "Criar e-mails permitidos",
-            "description": "Permite criar entradas de e-mails permitidos."
+            "label": "Criar usuários",
+            "description": "Permite provisionar e reativar usuários."
           },
           "update": {
-            "label": "Atualizar e-mails permitidos",
-            "description": "Permite ativar ou desativar entradas de e-mails permitidos."
+            "label": "Atualizar usuários",
+            "description": "Permite ativar ou desativar usuários."
           }
         },
         "access-control": {
@@ -289,17 +262,9 @@
           "label": "Membro",
           "description": "Papel básico para membros autenticados do template Swiss Kit."
         },
-        "allowed-emails-manager": {
-          "label": "Gestor de e-mails permitidos",
-          "description": "Gerencia entradas de e-mails permitidos para o onboarding de acesso do template."
-        },
-        "allowed-emails-viewer": {
-          "label": "Leitor de e-mails permitidos",
-          "description": "Visualiza entradas de e-mails permitidos sem alterá-las."
-        },
         "users-manager": {
           "label": "Gestor de usuários",
-          "description": "Papel do template para visibilidade de usuários e futuras operações de gestão."
+          "description": "Gerencia provisionamento, ativação e visibilidade de usuários."
         },
         "users-viewer": {
           "label": "Leitor de usuários",

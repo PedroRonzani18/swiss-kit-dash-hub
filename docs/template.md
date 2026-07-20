@@ -14,7 +14,7 @@ Core currently centers on:
 - NestJS API;
 - Google OAuth with HttpOnly cookie session;
 - protected `/app` area;
-- users and allowed emails baseline;
+- users and access provisioning baseline;
 - health checks;
 - shared contracts;
 - pnpm workspaces and Turbo orchestration;

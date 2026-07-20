@@ -9,7 +9,7 @@ Current routeable modules are:
 - `users`
 - `access-control`
 - `settings`
-- `access-list` (route/capability `allowed-emails`)
+- `users` (directory, provisioning, and activation)
 - `tasks` (Reference / Implemented)
 
 `settings` is Core / Partial. Files and notifications are Optional / Not implemented; multi-tenancy is Out of scope / Not implemented. See [the runtime matrix](../../../../docs/current/capability-matrix.md).

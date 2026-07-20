@@ -14,19 +14,19 @@ The web sends cookie-authenticated requests through its fetch client. The API ap
 
 ## Active modules
 
-The API registers `auth`, `core`, `health`, `settings`, `users`, `access-list`, `access-control`, and `tasks`. The web registry exposes routes for `core`, `settings`, `users`, `allowed-emails`, `access-control`, and `tasks`; `access-list` is the backend module name for the allowed-email capability.
+The API registers `auth`, `core`, `health`, `settings`, `users`, `access-control`, and `tasks`. The web registry exposes routes for `core`, `settings`, `users`, `access-control`, and `tasks`.
 
 `tasks` is the implemented reference module. `settings` is Core but partial: it returns and renders static sections only. See the [capability matrix](./current/capability-matrix.md).
 
 ## Authentication and bootstrap
 
-Google OAuth starts at `/api/auth/google`. On callback the API verifies that the normalized email is active in `AllowedEmail`, upserts the user, issues a JWT in an HttpOnly cookie, and returns effective roles and permissions from `/api/auth/me`.
+Google OAuth starts at `/api/auth/google`. On callback the API verifies that the normalized email belongs to an active user, atomically binds an unbound Google identity, issues a JWT in an HttpOnly cookie, and returns effective roles and permissions from `/api/auth/me`.
 
-`INITIAL_ADMIN_EMAIL` is optional seed-only configuration. When present for an email with no existing user or allowlist record, Prisma seed creates its allowed email, placeholder user, and persistent `admin` assignment. Runtime does not read it: Google login updates the matching placeholder user and preserves existing roles, while users with no role assignments receive `member` when that role exists. The seed never reactivates or promotes an existing record from this variable.
+`INITIAL_ADMIN_EMAIL` is optional seed-only configuration. When present for an email with no existing user, Prisma seed creates an active unbound user and persistent `admin` assignment. Runtime does not read it: Google login binds the matching user while preserving existing roles, and users with no role assignments receive `member` when that role exists. The seed never reactivates or promotes an existing record from this variable.
 
 ## Persistence
 
-Prisma persists Core authentication/allowlist data and local access-control data: users, allowed emails, permission groups, permissions, roles, and direct/role permission assignments. There is no tenant model or tenant-aware query path.
+Prisma persists Core authentication and local access-control data: users, permission groups, permissions, roles, and direct/role permission assignments. There is no tenant model or tenant-aware query path.
 
 ## Operational surface
 

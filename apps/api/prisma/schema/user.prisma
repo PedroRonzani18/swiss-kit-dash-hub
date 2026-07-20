@@ -3,12 +3,16 @@ model User {
   email         String        @unique
   name          String?
   avatarUrl     String?
-  provider      AuthProvider  @default(google)
-  providerUserId String       @unique
+  isActive      Boolean       @default(true)
+  note          String?
+  provider      AuthProvider?
+  providerUserId String?      @unique
   lastLoginAt   DateTime?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
   roles             UserRole[]
   directPermissions UserPermission[]
+
+  @@index([isActive])
 }

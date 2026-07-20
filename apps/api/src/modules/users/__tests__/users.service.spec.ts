@@ -9,6 +9,8 @@ describe('UsersService', () => {
       email: 'user@example.com',
       name: 'User Name',
       avatarUrl: null,
+      isActive: true,
+      note: null,
       provider: 'google',
       lastLoginAt: null,
       createdAt: '2026-07-04T21:00:00.000Z',

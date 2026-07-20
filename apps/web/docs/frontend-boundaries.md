@@ -40,7 +40,7 @@ Current shell entrypoints:
 - `/` redirects by auth state.
 - `/login` is public-only.
 - `/app` is the protected neutral Core shell.
-- `/settings`, `/users`, `/allowed-emails`, and `/access-control` are protected Core module routes.
+- `/settings`, `/users`, and `/access-control` are protected Core module routes.
 - `/tasks` is an example module for template authors.
 - `*` falls through to the Not Found page.
 

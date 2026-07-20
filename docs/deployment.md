@@ -5,7 +5,7 @@ No estado atual do repositório:
 - o deploy é operacional (configurado no provider), não versionado como IaC neste repo;
 - não existe `railway.toml` no código-fonte;
 - o projeto é publicado com frontend e API em serviços separados no Railway;
-- a baseline Prisma é Core e contém autenticação, allowlist e access-control local.
+- a baseline Prisma é Core e contém autenticação, estado de acesso do usuário e access-control local.
 
 ## Topologia de publicação
 - Serviço `web` (frontend Vite buildado e servido pelo serviço web).
@@ -64,4 +64,4 @@ Para autenticação Google funcionar em produção:
 - CORS incorreto impede envio de credenciais/cookies do browser.
 - `AUTH_COOKIE_SAME_SITE=none` sem `AUTH_COOKIE_SECURE=true` quebra autenticação.
 - `DATABASE_URL` ausente/errado mantém API de pé, mas readiness ficará indisponível.
-- Acesso depende de e-mail ativo em `AllowedEmail`. Quando definido para um e-mail sem registros existentes, `INITIAL_ADMIN_EMAIL` faz o seed criar o e-mail permitido, o usuário placeholder e a atribuição `admin`; ele não altera acessos existentes.
+- Acesso depende de um `User` ativo. Quando definido para um e-mail sem usuário, `INITIAL_ADMIN_EMAIL` faz o seed criar um administrador ativo sem identidade Google e atribuir `admin`; ele não altera acessos existentes.

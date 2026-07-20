@@ -13,7 +13,7 @@ This documents variables validated or consumed by the current runtime, plus the 
 | Variable | Required | Meaning |
 | --- | --- | --- |
 | `DATABASE_URL` | Runtime optional; required for database-backed features and seed | PostgreSQL connection string. |
-| `INITIAL_ADMIN_EMAIL` | No; seed only | When present for an email with no user or allowlist record, seed creates an allowed user with the persistent `admin` role; API runtime does not validate or read it. |
+| `INITIAL_ADMIN_EMAIL` | No; seed only | When present for an email with no user record, seed creates an active administrator with the persistent `admin` role; API runtime does not validate or read it. |
 | `JWT_SECRET` | Yes | JWT signing secret. |
 | `JWT_EXPIRES_IN` | No | JWT duration; defaults to `1d`. |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_CALLBACK_URL` | Yes | Google OAuth configuration. |
@@ -29,6 +29,6 @@ This documents variables validated or consumed by the current runtime, plus the 
 
 ## Seed administrator
 
-Set `INITIAL_ADMIN_EMAIL` only when the seed should provision an administrator. When that email has no existing user or allowlist record, seed creates the allowed-email record, a placeholder user, and the persistent `admin` assignment. On the first Google login with that email, runtime updates the placeholder profile and provider ID while retaining the assignment.
+Set `INITIAL_ADMIN_EMAIL` only when the seed should provision an administrator. When that email has no existing user record, seed creates an active user without a Google identity and assigns `admin`. On the first Google login with that email, runtime binds the Google identity while retaining the assignment.
 
 When the variable is absent, or either record already exists, seed skips administrator provisioning. It never reactivates or promotes existing access. Runtime login assigns `member` only to users with no role assignments.

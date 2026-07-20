@@ -9,7 +9,7 @@ Current active modules:
 - `health`
 - `settings` (Core / Partial: static overview)
 - `users` (Core / Implemented)
-- `access-list` (Core / Implemented; HTTP capability is `allowed-emails`)
+- `users` (Core / Implemented; directory, provisioning, and activation)
 - `access-control` (Core / Implemented)
 - `tasks` (Reference / Implemented; static module-authoring example)
 
@@ -75,7 +75,7 @@ Treat these changes as high risk:
 - cookies;
 - JWT;
 - CORS;
-- allowed emails;
+- user activation;
 - Prisma schema;
 - migrations;
 - environment validation;

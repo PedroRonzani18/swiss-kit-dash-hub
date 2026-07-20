@@ -14,7 +14,7 @@ Prioritized from the current runtime. These are not commitments or a roadmap.
 | --- | --- | --- | --- | --- |
 | Administrator provisioning is seed-driven: `INITIAL_ADMIN_EMAIL` creates access only for a new email and never restores existing access. | Authentication, seed, and access-control onboarding require careful environment use. | Define the variable only when provisioning the intended administrator; manage existing access changes explicitly. | No | Administrator management policy |
 | Access-control administration is read-only. | Persisted roles, direct grants, and assignments are enforced but cannot be managed in the app. | Add management APIs/UI only under a separate authorization scope. | No | Access-control administration |
-| Allowlist administration needs an existing privileged user. | There is no separate invitation or recovery workflow after bootstrap. | Decide whether a reusable recovery or invitation pattern belongs in Core or an optional module. | No | Access onboarding/recovery |
+| User provisioning needs an existing privileged user. | There is no separate invitation or recovery workflow after bootstrap. | Decide whether a reusable recovery or invitation pattern belongs in Core or an optional module. | No | Access onboarding/recovery |
 
 ## Improvement
 

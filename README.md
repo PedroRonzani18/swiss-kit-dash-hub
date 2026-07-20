@@ -6,7 +6,7 @@ The checked-in runtime is documented in [docs/current](./docs/current/README.md)
 
 ## Current baseline
 
-- **Core / implemented:** Google OAuth, HttpOnly JWT cookie session, allowed-email access list, users overview, local access control, health checks, web shell, and shared contracts.
+- **Core / implemented:** Google OAuth, HttpOnly JWT cookie session, user provisioning and activation, local access control, health checks, web shell, and shared contracts.
 - **Core / partial:** settings has a protected static overview but no persistence or editing.
 - **Reference / implemented:** tasks demonstrates the complete web/API/contracts module path with static data.
 - **Optional / not implemented:** files and notifications.
@@ -29,7 +29,7 @@ pnpm --filter api prisma:seed
 pnpm dev
 ```
 
-Set the required API runtime variables before starting. Optionally set `INITIAL_ADMIN_EMAIL` when running `prisma:seed` to create a new allowed user with the persistent `admin` role. Existing users and allowlist records are never changed by this flag. The running API never reads it. See [environment configuration](./docs/env.md).
+Set the required API runtime variables before starting. Optionally set `INITIAL_ADMIN_EMAIL` when running `prisma:seed` to create a new active administrator with the persistent `admin` role. Existing users are never changed by this flag. The running API never reads it. See [environment configuration](./docs/env.md).
 
 Default local URLs:
 

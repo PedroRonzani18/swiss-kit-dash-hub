@@ -45,7 +45,7 @@ Examples:
 ```text
 users:access
 users:read
-allowed-emails:create
+users:create
 access-control:manage
 ```
 
@@ -106,19 +106,11 @@ member
 Area-specific roles:
 
 ```text
-allowed-emails-manager
-  allowed-emails:access
-  allowed-emails:read
-  allowed-emails:create
-  allowed-emails:update
-
-allowed-emails-viewer
-  allowed-emails:access
-  allowed-emails:read
-
 users-manager
   users:access
   users:read
+  users:create
+  users:update
 
 users-viewer
   users:access
@@ -134,7 +126,7 @@ tasks-viewer
   tasks:read
 ```
 
-`users-manager` is intentionally seeded now even though the current template does not expose user write permissions yet. In this baseline, it is equivalent to `users-viewer` until write permissions are introduced.
+`users-manager` can provision/reactivate users and update their activation state.
 
 On Google login, users with no role assignments receive the seeded `member` role when it exists. Existing assignments are preserved:
 
@@ -143,7 +135,7 @@ no UserRole assignment -> member
 existing UserRole assignment -> unchanged
 ```
 
-`INITIAL_ADMIN_EMAIL` is an optional seed-only variable. When present for an email without an existing user or allowlist record, seed creates the allowed email, placeholder user, and `admin` assignment. The running API never reads it and seed never reactivates or promotes an existing record from this variable.
+`INITIAL_ADMIN_EMAIL` is an optional seed-only variable. When present for an email without an existing user, seed creates an active unbound user and `admin` assignment. The running API never reads it and seed never reactivates or promotes an existing record from this variable.
 
 ## Frontend filtering
 
