@@ -2,19 +2,24 @@
   "name": "swiss-kit-dash-hub",
   "private": true,
   "engines": {
-    "node": ">=24 <25"
+    "node": "24.x",
+    "pnpm": "10.x"
   },
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "scripts": {
+    "bootstrap": "node scripts/setup.mjs",
+    "check": "node scripts/check.mjs",
+    "test:scripts": "node --test scripts/*.test.mjs",
+    "verify": "node scripts/verify.mjs",
     "build": "turbo run build",
     "build:ci": "pnpm build",
     "lint": "turbo run lint",
     "lint:ci": "pnpm lint",
     "test": "turbo run test",
-    "test:ci": "pnpm test",
+    "test:ci": "pnpm test && pnpm test:api:integration",
     "typecheck": "turbo run typecheck",
     "typecheck:api": "pnpm --filter api typecheck",
     "typecheck:web": "pnpm --filter web typecheck",
@@ -28,10 +33,17 @@
     "test:web": "pnpm --filter web test",
     "test:web:e2e": "pnpm --filter web test:e2e",
     "test:web:watch": "pnpm --filter web test:watch",
-    "test:api": "pnpm --filter api test",
+    "test:api": "pnpm --filter api test:unit",
+    "test:api:integration": "pnpm --filter api test:integration",
     "lint:web": "pnpm --filter web lint",
     "lint:api": "pnpm --filter api lint",
-    "scaffold:module": "node scripts/scaffold-module.mjs"
+    "scaffold:module": "node scripts/scaffold-module.mjs",
+    "db:up": "node scripts/db.mjs up",
+    "db:down": "node scripts/db.mjs down",
+    "db:logs": "node scripts/db.mjs logs",
+    "db:status": "node scripts/db.mjs status",
+    "db:migrate": "node scripts/db.mjs migrate",
+    "db:seed": "node scripts/db.mjs seed"
   },
   "devDependencies": {
     "turbo": "^2.9.5"

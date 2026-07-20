@@ -1,4 +1,3 @@
-import { execFileSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import {
@@ -7,17 +6,25 @@ import {
   RUNTIME_ENV_PATH,
   RuntimeTestEnv,
 } from './test-env.constants';
+import { assertSafeIntegrationTestDatabaseUrl } from './test-database-url';
+import { runPinnedPnpm } from './run-pinned-pnpm';
 
-function resolveBaseDatabaseUrl(): string {
-  return (
-    process.env.TEST_DATABASE_URL ??
-    process.env.DATABASE_URL ??
-    'postgresql://postgres:postgres@localhost:5432/swisskit'
-  );
+function resolveTestDatabaseUrl(): string {
+  const testDatabaseUrl = process.env.TEST_DATABASE_URL;
+
+  if (!testDatabaseUrl) {
+    throw new Error(
+      'TEST_DATABASE_URL is required for API integration tests. DATABASE_URL is never used by integration tests.',
+    );
+  }
+
+  assertSafeIntegrationTestDatabaseUrl(testDatabaseUrl, 'TEST_DATABASE_URL');
+
+  return testDatabaseUrl;
 }
 
 function buildRuntimeEnv(): RuntimeTestEnv {
-  const baseDatabaseUrl = resolveBaseDatabaseUrl();
+  const baseDatabaseUrl = resolveTestDatabaseUrl();
   const databaseUrl = new URL(baseDatabaseUrl);
   databaseUrl.searchParams.delete('schema');
 
@@ -28,8 +35,7 @@ function buildRuntimeEnv(): RuntimeTestEnv {
 
 function runMigrations(env: Record<string, string>): void {
   try {
-    execFileSync(
-      'pnpm',
+    runPinnedPnpm(
       ['prisma', 'migrate', 'deploy', '--config', 'prisma.config.ts'],
       {
         cwd: API_ROOT_DIR,

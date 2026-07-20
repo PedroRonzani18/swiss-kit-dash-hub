@@ -1,10 +1,15 @@
 import path from 'node:path';
 
 export const API_ROOT_DIR = process.cwd();
-export const RUNTIME_ENV_PATH = path.resolve(
-  API_ROOT_DIR,
-  'test/setup/.runtime-test-env.json',
-);
+const runtimeEnvPath = process.env.API_TEST_RUNTIME_ENV_PATH;
+
+if (!runtimeEnvPath) {
+  throw new Error(
+    'API_TEST_RUNTIME_ENV_PATH is required for API integration tests. Use the test:integration command.',
+  );
+}
+
+export const RUNTIME_ENV_PATH = path.resolve(runtimeEnvPath);
 
 export const DEFAULT_TEST_ENV = {
   NODE_ENV: 'test',
