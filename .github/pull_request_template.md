@@ -1,23 +1,55 @@
+## Card Jira
+
+- Link:
+
+## Pipeline Codex
+
+- [ ] Escopo confirmado
+- [ ] Implementação
+- [ ] Revisão independente / validação
+
 ## Contexto
 
-Descreva rapidamente o problema, motivação ou necessidade desta alteração.
+Descreva o problema, motivação ou necessidade.
 
-## O que mudou
+## Alterações
 
-- 
+-
 
-## Como testar
+## Fora do escopo
 
-1. 
-2. 
+-
 
-## Riscos / impacto
+## Contratos e interfaces afetados
 
-Liste riscos, impactos em comportamento existente, migrações ou pontos de atenção.
+- [ ] Nenhum
+- [ ] Contratos compartilhados, API pública ou comportamento de interface (descrever abaixo)
 
-## Checklist
+## Banco e migrations
 
-- [ ] Li e segui o `CONTRIBUTING.md`
-- [ ] Validei localmente (`lint`, `test` e `build`)
-- [ ] Atualizei documentação quando necessário
-- [ ] Não incluí credenciais, dados sensíveis ou segredos no código
+- [ ] Nenhum
+- [ ] Migration, seed ou alteração de dados (descrever impacto e reversão)
+
+## Segurança
+
+- [ ] Nenhum impacto identificado
+- [ ] Auth, autorização, cookies, CORS, secrets ou dados sensíveis (descrever revisão)
+
+## Validação executada
+
+- [ ] `pnpm check`
+- [ ] `pnpm verify`
+- [ ] Outra (listar comando e resultado)
+
+## Validação não executada
+
+- [ ] Nenhuma
+- [ ] Descrever comando, motivo e risco residual
+
+## Riscos
+
+-
+
+## Follow-ups
+
+-

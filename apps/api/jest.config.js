@@ -2,7 +2,8 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   roots: ['<rootDir>/src', '<rootDir>/test'],
-  testMatch: ['**/*.spec.ts', '**/*.test.ts'],
+  testMatch: ['<rootDir>/src/**/*.spec.ts', '<rootDir>/src/**/*.test.ts', '<rootDir>/test/**/*.spec.ts'],
+  testPathIgnorePatterns: ['\\.integration\\.spec\\.ts$'],
   transform: {
     '^.+\\.ts$': [
       'ts-jest',
@@ -14,8 +15,5 @@ module.exports = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
-  setupFilesAfterEnv: ['<rootDir>/test/setup/load-test-env.ts'],
-  globalSetup: '<rootDir>/test/setup/global-setup.ts',
-  globalTeardown: '<rootDir>/test/setup/global-teardown.ts',
   maxWorkers: 1,
 };

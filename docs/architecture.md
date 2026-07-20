@@ -35,3 +35,9 @@ Prisma persists Core authentication and local access-control data: users, permis
 - `settings` and `tasks` endpoints deliberately return static reference/overview data.
 
 See [backend boundaries](../apps/api/docs/backend-boundaries.md) and [frontend boundaries](../apps/web/docs/frontend-boundaries.md) for ownership rules.
+
+## Local verification
+
+Node.js 24 is required and pinned in `.node-version`; pnpm is pinned in `package.json`. `pnpm bootstrap` verifies the pinned pnpm version, runs its child package-manager commands through Corepack, installs the lockfile, creates missing local environment files without overwriting existing ones, and generates the API Prisma client. `pnpm check` is intentionally Docker-free and runs linting, typechecks, Prisma generation, web tests, and API unit tests.
+
+`pnpm verify` owns a separate temporary PostgreSQL Compose project. It passes only `TEST_DATABASE_URL` to integration tests; the API test setup rejects URLs unless the database name ends in `_test` and the URL has the `swisskit-integration-test` application marker. The verification script removes its containers and volumes on exit. Persistent local development database commands remain under `pnpm db:*`.

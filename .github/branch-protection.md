@@ -2,9 +2,8 @@
 
 Configure required status checks in GitHub rulesets using this exact PR check:
 
-- `PR CI / quality-gate`
+- `CI / quality-gate`
 
 Notes:
 
-- This check is produced only on `pull_request`, avoiding duplicate contexts from `push`.
-- `Main CI / quality-gate-main` runs on `main` after merge and should not be required for PR merge.
+- This workflow runs for pull requests, `main`, and manual dispatch. Require this check for pull requests.

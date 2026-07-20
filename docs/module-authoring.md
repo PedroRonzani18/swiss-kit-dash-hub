@@ -8,27 +8,27 @@ A module should be a vertical slice with clear ownership across frontend, backen
 
 ## Fast start
 
-Use the scaffold for the web shell pieces:
+Use the scaffold for the local starter files:
 
 ```bash
-pnpm scaffold:module <module-id>
+pnpm scaffold:module -- <module-id> --type <web-only|api-only|contracts-only|full-stack>
 ```
 
 Example:
 
 ```bash
-pnpm scaffold:module tasks
+pnpm scaffold:module -- tasks --type full-stack
 ```
 
-The scaffold creates:
+The scaffold creates only the selected local files:
 
 ```text
 apps/web/src/modules/<module>/pages/<Module>Page.tsx
-apps/web/src/features/<module>/hooks/use<Module>Overview.ts
-apps/web/src/api/<module>.ts
+apps/api/src/modules/<module>/<module>.{controller,service,module}.ts
+packages/contracts/src/<module>.ts
 ```
 
-It does not modify the module registry automatically. After running it, register the module in `apps/web/src/app/navigation/modules.ts`.
+It does not modify route/navigation registries, API module imports, permissions, or contract barrel exports. Add only the required registrations after implementing the feature.
 
 Use the `tasks` module as the full-stack reference implementation.
 
