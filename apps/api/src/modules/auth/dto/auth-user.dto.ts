@@ -4,10 +4,10 @@ export class AuthUserDto {
   @ApiProperty({ format: 'uuid' })
   id: string;
 
-  @ApiProperty({ example: 'pedroaugustogabironzani@gmail.com' })
+  @ApiProperty({ example: 'user@example.com' })
   email: string;
 
-  @ApiProperty({ nullable: true, example: 'Pedro Ronzani' })
+  @ApiProperty({ nullable: true, example: 'Example User' })
   name: string | null;
 
   @ApiProperty({ example: 'google' })
