@@ -4,6 +4,8 @@
 
 Swiss Kit Core is a reusable monorepo baseline for web systems.
 
+The active implementation and classifications are maintained in [docs/current](./current/README.md); this document describes direction, not a feature inventory.
+
 It should provide the stable foundation that most systems need without forcing enterprise complexity into every new project.
 
 Core currently centers on:

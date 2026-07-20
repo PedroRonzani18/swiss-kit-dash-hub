@@ -70,6 +70,8 @@ notifications
 tasks
 ```
 
+Current classification matters: `tasks` is Reference / Implemented; `settings` is Core / Partial; `files` and `notifications` are Optional / Not implemented. Multi-tenancy is Out of scope / Not implemented.
+
 Avoid client-specific, product-specific or legacy domain names in Core.
 
 ## Frontend module shape

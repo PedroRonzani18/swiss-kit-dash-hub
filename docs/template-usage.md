@@ -2,6 +2,8 @@
 
 Swiss Kit Core is a template-core for new internal systems.
 
+Check [docs/current](./current/README.md) first: `tasks` is **Reference / Implemented**, while files and notifications are Optional / Not implemented and multi-tenancy is Out of scope / Not implemented.
+
 Use it when you need:
 
 - Google OAuth authentication;
@@ -64,10 +66,10 @@ The frontend filter is UX only. API guards remain the security boundary.
 
 Keep these as optional presets or product-specific extensions:
 
-- multi-tenant authorization;
 - Redis sessions;
 - S3/file storage;
 - email delivery;
-- i18n;
 - complex role management UI;
 - client-specific modules.
+
+Multi-tenancy is not an optional preset in the current baseline: it is **Out of scope / Not implemented** and requires an explicit architectural decision before work begins.

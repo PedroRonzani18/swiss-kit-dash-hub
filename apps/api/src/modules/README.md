@@ -2,19 +2,22 @@
 
 This directory contains routeable backend capabilities for the Swiss Kit API.
 
-Current Core baseline modules:
+Current active modules:
 
 - `auth`
 - `core`
 - `health`
+- `settings` (Core / Partial: static overview)
+- `users` (Core / Implemented)
+- `access-list` (Core / Implemented; HTTP capability is `allowed-emails`)
+- `access-control` (Core / Implemented)
+- `tasks` (Reference / Implemented; static module-authoring example)
 
-Future template modules may include:
+Optional / Not implemented: `files`, `notifications`.
 
-- `users`
-- `access-control`
-- `settings`
-- `files`
-- `notifications`
+Out of scope / Not implemented: multi-tenancy.
+
+The repository [capability matrix](../../../../docs/current/capability-matrix.md) is the runtime source of truth.
 
 ## Responsibility
 

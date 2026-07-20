@@ -4,6 +4,8 @@ This guide describes how to add backend modules to Swiss Kit without weakening t
 
 Use it when creating a new module such as `users`, `access-control`, `settings`, `files` or another reusable template capability.
 
+Check the repository [capability matrix](../../../docs/current/capability-matrix.md) first. `files` and `notifications` are Optional / Not implemented; multi-tenancy is Out of scope / Not implemented.
+
 ## Goal
 
 A backend module should be easy to understand, test and remove.
