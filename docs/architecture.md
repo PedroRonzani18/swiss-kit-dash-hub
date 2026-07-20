@@ -1,95 +1,37 @@
-# Arquitetura
+# Architecture
 
-## Visão geral do sistema
-O `swiss-kit-dash-hub` é um Swiss Kit Core vazio/modular. O Core preserva autenticação, health checks, shell web, contratos compartilhados e tooling do monorepo como baseline para módulos futuros.
+The current runtime inventory lives in [docs/current](./current/README.md). This document explains its boundaries.
 
-Componentes principais:
-- `apps/web`: frontend React que renderiza o shell Core, protege `/app`, consome a API e valida contratos de resposta.
-- `apps/api`: backend NestJS que expõe endpoints REST, autentica usuários via Google OAuth e persiste dados no PostgreSQL.
-- `packages/contracts`: pacote compartilhado com tipos e schemas Zod, preservado para contratos Core/auth.
+## Applications and dependency flow
 
-Fluxo macro:
-1. O usuário interage com o frontend (`apps/web`).
-2. O frontend chama a API com `fetch` e `credentials: include`.
-3. A API valida autenticação, executa regras de domínio e acessa o banco via Prisma.
-4. O frontend valida payloads com Zod e atualiza o estado/caches com React Query.
+```text
+apps/web: src/app -> src/modules -> src/features -> src/shared and src/api
+apps/api: controller -> service -> repository -> PrismaService
+packages/contracts: Zod schemas and API-facing types shared by web and API
+```
 
-## Monorepo com pnpm + Turbo
-O repositório usa:
-- `pnpm` para workspaces (`apps/*` e `packages/*`).
-- `turbo` para orquestrar `build`, `lint`, `test`, `typecheck` e `dev`.
+The web sends cookie-authenticated requests through its fetch client. The API applies global JWT authentication and then permission checks where a controller declares `@RequirePermissions()`. Web permission filtering is UX only.
 
-Benefícios práticos no estado atual:
-- scripts centralizados na raiz para web e API;
-- execução por filtro (`--filter=web`, `--filter=api`);
-- pipeline de CI consistente para todos os pacotes.
+## Active modules
 
-## Frontend (`apps/web`)
-Tecnologias centrais:
-- React + Vite + TypeScript
-- TanStack Query para cache/sincronização de dados
-- React Router para roteamento
-- i18next + react-i18next para internacionalização
+The API registers `auth`, `core`, `health`, `settings`, `users`, `access-control`, and `tasks`. The web registry exposes routes for `core`, `settings`, `users`, `access-control`, and `tasks`.
 
-Responsabilidades principais:
-- autenticação e sessão no browser via `AuthProvider`;
-- rota protegida neutra em `/app`;
-- validação de payloads da API com schemas de `@swisskit/contracts`, quando aplicável.
-- catálogos `pt-BR` e `en` em `src/shared/i18n/locales`, com seleção explícita persistida em `localStorage`, detecção do idioma do navegador e fallback para `pt-BR`.
+`tasks` is the implemented reference module. `settings` is Core but partial: it returns and renders static sections only. See the [capability matrix](./current/capability-matrix.md).
 
-Textos de interface pertencem aos catálogos do frontend. Quando uma resposta da API define cópia estática exibida pela interface, o contrato transporta uma chave estável de tradução, como `labelKey` ou `descriptionKey`, e o web resolve a chave no locale ativo. Dados livres criados por usuários permanecem como dados e não são tratados como chaves de tradução.
+## Authentication and bootstrap
 
-Notas de integração:
-- base da API é `VITE_API_URL` (com fallback para `/api`);
-- em desenvolvimento, o Vite proxya `/api` para `http://localhost:3001`.
+Google OAuth starts at `/api/auth/google`. On callback the API verifies that the normalized email belongs to an active user, atomically binds an unbound Google identity, issues a JWT in an HttpOnly cookie, and returns effective roles and permissions from `/api/auth/me`.
 
-## Backend (`apps/api`)
-Tecnologias centrais:
-- NestJS + TypeScript
-- Prisma 7 com adapter PostgreSQL (`@prisma/adapter-pg`)
-- Passport (Google OAuth2 + JWT)
+`INITIAL_ADMIN_EMAIL` is optional seed-only configuration. When present for an email with no existing user, Prisma seed creates an active unbound user and persistent `admin` assignment. Runtime does not read it: Google login binds the matching user while preserving existing roles, and users with no role assignments receive `member` when that role exists. The seed never reactivates or promotes an existing record from this variable.
 
-Organização principal:
-- módulos Core preservados: `auth` e `health`;
-- módulo `core` para endpoints protegidos neutros, como `GET /api/core/session-check`;
-- padrão por módulo: `controller -> service -> repository`;
-- `PrismaService` compartilhado para acesso a dados;
-- `JwtAuthGuard` global, com rotas públicas explícitas via `@Public()`.
+## Persistence
 
-Capacidades operacionais:
-- Swagger em `/api/docs`;
-- health checks em `/api/health/live`, `/api/health/ready` e `/api/health`;
-- CORS com allowlist por variável de ambiente.
+Prisma persists Core authentication and local access-control data: users, permission groups, permissions, roles, and direct/role permission assignments. There is no tenant model or tenant-aware query path.
 
-## Contratos compartilhados (`packages/contracts`)
-O pacote contém:
-- superfície Core/auth em `core.ts`;
-- exports compartilhados necessários para autenticação e ids.
+## Operational surface
 
-Uso atual:
-- auth e consumidores web/API preservam o pacote compartilhado;
-- a API mantém também contratos internos em `apps/api/src/common/contracts`.
+- Swagger: `/api/docs`
+- Health: `/api/health/live`, `/api/health/ready`, and `/api/health`
+- `settings` and `tasks` endpoints deliberately return static reference/overview data.
 
-## Fluxo de autenticação (alto nível)
-1. O frontend inicia login em `GET /api/auth/google`.
-2. A API redireciona para Google OAuth.
-3. No callback (`GET /api/auth/google/callback`), a API valida o perfil e confere allowlist (`AllowedEmail`).
-4. A API faz upsert do usuário, assina JWT e grava cookie HttpOnly.
-5. A página de callback comunica sucesso/erro para o frontend via `postMessage` restrito ao `WEB_APP_URL`.
-6. O frontend invalida cache de sessão e consulta `GET /api/auth/me`.
-7. Rotas protegidas aceitam JWT por cookie (e fallback opcional por Bearer token).
-
-## Fluxo de dados (alto nível)
-1. Componentes do shell/autenticação acionam hooks/queries.
-2. A camada `src/api/*` chama endpoints REST quando necessário.
-3. O backend autentica o usuário e delega para services/repositories.
-4. Repositories executam operações Prisma no PostgreSQL.
-5. Respostas retornam ao frontend.
-6. O frontend valida schema, normaliza mapeamentos e atualiza cache React Query.
-
-## Decisões estruturais principais
-- Monorepo único para web/API/contratos com toolchain compartilhado.
-- Contratos compartilhados para reduzir drift entre backend e frontend.
-- Sessão baseada em cookie HttpOnly (em vez de token em storage do browser).
-- Guard global de autenticação, com rotas públicas explícitas.
-- Baseline Prisma enxuta com apenas entidades Core de autenticação e acesso.
+See [backend boundaries](../apps/api/docs/backend-boundaries.md) and [frontend boundaries](../apps/web/docs/frontend-boundaries.md) for ownership rules.

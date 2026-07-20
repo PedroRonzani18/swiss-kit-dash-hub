@@ -2,7 +2,7 @@
 
 This document defines import and ownership boundaries for the web app to keep modules decoupled, template-friendly and predictable to maintain.
 
-The current frontend should behave as a neutral Core shell. Product-specific modules can be added later, but they must enter through explicit module registration instead of leaking into shared layers.
+The current frontend is a neutral Core shell. The current runtime classification is in [docs/current](../../../docs/current/README.md): settings is Core / Partial and tasks is Reference / Implemented.
 
 ## Layer direction
 
@@ -40,6 +40,7 @@ Current shell entrypoints:
 - `/` redirects by auth state.
 - `/login` is public-only.
 - `/app` is the protected neutral Core shell.
+- `/settings`, `/users`, and `/access-control` are protected Core module routes.
 - `/tasks` is an example module for template authors.
 - `*` falls through to the Not Found page.
 
@@ -87,6 +88,7 @@ Because Swiss Kit is meant to become a reusable template:
 - Do not copy a full product module from another system into the template baseline.
 - Treat product modules as optional presets unless they are required by the Core template.
 - Do not reintroduce finance-domain routes, contracts or navigation as active implementation.
+- Files and notifications remain Optional / Not implemented; multi-tenancy is Out of scope / Not implemented.
 
 ## Core navigation contract
 

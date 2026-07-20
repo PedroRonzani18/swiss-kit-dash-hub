@@ -6,11 +6,10 @@ import type {
   GoogleAuthProfileContract,
   UserContract,
 } from '@/common/contracts';
+import type { AuthProvider } from '@swisskit/contracts/core';
 import { mapUserFromPersistence } from '@/common/mappers';
 import { AUTH_PROVIDER } from '@/common/enums';
 
-const PRIMARY_OWNER_EMAIL = 'pedroaugustogabironzani@gmail.com';
-const ADMIN_ROLE_KEY = 'admin';
 const MEMBER_ROLE_KEY = 'member';
 
 const userSelect = {
@@ -26,26 +25,19 @@ const userSelect = {
 } satisfies Prisma.UserSelect;
 
 type UserRow = Prisma.UserGetPayload<{ select: typeof userSelect }>;
+type AuthenticatedUserRow = UserRow & {
+  provider: AuthProvider;
+  providerUserId: string;
+};
+
+type ClaimGoogleUserResult =
+  | { status: 'not-allowed' }
+  | { status: 'identity-conflict' }
+  | { status: 'claimed'; user: UserContract };
 
 @Injectable()
 export class AuthRepository {
   constructor(private readonly prisma: PrismaService) {}
-
-  async isAllowedEmail(email: string): Promise<boolean> {
-    const normalizedEmail = email.toLowerCase().trim();
-
-    const record = await this.prisma.allowedEmail.findFirst({
-      select: {
-        id: true,
-      },
-      where: {
-        email: normalizedEmail,
-        isActive: true,
-      },
-    });
-
-    return Boolean(record);
-  }
 
   async findById(id: string): Promise<UserContract | null> {
     const record = await this.prisma.user.findUnique({
@@ -53,7 +45,11 @@ export class AuthRepository {
       where: { id },
     });
 
-    return record ? mapUserFromPersistence(record as UserRow) : null;
+    if (!record?.provider || !record.providerUserId) {
+      return null;
+    }
+
+    return mapUserFromPersistence(record as AuthenticatedUserRow);
   }
 
   async getEffectiveAccess(userId: string): Promise<EffectiveAccessContract> {
@@ -112,53 +108,92 @@ export class AuthRepository {
     };
   }
 
-  async upsertGoogleUser(
+  async claimGoogleUser(
     profile: GoogleAuthProfileContract,
-  ): Promise<UserContract> {
-    const record = await this.prisma.user.upsert({
-      select: userSelect,
-      where: { email: profile.email },
-      update: {
-        name: profile.name,
-        avatarUrl: profile.avatarUrl,
-        provider: AUTH_PROVIDER.GOOGLE,
-        providerUserId: profile.providerUserId,
-        lastLoginAt: new Date(),
-      },
-      create: {
-        email: profile.email,
-        name: profile.name,
-        avatarUrl: profile.avatarUrl,
-        provider: AUTH_PROVIDER.GOOGLE,
-        providerUserId: profile.providerUserId,
-        lastLoginAt: new Date(),
-      },
+  ): Promise<ClaimGoogleUserResult> {
+    return this.prisma.$transaction(async (transaction) => {
+      const [emailUser, identityUser] = await Promise.all([
+        transaction.user.findUnique({
+          where: { email: profile.email },
+          select: { id: true, isActive: true, providerUserId: true },
+        }),
+        transaction.user.findUnique({
+          where: { providerUserId: profile.providerUserId },
+          select: { id: true },
+        }),
+      ]);
+
+      if (!emailUser || !emailUser.isActive) {
+        return { status: 'not-allowed' };
+      }
+
+      if (identityUser && identityUser.id !== emailUser.id) {
+        return { status: 'identity-conflict' };
+      }
+
+      const claimed = await transaction.user.updateMany({
+        where: {
+          id: emailUser.id,
+          isActive: true,
+          OR: [
+            { providerUserId: null },
+            { providerUserId: profile.providerUserId },
+          ],
+        },
+        data: {
+          name: profile.name,
+          avatarUrl: profile.avatarUrl,
+          provider: AUTH_PROVIDER.GOOGLE,
+          providerUserId: profile.providerUserId,
+          lastLoginAt: new Date(),
+        },
+      });
+
+      if (!claimed.count) {
+        return { status: 'not-allowed' };
+      }
+
+      const record = await transaction.user.findUniqueOrThrow({
+        select: userSelect,
+        where: { id: emailUser.id },
+      });
+
+      if (!record.provider || !record.providerUserId) {
+        return { status: 'identity-conflict' };
+      }
+
+      await this.assignMemberRoleWhenUnassigned(record.id, transaction);
+
+      return {
+        status: 'claimed',
+        user: mapUserFromPersistence(record as AuthenticatedUserRow),
+      };
     });
-
-    await this.assignDefaultRole(record.id, record.email);
-
-    return mapUserFromPersistence(record as UserRow);
   }
 
-  private async assignDefaultRole(
+  private async assignMemberRoleWhenUnassigned(
     userId: string,
-    email: string,
+    prisma: Prisma.TransactionClient = this.prisma,
   ): Promise<void> {
-    const roleKey =
-      email.toLowerCase() === PRIMARY_OWNER_EMAIL
-        ? ADMIN_ROLE_KEY
-        : MEMBER_ROLE_KEY;
+    const existingAssignment = await prisma.userRole.findFirst({
+      select: { userId: true },
+      where: { userId },
+    });
 
-    const role = await this.prisma.role.findUnique({
+    if (existingAssignment) {
+      return;
+    }
+
+    const role = await prisma.role.findUnique({
       select: { id: true },
-      where: { key: roleKey },
+      where: { key: MEMBER_ROLE_KEY },
     });
 
     if (!role) {
       return;
     }
 
-    await this.prisma.userRole.upsert({
+    await prisma.userRole.upsert({
       where: {
         userId_roleId: {
           userId,

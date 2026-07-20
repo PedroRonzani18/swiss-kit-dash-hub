@@ -44,11 +44,7 @@
       },
       "users": {
         "label": "Users",
-        "description": "Authenticated template users."
-      },
-      "allowedEmails": {
-        "label": "Allowed Emails",
-        "description": "Emails allowed to access the template."
+        "description": "User directory, access provisioning, and activation."
       },
       "accessControl": {
         "label": "Access Control",
@@ -100,27 +96,18 @@
   "users": {
     "eyebrow": "Template module",
     "title": "Users",
-    "description": "Base module for viewing authenticated users without adding administration, roles, or permissions.",
+    "description": "Manage provisioned users and their access status.",
     "loading": "Loading users...",
     "error": "Could not load users.",
     "registered": "Registered users",
     "count_one": "{{count}} user found.",
-    "count_other": "{{count}} users found."
-  },
-  "allowedEmails": {
-    "eyebrow": "Access baseline",
-    "title": "Allowed Emails",
-    "description": "Emails allowed to access the template, with basic registration and activation controls and no complete RBAC.",
+    "count_other": "{{count}} users found.",
     "emailPlaceholder": "user@example.com",
     "notePlaceholder": "Optional note",
     "saving": "Saving...",
     "add": "Add",
-    "saveError": "Could not save the email.",
-    "loading": "Loading emails...",
-    "loadError": "Could not load the email list.",
-    "registered": "Registered emails",
-    "count_one": "{{count}} email found.",
-    "count_other": "{{count}} emails found.",
+    "saveError": "Could not save the user.",
+    "pending": "Pending",
     "activate": "Activate",
     "deactivate": "Deactivate"
   },
@@ -199,11 +186,7 @@
         },
         "users": {
           "label": "Users",
-          "description": "Authenticated user directory and profile visibility."
-        },
-        "allowed-emails": {
-          "label": "Allowed Emails",
-          "description": "Allowed email list administration."
+          "description": "User directory, access provisioning, and activation."
         },
         "access-control": {
           "label": "Access Control",
@@ -234,25 +217,15 @@
           },
           "read": {
             "label": "Read Users",
-            "description": "Allows reading authenticated user profiles."
-          }
-        },
-        "allowed-emails": {
-          "access": {
-            "label": "Access Allowed Emails",
-            "description": "Allows access to the allowed emails module."
-          },
-          "read": {
-            "label": "Read Allowed Emails",
-            "description": "Allows reading allowed email entries."
+            "description": "Allows reading user profiles."
           },
           "create": {
-            "label": "Create Allowed Emails",
-            "description": "Allows creating allowed email entries."
+            "label": "Create Users",
+            "description": "Allows provisioning and reactivating users."
           },
           "update": {
-            "label": "Update Allowed Emails",
-            "description": "Allows enabling or disabling allowed email entries."
+            "label": "Update Users",
+            "description": "Allows enabling or disabling users."
           }
         },
         "access-control": {
@@ -289,17 +262,9 @@
           "label": "Member",
           "description": "Baseline authenticated member role for the Swiss Kit template."
         },
-        "allowed-emails-manager": {
-          "label": "Allowed Emails Manager",
-          "description": "Manages allowed email entries for template access onboarding."
-        },
-        "allowed-emails-viewer": {
-          "label": "Allowed Emails Viewer",
-          "description": "Views allowed email entries without changing them."
-        },
         "users-manager": {
           "label": "Users Manager",
-          "description": "Template role for user visibility and future user-management operations."
+          "description": "Manages user provisioning, activation, and directory visibility."
         },
         "users-viewer": {
           "label": "Users Viewer",

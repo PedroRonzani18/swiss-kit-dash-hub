@@ -2,19 +2,22 @@
 
 This directory contains routeable backend capabilities for the Swiss Kit API.
 
-Current Core baseline modules:
+Current active modules:
 
 - `auth`
 - `core`
 - `health`
+- `settings` (Core / Partial: static overview)
+- `users` (Core / Implemented)
+- `users` (Core / Implemented; directory, provisioning, and activation)
+- `access-control` (Core / Implemented)
+- `tasks` (Reference / Implemented; static module-authoring example)
 
-Future template modules may include:
+Optional / Not implemented: `files`, `notifications`.
 
-- `users`
-- `access-control`
-- `settings`
-- `files`
-- `notifications`
+Out of scope / Not implemented: multi-tenancy.
+
+The repository [capability matrix](../../../../docs/current/capability-matrix.md) is the runtime source of truth.
 
 ## Responsibility
 
@@ -72,7 +75,7 @@ Treat these changes as high risk:
 - cookies;
 - JWT;
 - CORS;
-- allowed emails;
+- user activation;
 - Prisma schema;
 - migrations;
 - environment validation;

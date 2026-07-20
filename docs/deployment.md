@@ -5,7 +5,7 @@ No estado atual do repositório:
 - o deploy é operacional (configurado no provider), não versionado como IaC neste repo;
 - não existe `railway.toml` no código-fonte;
 - o projeto é publicado com frontend e API em serviços separados no Railway;
-- a baseline Prisma é Core e contém apenas entidades de autenticação e acesso.
+- a baseline Prisma é Core e contém autenticação, estado de acesso do usuário e access-control local.
 
 ## Topologia de publicação
 - Serviço `web` (frontend Vite buildado e servido pelo serviço web).
@@ -21,9 +21,11 @@ Comandos de referência (usando scripts já existentes):
 
 Etapas importantes:
 1. Configurar variáveis de ambiente da API (`apps/api/.env.example` como base).
-2. Garantir `DATABASE_URL` apontando para PostgreSQL válido.
-3. Para ambientes novos ou reprovisionados, executar migrações Prisma antes (ou durante) o rollout: `pnpm --filter api prisma:migrate:deploy`.
-4. Validar health checks após deploy:
+2. Opcionalmente, definir `INITIAL_ADMIN_EMAIL` antes do seed para provisionar um usuário `admin`. A API em execução não lê essa variável.
+3. Garantir `DATABASE_URL` apontando para PostgreSQL válido.
+4. Para ambientes novos ou reprovisionados, executar migrações Prisma antes (ou durante) o rollout: `pnpm --filter api prisma:migrate:deploy`.
+5. Executar `pnpm --filter api prisma:seed` para sincronizar permissões e roles e, quando `INITIAL_ADMIN_EMAIL` estiver definido, provisionar esse administrador.
+6. Validar health checks após deploy:
 - `GET /api/health/live`
 - `GET /api/health/ready`
 
@@ -62,4 +64,4 @@ Para autenticação Google funcionar em produção:
 - CORS incorreto impede envio de credenciais/cookies do browser.
 - `AUTH_COOKIE_SAME_SITE=none` sem `AUTH_COOKIE_SECURE=true` quebra autenticação.
 - `DATABASE_URL` ausente/errado mantém API de pé, mas readiness ficará indisponível.
-- Acesso depende de e-mail ativo em `AllowedEmail`.
+- Acesso depende de um `User` ativo. Quando definido para um e-mail sem usuário, `INITIAL_ADMIN_EMAIL` faz o seed criar um administrador ativo sem identidade Google e atribuir `admin`; ele não altera acessos existentes.

@@ -1,6 +1,9 @@
 {
   "name": "swiss-kit-dash-hub",
   "private": true,
+  "engines": {
+    "node": ">=24 <25"
+  },
   "workspaces": [
     "apps/*",
     "packages/*"

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Swiss Kit uses local access-control as a Core template capability.
+Swiss Kit uses local access-control as a Core template capability. Its current status is **Core / Implemented**; it is not a complete administration product. See the [capability matrix](./current/capability-matrix.md).
 
 The first step is a permission catalog. It defines stable permission keys and exposes them through the API and web shell.
 
@@ -45,7 +45,7 @@ Examples:
 ```text
 users:access
 users:read
-allowed-emails:create
+users:create
 access-control:manage
 ```
 
@@ -106,19 +106,11 @@ member
 Area-specific roles:
 
 ```text
-allowed-emails-manager
-  allowed-emails:access
-  allowed-emails:read
-  allowed-emails:create
-  allowed-emails:update
-
-allowed-emails-viewer
-  allowed-emails:access
-  allowed-emails:read
-
 users-manager
   users:access
   users:read
+  users:create
+  users:update
 
 users-viewer
   users:access
@@ -134,14 +126,16 @@ tasks-viewer
   tasks:read
 ```
 
-`users-manager` is intentionally seeded now even though the current template does not expose user write permissions yet. In this baseline, it is equivalent to `users-viewer` until write permissions are introduced.
+`users-manager` can provision/reactivate users and update their activation state.
 
-On Google login, users are assigned a default role if the role exists:
+On Google login, users with no role assignments receive the seeded `member` role when it exists. Existing assignments are preserved:
 
 ```text
-primary owner email -> admin
-other allowed users -> member
+no UserRole assignment -> member
+existing UserRole assignment -> unchanged
 ```
+
+`INITIAL_ADMIN_EMAIL` is an optional seed-only variable. When present for an email without an existing user, seed creates an active unbound user and `admin` assignment. The running API never reads it and seed never reactivates or promotes an existing record from this variable.
 
 ## Frontend filtering
 
@@ -207,12 +201,6 @@ pnpm --filter api prisma:seed
 - `UserPermission` remains the direct-grant exception path for administrators.
 - This baseline does not add tenant scoping, deny rules or external policy engines.
 
-## Next steps
+## Limitations
 
-Recommended follow-up PRs:
-
-1. Add role/user assignment write endpoints.
-2. Add role/user assignment management UI.
-3. Add tests around access checks.
-
-Do not add multi-tenant authorization, Redis-backed sessions or external policy engines to the Core baseline.
+Role and direct-grant management write surfaces are not implemented; the endpoint and UI currently expose catalog/role overview only. Do not add multi-tenant authorization, Redis-backed sessions, or external policy engines to the Core baseline without explicit scope. See [known limitations](./current/known-limitations.md).

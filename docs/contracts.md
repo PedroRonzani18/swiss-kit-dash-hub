@@ -14,7 +14,7 @@ Use it to keep frontend and backend aligned on:
 
 ## Current baseline
 
-Core contract areas:
+Active contract areas include:
 
 ```text
 api.ts
@@ -31,9 +31,13 @@ modules.ts
 
 users.ts
 settings.ts
-allowed-emails.ts
-  existing Core module contracts
+access-control.ts
+access-control-catalog.ts
+tasks.ts
+  Core contracts plus the implemented Reference tasks contract
 ```
+
+The runtime classification is maintained in [docs/current](./current/README.md). Do not create files or notifications contracts until those Optional capabilities are explicitly implemented.
 
 ## Permission key format
 

@@ -2,13 +2,17 @@
 
 Modules own page-level composition for the web app.
 
-Use this directory for code that represents a routeable area of the application, such as:
+Current routeable modules are:
 
 - `core`
 - `auth`
 - `users`
 - `access-control`
 - `settings`
+- `users` (directory, provisioning, and activation)
+- `tasks` (Reference / Implemented)
+
+`settings` is Core / Partial. Files and notifications are Optional / Not implemented; multi-tenancy is Out of scope / Not implemented. See [the runtime matrix](../../../../docs/current/capability-matrix.md).
 
 ## Responsibilities
 

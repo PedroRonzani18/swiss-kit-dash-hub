@@ -65,9 +65,15 @@ export class AuthService {
       ...profile,
       email: profile.email.toLowerCase().trim(),
     };
-    await this.assertAllowedEmail(normalizedProfile.email);
+    const claim = await this.authRepository.claimGoogleUser(normalizedProfile);
 
-    const user = await this.authRepository.upsertGoogleUser(normalizedProfile);
+    if (claim.status !== 'claimed') {
+      throw new ForbiddenException(
+        'Your Google account is not allowed to access this API',
+      );
+    }
+
+    const { user } = claim;
     const payload: JwtPayloadContract = {
       sub: user.id,
       email: user.email,
@@ -123,16 +129,6 @@ export class AuthService {
       ...user,
       ...effectiveAccess,
     };
-  }
-
-  private async assertAllowedEmail(email: string): Promise<void> {
-    const isAllowed = await this.authRepository.isAllowedEmail(email);
-
-    if (!isAllowed) {
-      throw new ForbiddenException(
-        'Your Google account is not allowed to access this API',
-      );
-    }
   }
 
   private getAuthCookieBaseOptions(): CookieOptions {

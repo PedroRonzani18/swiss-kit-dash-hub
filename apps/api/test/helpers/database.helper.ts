@@ -40,6 +40,4 @@ export async function resetDatabase(prisma: PrismaService): Promise<void> {
     await ensureDatabasePrepared();
     await prisma.user.deleteMany();
   }
-
-  await prisma.allowedEmail.deleteMany();
 }

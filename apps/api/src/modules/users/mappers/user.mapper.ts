@@ -6,7 +6,9 @@ type UserPersistence = {
   email: string;
   name: string | null;
   avatarUrl: string | null;
-  provider: AuthProvider;
+  isActive: boolean;
+  note: string | null;
+  provider: AuthProvider | null;
   lastLoginAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
@@ -24,6 +26,8 @@ export function mapUserProfileFromPersistence(
     email: user.email,
     name: user.name,
     avatarUrl: user.avatarUrl,
+    isActive: user.isActive,
+    note: user.note,
     provider: user.provider,
     lastLoginAt: toIsoString(user.lastLoginAt),
     createdAt: user.createdAt.toISOString(),

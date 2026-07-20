@@ -4,6 +4,8 @@ This guide describes how to add frontend modules to Swiss Kit without weakening 
 
 Use this when creating a new area such as `users`, `access-control`, `settings`, `files` or another reusable template module.
 
+Check the repository [capability matrix](../../../docs/current/capability-matrix.md) first. `files` and `notifications` are Optional / Not implemented; multi-tenancy is Out of scope / Not implemented.
+
 ## Goal
 
 A module should be easy to remove, replace or promote into an optional preset.

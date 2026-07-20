@@ -2,17 +2,18 @@
 
 This module is a neutral template shell for application settings.
 
-It exists to validate the frontend module authoring flow:
+It exists as the current partial Core settings slice:
 
 - route path registered in `src/app/navigation/modules.ts`;
 - protected route wired in `src/app/routes/AppRoutes.tsx`;
 - page component owned by `src/modules/settings/pages`;
 - no product-specific behavior;
-- no API or persistence dependency yet.
+- protected API overview at `GET /api/settings`;
+- no persistence dependency.
 
 ## Current scope
 
-The current page is intentionally static.
+The current API response and page are intentionally static.
 
 It only reserves UI space for future generic settings areas:
 
@@ -24,7 +25,6 @@ It only reserves UI space for future generic settings areas:
 
 This module does not currently include:
 
-- backend endpoints;
 - persisted settings;
 - user profile editing;
 - role or permission management;

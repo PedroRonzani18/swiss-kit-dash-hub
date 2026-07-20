@@ -14,9 +14,11 @@ dist
 dist-ssr
 *.local
 
-# Codex pipeline generated runs
-.pipeline/runs/*
-!.pipeline/runs/.gitkeep
+# Test artifacts
+test-results/
+playwright-report/
+blob-report/
+coverage/
 
 # Editor directories and files
 .vscode/*

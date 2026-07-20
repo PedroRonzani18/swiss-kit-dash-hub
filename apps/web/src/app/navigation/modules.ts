@@ -8,11 +8,9 @@ import {
   Home,
   KeyRound,
   Settings,
-  ShieldCheck,
   Users,
   type LucideIcon,
 } from "lucide-react";
-import { AccessListPage } from "@/modules/access-list/pages/AccessListPage";
 import { AccessControlPage } from "@/modules/access-control/pages/AccessControlPage";
 import { CoreAppPage } from "@/modules/core/pages/CoreAppPage";
 import { SettingsPage } from "@/modules/settings/pages/SettingsPage";
@@ -23,7 +21,6 @@ export const MODULE_ROUTES = {
   core: "/app",
   settings: "/settings",
   users: "/users",
-  allowedEmails: "/allowed-emails",
   accessControl: "/access-control",
   tasks: "/tasks",
 } as const;
@@ -80,18 +77,6 @@ export const APP_MODULES: ShellModuleDefinition[] = [
     status: "available",
     requiredPermissions: ["users:access"],
     descriptionKey: "navigation.modules.users.description",
-  },
-  {
-    id: "allowed-emails",
-    routeKey: "allowedEmails",
-    labelKey: "navigation.modules.allowedEmails.label",
-    path: MODULE_ROUTES.allowedEmails,
-    icon: ShieldCheck,
-    component: AccessListPage,
-    nav: true,
-    status: "available",
-    requiredPermissions: ["allowed-emails:access"],
-    descriptionKey: "navigation.modules.allowedEmails.description",
   },
   {
     id: "access-control",
