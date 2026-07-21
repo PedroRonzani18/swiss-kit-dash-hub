@@ -17,10 +17,14 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const request = ctx.getRequest<Request>();
     const response = ctx.getResponse<Response>();
+    const responseRequestId = response.getHeader('x-request-id');
     const requestIdHeader = request.headers['x-request-id'];
-    const requestId = Array.isArray(requestIdHeader)
-      ? requestIdHeader[0]
-      : requestIdHeader;
+    const requestId =
+      typeof responseRequestId === 'string'
+        ? responseRequestId
+        : Array.isArray(requestIdHeader)
+          ? requestIdHeader[0]
+          : requestIdHeader;
     const path = request.originalUrl.split('?')[0];
     const isProduction = process.env.NODE_ENV === 'production';
 

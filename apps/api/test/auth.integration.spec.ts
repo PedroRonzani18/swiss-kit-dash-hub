@@ -1,4 +1,5 @@
 import { INestApplication } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import request from 'supertest';
 import { PrismaService } from '@/prisma/prisma.service';
 import { createAuthenticatedTestUser } from './helpers/auth.helper';
@@ -69,5 +70,85 @@ describe('Auth integration', () => {
         provider: authUser.user.provider,
       },
     });
+  });
+
+  it('denies a previously authenticated user after deactivation', async () => {
+    const authUser = await createAuthenticatedTestUser(app, prisma, {
+      permissions: ['core:access'],
+    });
+
+    await prisma.user.update({
+      where: { id: authUser.user.id },
+      data: { isActive: false },
+    });
+
+    await request(app.getHttpServer())
+      .get('/api/auth/me')
+      .set(authUser.authHeader)
+      .expect(401);
+
+    await request(app.getHttpServer())
+      .get('/api/core/session-check')
+      .set(authUser.authHeader)
+      .expect(401);
+  });
+
+  it('keeps a token invalid after deactivation and reactivation', async () => {
+    const actor = await createAuthenticatedTestUser(app, prisma, {
+      permissions: ['users:update'],
+    });
+    const authUser = await createAuthenticatedTestUser(app, prisma, {
+      permissions: ['core:access'],
+    });
+
+    await request(app.getHttpServer())
+      .patch(`/api/users/${authUser.user.id}/status`)
+      .set(actor.authHeader)
+      .send({ isActive: false })
+      .expect(200);
+
+    await request(app.getHttpServer())
+      .patch(`/api/users/${authUser.user.id}/status`)
+      .set(actor.authHeader)
+      .send({ isActive: true })
+      .expect(200);
+
+    await request(app.getHttpServer())
+      .get('/api/auth/me')
+      .set(authUser.authHeader)
+      .expect(401);
+
+    const currentUser = await prisma.user.findUniqueOrThrow({
+      where: { id: authUser.user.id },
+    });
+    const jwtService = app.get(JwtService);
+    const currentToken = await jwtService.signAsync({
+      sub: currentUser.id,
+      email: currentUser.email,
+      name: currentUser.name,
+      provider: currentUser.provider,
+      sessionVersion: currentUser.sessionVersion,
+    });
+
+    await request(app.getHttpServer())
+      .get('/api/auth/me')
+      .set('Authorization', `Bearer ${currentToken}`)
+      .expect(200);
+  });
+
+  it('accepts a legacy token while the user session version is zero', async () => {
+    const authUser = await createAuthenticatedTestUser(app, prisma);
+    const jwtService = app.get(JwtService);
+    const legacyToken = await jwtService.signAsync({
+      sub: authUser.user.id,
+      email: authUser.user.email,
+      name: authUser.user.name,
+      provider: authUser.user.provider,
+    });
+
+    await request(app.getHttpServer())
+      .get('/api/auth/me')
+      .set('Authorization', `Bearer ${legacyToken}`)
+      .expect(200);
   });
 });

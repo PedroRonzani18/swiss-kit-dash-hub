@@ -8,8 +8,8 @@ const repoRoot = process.env.SWISSKIT_SCAFFOLD_ROOT ?? join(__dirname, '..');
 const scaffoldTypes = new Set(['web-only', 'api-only', 'contracts-only', 'full-stack']);
 
 function usage() {
-  console.log('Usage: pnpm scaffold:module -- <module-id> --type <web-only|api-only|contracts-only|full-stack>');
-  console.log('Example: pnpm scaffold:module -- tickets --type full-stack');
+  console.log('Usage: pnpm scaffold:module <module-id> --type <web-only|api-only|contracts-only|full-stack>');
+  console.log('Example: pnpm scaffold:module tickets --type full-stack');
 }
 
 function parseArgs(args) {
