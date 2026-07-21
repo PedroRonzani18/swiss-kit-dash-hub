@@ -11,6 +11,7 @@
       "en": "Inglês"
     },
     "actions": {
+      "cancel": "Cancelar",
       "close": "Fechar",
       "toggleSidebar": "Alternar barra lateral",
       "collapseSidebar": "Recolher",
@@ -107,9 +108,15 @@
     "saving": "Salvando...",
     "add": "Adicionar",
     "saveError": "Não foi possível salvar o usuário.",
+    "empty": "Nenhum usuário foi provisionado ainda.",
     "pending": "Pendente",
     "activate": "Ativar",
-    "deactivate": "Desativar"
+    "deactivate": "Desativar",
+    "deactivateDialog": {
+      "title": "Desativar usuário?",
+      "description": "{{user}} não poderá acessar o sistema até ser reativado.",
+      "confirm": "Desativar usuário"
+    }
   },
   "accessControl": {
     "title": "Controle de acesso",
@@ -292,6 +299,7 @@
     "description": "Módulo de referência que demonstra o fluxo do template entre contratos compartilhados, endpoint da API, cliente web, hook, página e registro de módulos.",
     "loading": "Carregando tarefas...",
     "error": "Não foi possível carregar as tarefas.",
+    "empty": "Nenhuma tarefa de referência está disponível.",
     "noDescription": "Sem descrição.",
     "items": {
       "reviewTemplate": {

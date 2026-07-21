@@ -4,6 +4,18 @@ import { useAuth } from "@/auth";
 import { createOrReactivateUser, updateUserStatus } from "@/api/users";
 import { usersKeys } from "@/api/queryKeys";
 import { AppLayout } from "@/components/AppLayout";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useUsersOverview } from "@/features/users/hooks/useUsersOverview";
 import { useTranslation } from "react-i18next";
 
@@ -14,6 +26,10 @@ export function UsersPage() {
   const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [note, setNote] = useState("");
+  const [userPendingDeactivation, setUserPendingDeactivation] = useState<{
+    id: string;
+    label: string;
+  } | null>(null);
   const canCreate = can("users:create");
   const canUpdate = can("users:update");
 
@@ -30,6 +46,7 @@ export function UsersPage() {
     mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) =>
       updateUserStatus(id, { isActive }),
     onSuccess: async () => {
+      setUserPendingDeactivation(null);
       await queryClient.invalidateQueries({ queryKey: usersKeys.overview() });
     },
   });
@@ -66,28 +83,25 @@ export function UsersPage() {
             className="grid gap-3 rounded-2xl border border-border/70 bg-card/70 p-5 shadow-sm md:grid-cols-[1fr_1fr_auto]"
             onSubmit={handleSubmit}
           >
-            <input
-              className="rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
+            <Input
               onChange={(event) => setEmail(event.target.value)}
               placeholder={t("users.emailPlaceholder")}
               required
               type="email"
               value={email}
             />
-            <input
-              className="rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
+            <Input
               onChange={(event) => setNote(event.target.value)}
               placeholder={t("users.notePlaceholder")}
               type="text"
               value={note}
             />
-            <button
-              className="rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-60"
+            <Button
               disabled={createMutation.isPending}
               type="submit"
             >
               {createMutation.isPending ? t("users.saving") : t("users.add")}
-            </button>
+            </Button>
           </form>
         ) : null}
 
@@ -123,7 +137,11 @@ export function UsersPage() {
             </div>
 
             <div className="divide-y divide-border/70">
-              {usersOverviewQuery.data.users.map((user) => (
+              {usersOverviewQuery.data.users.length === 0 ? (
+                <p className="px-5 py-8 text-sm text-muted-foreground">
+                  {t("users.empty")}
+                </p>
+              ) : usersOverviewQuery.data.users.map((user) => (
                 <article key={user.id} className="px-5 py-4">
                   <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
                     <div>
@@ -151,19 +169,28 @@ export function UsersPage() {
                           : t("users.pending")}
                       </span>
                       {canUpdate ? (
-                        <button
-                          className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-foreground disabled:cursor-not-allowed disabled:opacity-60"
+                        <Button
+                          size="sm"
+                          variant="outline"
                           disabled={statusMutation.isPending}
-                          onClick={() =>
-                            statusMutation.mutate({
+                          onClick={() => {
+                            if (!user.isActive) {
+                              statusMutation.mutate({
+                                id: user.id,
+                                isActive: true,
+                              });
+                              return;
+                            }
+
+                            setUserPendingDeactivation({
                               id: user.id,
-                              isActive: !user.isActive,
-                            })
-                          }
+                              label: user.name ?? user.email,
+                            });
+                          }}
                           type="button"
                         >
                           {user.isActive ? t("users.deactivate") : t("users.activate")}
-                        </button>
+                        </Button>
                       ) : null}
                     </div>
                   </div>
@@ -173,6 +200,47 @@ export function UsersPage() {
           </div>
         ) : null}
       </section>
+
+      <AlertDialog
+        open={Boolean(userPendingDeactivation)}
+        onOpenChange={(open) => {
+          if (!open && !statusMutation.isPending) {
+            setUserPendingDeactivation(null);
+          }
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("users.deactivateDialog.title")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("users.deactivateDialog.description", {
+                user: userPendingDeactivation?.label,
+              })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={statusMutation.isPending}>
+              {t("common.actions.cancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              disabled={statusMutation.isPending}
+              onClick={(event) => {
+                event.preventDefault();
+                if (userPendingDeactivation) {
+                  statusMutation.mutate({
+                    id: userPendingDeactivation.id,
+                    isActive: false,
+                  });
+                }
+              }}
+            >
+              {statusMutation.isPending
+                ? t("users.saving")
+                : t("users.deactivateDialog.confirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppLayout>
   );
 }

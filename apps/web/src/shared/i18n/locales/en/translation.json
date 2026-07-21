@@ -11,6 +11,7 @@
       "en": "English"
     },
     "actions": {
+      "cancel": "Cancel",
       "close": "Close",
       "toggleSidebar": "Toggle sidebar",
       "collapseSidebar": "Collapse",
@@ -107,9 +108,15 @@
     "saving": "Saving...",
     "add": "Add",
     "saveError": "Could not save the user.",
+    "empty": "No users have been provisioned yet.",
     "pending": "Pending",
     "activate": "Activate",
-    "deactivate": "Deactivate"
+    "deactivate": "Deactivate",
+    "deactivateDialog": {
+      "title": "Deactivate user?",
+      "description": "{{user}} will not be able to access the system until reactivated.",
+      "confirm": "Deactivate user"
+    }
   },
   "accessControl": {
     "title": "Access Control",
@@ -292,6 +299,7 @@
     "description": "Reference module showing the template flow from shared contracts to API endpoint, web API client, hook, page, and module registry.",
     "loading": "Loading tasks...",
     "error": "Failed to load tasks.",
+    "empty": "No reference tasks are available.",
     "noDescription": "No description.",
     "items": {
       "reviewTemplate": {
