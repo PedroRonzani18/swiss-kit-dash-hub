@@ -11,13 +11,13 @@ A module should be a vertical slice with clear ownership across frontend, backen
 Use the scaffold for the local starter files:
 
 ```bash
-pnpm scaffold:module -- <module-id> --type <web-only|api-only|contracts-only|full-stack>
+pnpm scaffold:module <module-id> --type <web-only|api-only|contracts-only|full-stack>
 ```
 
 Example:
 
 ```bash
-pnpm scaffold:module -- tasks --type full-stack
+pnpm scaffold:module tasks --type full-stack
 ```
 
 The scaffold creates only the selected local files:
