@@ -113,7 +113,10 @@ export class UsersRepository {
         const record = await transaction.user.update({
           where: { id },
           select: userProfileSelect,
-          data: { isActive: input.isActive },
+          data: {
+            isActive: input.isActive,
+            ...(!input.isActive ? { sessionVersion: { increment: 1 } } : {}),
+          },
         });
 
         return mapUserProfileFromPersistence(record as UserProfileRow);

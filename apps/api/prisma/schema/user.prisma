@@ -7,6 +7,7 @@ model User {
   note          String?
   provider      AuthProvider?
   providerUserId String?      @unique
+  sessionVersion Int          @default(0)
   lastLoginAt   DateTime?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt

@@ -48,6 +48,7 @@ export type JwtPayloadContract = {
   email: string;
   name: string | null;
   provider: AuthProvider;
+  sessionVersion?: number;
 };
 
 export type AuthLoginResultContract = {

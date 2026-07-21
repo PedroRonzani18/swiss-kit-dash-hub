@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
 import type {
+  AuthenticatedUserContract,
   EffectiveAccessContract,
   GoogleAuthProfileContract,
   UserContract,
@@ -19,6 +20,7 @@ const userSelect = {
   avatarUrl: true,
   provider: true,
   providerUserId: true,
+  sessionVersion: true,
   lastLoginAt: true,
   createdAt: true,
   updatedAt: true,
@@ -30,14 +32,50 @@ type AuthenticatedUserRow = UserRow & {
   providerUserId: string;
 };
 
+export type ActiveAuthenticatedUser = AuthenticatedUserContract & {
+  sessionVersion: number;
+};
+
 type ClaimGoogleUserResult =
   | { status: 'not-allowed' }
   | { status: 'identity-conflict' }
-  | { status: 'claimed'; user: UserContract };
+  | { status: 'claimed'; user: UserContract; sessionVersion: number };
 
 @Injectable()
 export class AuthRepository {
   constructor(private readonly prisma: PrismaService) {}
+
+  async findActiveAuthenticatedUser(
+    id: string,
+  ): Promise<ActiveAuthenticatedUser | null> {
+    const record = await this.prisma.user.findFirst({
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        provider: true,
+        sessionVersion: true,
+      },
+      where: {
+        id,
+        isActive: true,
+        provider: { not: null },
+        providerUserId: { not: null },
+      },
+    });
+
+    if (!record?.provider) {
+      return null;
+    }
+
+    return {
+      id: record.id,
+      email: record.email,
+      name: record.name,
+      provider: record.provider,
+      sessionVersion: record.sessionVersion,
+    };
+  }
 
   async findById(id: string): Promise<UserContract | null> {
     const record = await this.prisma.user.findUnique({
@@ -167,6 +205,7 @@ export class AuthRepository {
       return {
         status: 'claimed',
         user: mapUserFromPersistence(record as AuthenticatedUserRow),
+        sessionVersion: record.sessionVersion,
       };
     });
   }

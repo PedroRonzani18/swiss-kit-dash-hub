@@ -103,6 +103,7 @@ export async function createAuthenticatedTestUser(
     email: user.email,
     name: user.name,
     provider: user.provider,
+    sessionVersion: user.sessionVersion,
   });
 
   const cookieName = process.env.AUTH_COOKIE_NAME ?? 'swisskit_auth';
